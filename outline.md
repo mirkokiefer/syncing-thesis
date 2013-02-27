@@ -1,8 +1,8 @@
 
 #Syncing Strategies for Mobile Devices
 ##Scenarios
-###Object List Synchronization
-The Wunderlist app servers as an example for a common data schema that requires syncing of typed objects.
+###Relational Data Synchronization
+The Wunderlist app serves as an example for a common data schema that requires syncing of a relational schema.
 
 Wunderlist's schema could be defined as the following:
 
