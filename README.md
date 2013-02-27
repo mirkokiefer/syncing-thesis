@@ -89,7 +89,7 @@ Aspects to consider when evaluating strategies:
 - **be small**: only implement the functional parts of syncing - leave everything else to the application (transport, persistence)
 - **sensitive defaults**: have defaults that *just work* but still support custom logic (e.g. for conflict resolution)
 
-###Implementation
+###Proof-Of-Concept Implementation
 As syncing is state based we need to track the entire history of a database.  
 Every client has his own replica of the database and commits data locally.  
 On every commit we create a commit object that links both to the new version of the data and the previous commit.  
@@ -119,4 +119,4 @@ This protocol is able to minimize the amount of data sent between synced stores 
 Updating the server's head uses optimistic locking. To update the head you need to include the last read head in your request.
 
 ##Evaluation
-
+Evaluate the proof-of-concept by simulating syncing of data structures used in the problem scenarios with realistic network latency and disconnection.
