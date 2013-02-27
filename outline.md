@@ -1,5 +1,11 @@
 
 #Syncing Strategies for Mobile Devices
+##Motivation
+Building collaborative apps that sync data among a group of users is hard.  
+The widespread adoption of mobile devices with limited network access requires the offline availability of data and apps.  
+Some aspects of syncing are often application specific and can therefore not be solved in a generic way.  
+However there are recurring patterns that can be used to build application specific solutions. The goal of this thesis is to develop a framework of common syncing patterns that speed up the development of collaborative apps.
+
 ##Problem Scenarios
 ###Relational Data Synchronization
 The Wunderlist app serves as an example for a common data schema that requires syncing of a relational schema.
@@ -49,6 +55,8 @@ Requirements for strategies:
 - Expose conflicts
 - Support peer-to-peer or hybrid synchronization
 
+(TODO: need to explain why this set of requirements...)
+
 Aspects to consider when evaluating strategies:
 
 - How are updates detected?
@@ -63,6 +71,7 @@ Aspects to consider when evaluating strategies:
 
 ###CouchDB
 
-##Approach
+##Framework of Syncing Patterns
 
 ##Evaluation
+
