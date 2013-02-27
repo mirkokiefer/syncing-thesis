@@ -6,7 +6,7 @@ The widespread adoption of mobile devices with limited network access requires t
 Some aspects of syncing are often application specific and can therefore not be solved in a generic way.  
 However there are recurring patterns that can be used to build application specific solutions. The goal of this thesis is to develop a syncing framework that speeds up the development of collaborative apps.
 
-##Problem Scenarios
+##Application Scenarios
 ###Relational Data Synchronization
 The Wunderlist app serves as an example for a common data schema that requires syncing of a relational schema.
 
