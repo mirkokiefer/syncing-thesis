@@ -81,8 +81,8 @@ Aspects to consider when evaluating strategies:
 ###DynamoDB/Riak
 
 ##Syncing Framework
-###Design goals
-- **no timestamps**: history based 3-way merging
+###Design concepts
+- **no timestamps**: state-based 3-way merging
 - **distributed**: merging does not require a central server
 - **no change tracing**: change tracing is not necessary - support diff computation on the fly
 - **data agnostic**: leave diff and merge of the actual data to plugins
@@ -90,7 +90,7 @@ Aspects to consider when evaluating strategies:
 - **sensitive defaults**: have defaults that *just work* but still support custom logic (e.g. for conflict resolution)
 
 ###Implementation
-As syncing is history based we need to track the entire history of a database.  
+As syncing is state based we need to track the entire history of a database.  
 Every client has his own replica of the database and commits data locally.  
 On every commit we create a commit object that links both to the new version of the data and the previous commit.  
 If a client is connected to a server he will start the sync process on every commit. As synclib2's architecture is distributed a server could itself be a client who is connected to other servers.  
