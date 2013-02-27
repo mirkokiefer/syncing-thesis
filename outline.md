@@ -44,6 +44,15 @@ Google Docs currently does not support offline editing.
 
 Syncing text is equal to the problem of syncing an ordered list and can trigger conflicts.
 
+##General Concepts
+###Causality Preservation
+###Optimistic Synchronization
+###State vs. Edit-Based Syncing
+###Three-Way Merging
+###Vector Clocks
+###Operational Transformation
+###Commutative Replicated Data Types
+
 ##Requirements and Evaluation Criteria
 We will evaluate syncing strategies for the listed application scenarios.
 
@@ -63,15 +72,6 @@ Aspects to consider when evaluating strategies:
 - How are updates propagated? (Stream or Snapshot)
 - How are updates merged/reconciled? (State or Edit-based)
 - Level of structural awareness (Textual, Syntactic, Semantic/Structural)
-
-##General Concepts
-###Causality Preservation
-###Optimistic Synchronization
-###State vs. Edit-Based Syncing
-###Three-Way Merging
-###Vector Clocks
-###Operational Transformation
-###Commutative Replicated Data Types
 
 ##Existing Systems
 ###git
