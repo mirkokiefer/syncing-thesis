@@ -1,6 +1,6 @@
 
 #Syncing Strategies for Mobile Devices
-##Scenarios
+##Problem Scenarios
 ###Relational Data Synchronization
 The Wunderlist app serves as an example for a common data schema that requires syncing of a relational schema.
 
@@ -38,7 +38,7 @@ Google Docs currently does not support offline editing.
 
 Syncing text is equal to the problem of syncing an ordered list and can trigger conflicts.
 
-##Problems and Goals
+##Requirements and Evaluation Criteria
 We will evaluate syncing strategies for the listed application scenarios.
 
 Requirements for strategies:
