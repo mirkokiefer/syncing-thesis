@@ -4,7 +4,7 @@
 Building collaborative apps that sync data among a group of users is hard.  
 The widespread adoption of mobile devices with limited network access requires the offline availability of data and apps.  
 Some aspects of syncing are often application specific and can therefore not be solved in a generic way.  
-However there are recurring patterns that can be used to build application specific solutions. The goal of this thesis is to develop a framework of common syncing patterns that speed up the development of collaborative apps.
+However there are recurring patterns that can be used to build application specific solutions. The goal of this thesis is to develop a syncing framework that speeds up the development of collaborative apps.
 
 ##Problem Scenarios
 ###Relational Data Synchronization
@@ -55,7 +55,7 @@ Requirements for strategies:
 - Expose conflicts
 - Support peer-to-peer or hybrid synchronization
 
-(TODO: need to explain why this set of requirements...)
+(TODO: need to explain why this set of requirements, constraints on mobile devices...)
 
 Aspects to consider when evaluating strategies:
 
@@ -64,14 +64,23 @@ Aspects to consider when evaluating strategies:
 - How are updates merged/reconciled? (State or Edit-based)
 - Level of structural awareness (Textual, Syntactic, Semantic/Structural)
 
-##Comparing Existing Systems
-###git
+##General Concepts
+###Causality Preservation
+###Optimistic Synchronization
+###State vs. Edit-Based Syncing
+###Three-Way Merging
+###Vector Clocks
+###Operational Transformation
+###Commutative Replicated Data Types
 
-###Vector clocks (DynamoDB/Riak)
+##Existing Systems
+###git
 
 ###CouchDB
 
-##Framework of Syncing Patterns
+###DynamoDB/Riak
+
+##Syncing Framework
 
 ##Evaluation
 
