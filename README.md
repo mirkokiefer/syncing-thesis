@@ -76,9 +76,24 @@ Aspects to consider when evaluating strategies:
 ##Existing Systems
 ###git
 
+- Data structure: filesystem/tree
+- Merging: tree-based, three-way merge
+- Propagation: snapshot-based
+- Supports peer-to-peer
+
 ###CouchDB
 
+- Data structure: key-value
+- Merging: tree-based
+- Propagation: stream-based
+- Supports peer-to-peer
+
 ###DynamoDB/Riak
+Not made for offline editing - only serves as example for vector clocks.
+
+- Data structure: key-value
+- Merging: vector clocks
+- Propagation: stream-based
 
 ##Syncing Framework
 ###Design Guidelines
