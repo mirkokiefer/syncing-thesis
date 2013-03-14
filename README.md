@@ -8,7 +8,7 @@ However there are recurring patterns that can be used to build application speci
 
 ##Application Scenarios
 ###Relational Data Synchronization
-The Wunderlist app serves as an example for a common data schema that requires syncing of a relational schema.
+The Wunderlist app serves as an example for a common kind of data model that requires syncing of data in a relational schema.
 
 Wunderlist's schema could be defined as the following:
 
