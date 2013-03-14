@@ -135,3 +135,25 @@ Updating the server's head uses optimistic locking. To update the head you need 
 
 ##Evaluation
 Evaluate the proof-of-concept by simulating syncing of data structures used in the problem scenarios with realistic network latency and disconnection.
+
+##Sources
+
+- [1] T. Lindholm, “XML-aware data synchronization for mobile devices,” 2009.
+- [2] P. Padmanabhan, L. Gruenwald, A. Vallur, and M. Atiquzzaman, “A survey of data replication techniques for mobile ad hoc network databases,” The VLDB Journal, vol. 17, no. 5, pp. 1143–1164, May 2008.
+- [3] N. Fraser, “Differential synchronization,” pp. 13–20, 2009.
+- [4] S. Weiss, P. Urso, and P. Molli, “Logoot: a scalable optimistic replication algorithm for collaborative editing on P2P networks,” pp. 404–412, 2009.
+- [5] A. Demers, K. Petersen, M. Spreitzer, D. Ferry, M. Theimer, and B. Welch, “The Bayou architecture: Support for data sharing among mobile users,” pp. 2–7, 1994.
+- [6] M. Letia, N. Preguiça, and M. Shapiro, “CRDTs: Consistency without concurrency control,” arXiv.org, vol. cs.DC. 06-Jul-2009.
+- [7] D. Ratner, P. Reiher, G. J. Popek, and G. H. Kuenning, “Replication requirements in mobile environments,” Mobile Networks and Applications, vol. 6, no. 6, pp. 525–533, 2001.
+- [8] T. Lindholm, “A 3-way merging algorithm for synchronizing ordered trees—,” Master's thesis, Helsinki University of Technology, 2001.
+- [9] G. DeCandia, D. Hastorun, M. Jampani, G. Kakulapati, A. Lakshman, A. Pilchin, S. Sivasubramanian, P. Vosshall, and W. Vogels, “Dynamo: amazon's highly available key-value store,” vol. 41, no. 6, pp. 205–220, 2007.
+- [10]  T. Lindholm, “A three-way merge for XML documents,” pp. 1–10, 2004.
+- [11]  K. Petersen, M. Spreitzer, D. Terry, and M. Theimer, “Bayou: replicated database services for world-wide applications,” pp. 275–280, 1996.
+- [12]  N. Preguiça, J. M. Marques, M. Shapiro, and M. Letia, “A Commutative Replicated Data Type for Cooperative Editing,” presented at the 2009 29th IEEE International Conference on Distributed Computing Systems (ICDCS), pp. 395–403.
+- [13]  G. Oster, P. Urso, P. Molli, and A. Imine, “Real time group editors without Operational transformation,” 2005.
+- [14]  S. Agarwal, D. Starobinski, and A. Trachtenberg, “On the scalability of data synchronization protocols for PDAs and mobile devices,” Network, IEEE, vol. 16, no. 4, pp. 22–28, 2002.
+- [15]  M. Satyanarayanan, J. J. Kistler, P. Kumar, M. E. Okasaki, E. H. Siegel, and D. C. Steere, “Coda: A highly available file system for a distributed workstation environment,” Computers, IEEE Transactions on, vol. 39, no. 4, pp. 447–459, 1990.
+- [16]  L. Lamport, “Time, clocks, and the ordering of events in a distributed system,” Communications of the ACM, vol. 21, no. 7, pp. 558–565, 1978.
+- [17]  R. Cox and W. Josephson, “File synchronization with vector time pairs,” 2005.
+- [18]  J. N. Foster, M. B. Greenwald, C. Kirkegaard, B. C. Pierce, and A. Schmitt, “Exploiting schemas in data synchronization,” Journal of Computer and System Sciences, vol. 73, no. 4, pp. 669–689, Jun. 2007.
+- [19]  R. Van Renesse, D. Dumitriu, V. Gough, and C. Thomas, “Efficient reconciliation and flow control for anti-entropy protocols,” p. 6, 2008.
