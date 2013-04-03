@@ -1,0 +1,173 @@
+% This template was initially provided by Dulip Withanage.
+% Modifications for the database systems research group
+% were made by Conny Junghans and Jannik Strötgen.
+
+\documentclass[
+     12pt,         % font size
+     a4paper,      % paper format
+     BCOR10mm,     % binding correction
+     DIV14,        % stripe size for margin calculation
+     liststotoc,   % table listing in toc
+     bibtotoc,     % bibliography in toc
+     idxtotoc,     % index in toc
+%     parskip       % paragraph skip instad of paragraph indent
+     ]{scrreprt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% PACKAGES:
+
+% Use German :
+\usepackage[USenglish, ngerman]{babel}
+% Input encoding
+\usepackage[utf8]{inputenc}
+% Font encoding
+\usepackage[T1]{fontenc}
+% Index-generation
+\usepackage{makeidx}
+% Einbinden von URLs:
+\usepackage{url}
+% Special \LaTex symbols (e.g. \BibTeX):
+\usepackage{doc}
+% Include Graphic-files:
+\usepackage{graphicx}
+% Include doc++ generated tex-files:
+%\usepackage{docxx}
+% Include PDF links
+%\usepackage[pdftex, bookmarks=true]{hyperref}
+
+% Fuer anderthalbzeiligen Textsatz
+\usepackage{setspace}
+
+% hyperrefs in the documents
+\usepackage[bookmarks=true,colorlinks,pdfpagelabels,pdfstartview = FitH,bookmarksopen = true,bookmarksnumbered = true,linkcolor = black,plainpages = false,hypertexnames = false,citecolor = black,urlcolor=black]{hyperref} 
+%\usepackage{hyperref}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% OTHER SETTINGS:
+
+% Pagestyle:
+\pagestyle{headings}
+
+% Choose language
+\newcommand{\setlang}[1]{\selectlanguage{#1}\nonfrenchspacing}
+
+
+\begin{document}
+
+% TITLE:
+\pagenumbering{roman} 
+\begin{titlepage}
+
+
+\vspace*{1cm}
+\begin{center}
+\vspace*{3cm}
+\textbf{ 
+\Large Ruprecht Karls University Heidelberg\\
+\smallskip
+\Large Institute of Computer Science\\
+\smallskip
+\Large Database Systems Research Group\\
+\smallskip
+}
+
+\vspace{3cm}
+
+\textbf{\large Bachelor Thesis} % Studienarbeit, Interdisziplinaeres Projekt
+
+\vspace{0.5\baselineskip}
+{\huge
+Data Synchronization on Mobile Devices
+}
+\end{center}
+
+\vfill 
+
+{\large
+\begin{tabular}[l]{ll}
+Name: & Mirko Kiefer\\
+Matricle: & 2746040\\
+Supervisor: & Prof. Dr. Gertz\\
+Date of Submission: & \today
+\end{tabular}
+}
+
+\end{titlepage}
+
+\onehalfspacing
+
+\thispagestyle{empty}
+
+\vspace*{100pt}
+I declare that this thesis was composed by myself and that the work contained therein is my
+own, except where explicitly stated otherwise in the text.
+
+\vspace*{50pt}
+
+
+Date of Submission: \today
+\newpage
+
+% Add a brief summary of your topic and contributions (Zusammenfassung) in German and in English:
+\chapter*{Abstract}
+\input{abstract}
+\newpage
+
+\chapter*{Zusammenfassung}
+\input{zusammenfassung}
+\newpage
+
+% MAIN PART:
+% Table of contents (Inhaltsveryeichnis)
+\tableofcontents
+\cleardoublepage
+\pagenumbering{arabic} 
+
+% List of figures (Abbildungsverzeichnis):
+%\listoffigures
+% List of tables (Tabellenverzeichnis):
+%\listoftables
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Here, the actual content of your thesis begins
+% You can either put all the text here or use individual files to store the chapters of your thesis.
+% Below are templates for both alternatives.
+
+\chapter{Introduction}\label{intro}
+This chapter contains an overview of the topic as well as the goals and contributions of your work.
+
+\section{Motivation}
+
+\section{Goals of the thesis}
+
+\section{Structure of the thesis}
+Here you describe the structure of the thesis. For example:
+
+In Kapitel~\ref{background} werden grundlegende Methoden für diese Arbeit vorgestellt.
+
+
+\newpage
+
+\chapter{Background}\label{background}
+Here you discuss some basics for your work and outline existing research in the area of your thesis by citing research papers like~\cite{AggHanWan03} by Aggarwal et al. and~\cite{Agg05,Agg07} by Aggarwal.
+
+\newpage
+
+% Alternative: put content in separate files
+% Check the difference between including these files using \input{filename} and \include{filename} and see which one you like better
+%\chapter{Einleitung}\label{intro}
+%\input{introduction}
+%
+%\chapter{Voraussetzungen}\label{bg}
+%\input{background}
+
+
+% References (Literaturverzeichnis):
+% a) Style (with abbreviations: use alpha):
+\bibliographystyle{unsrt}
+% b) The File:
+\bibliography{references}
+
+\end{document}
