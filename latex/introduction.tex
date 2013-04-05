@@ -1,12 +1,17 @@
 
 \chapter{Introduction}\label{intro}
 
-This chapter contains an overview of the topic as well as the goals and contributions of your work.
-
 \section{Motivation}
-Building collaborative apps that sync data among a group of users is
-hard.\\The widespread adoption of mobile devices with limited network
-access requires the offline availability of data and apps.\\Some aspects
+Applications that allow users to collaborate on data on a central server are in widespread use. Popular examples are document authoring tools like Google Docs, project collaboration apps like Basecamp or Trello or even large scale collaboration projects like Wikipedia.\\
+The traditional architecture of these applications follows a client-server model where the server hosts the entire application logic and persistence. Users access the application through a thin client, most commonly a web browser, who only runs the logic required for rendering the user interface.\\
+This model works well when using desktop computers with a realiable, high-speed connection to the server.\\
+The widespread adoption of mobile devices forces developers to re-think this architecture. Users can now carry their devices with them and expect their applications to work outside their home or office network.
+Applications therefore have to work with limited mobile internet access or often no access at all.\\
+The only way to support this is by moving relevant parts of the application logic to the client and by replicating data for offline use.\\
+The new architecture comes at a high price - the additional client logic and persistence adds a lot of complexity. While in the thin client-fat server model developers only had to maintain a single technology set on the server, they now face different technologies on each platform they aim to support with a fat client.\\
+In addition to that the ability to edit data offline requires an entire new layer of application logic to manage the propagation and merging of changes and to resolve conflicts.\\
+
+Some aspects
 of syncing are often application specific and can therefore not be
 solved in a generic way.\\However there are recurring patterns that can
 be used to build application specific solutions. The goal of this thesis
@@ -14,6 +19,15 @@ is to develop a syncing framework that speeds up the development of
 collaborative apps.
 
 \section{Goals of the thesis}
+This thesis aims to develop patterns and tools to make the development of offline capable, collaborative apps more productive and making their maintenance manageable.\\
+The focus lies on two core topics:
+\begin{itemize}
+\item Managing distributed application logic
+\item Synchronizing offline changes
+\end{itemize}
+
+These topics are closely related - if an application has to be available offline, the developer has to build client logic necessary to replace the server's tasks. Part of that logic is the ability to synchronize data with the server or even directly with other clients.\\
+The additional client logic has to be maintained and upgraded for new releases of the application. As the client logic is distributed among all users of the application, a code upgrade becomes more complex to manage than a simple server update. We will see how the same logic used to synchronize application data can be used for updating distributed application code.
 
 \section{Structure of the thesis}
 Here you describe the structure of the thesis. For example:
