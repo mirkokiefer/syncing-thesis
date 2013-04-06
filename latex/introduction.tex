@@ -11,13 +11,6 @@ The only way to support this is by moving relevant parts of the application logi
 The new architecture comes at a high price - the additional client logic and persistence adds a lot of complexity. While in the thin client-fat server model developers only had to maintain a single technology set on the server, they now face different technologies on each platform they aim to support with a fat client.\\
 In addition to that the ability to edit data offline requires an entire new layer of application logic to manage the propagation and merging of changes and to resolve conflicts.\\
 
-Some aspects
-of syncing are often application specific and can therefore not be
-solved in a generic way.\\However there are recurring patterns that can
-be used to build application specific solutions. The goal of this thesis
-is to develop a syncing framework that speeds up the development of
-collaborative apps.
-
 \section{Goals of the thesis}
 This thesis aims to develop patterns and tools to make the development of offline capable, collaborative apps more productive and making their maintenance manageable.\\
 The focus lies on two core topics:
