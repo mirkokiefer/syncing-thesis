@@ -70,6 +70,7 @@ Requirements for strategies:
 \item Optimistic synchronization
 \item Expose conflicts
 \item Support peer-to-peer or hybrid synchronization
+\item Integration with existing app logic
 \end{itemize}
 
 (TODO: need to explain why this set of requirements, constraints on
@@ -138,10 +139,15 @@ Based on the requirements and the evaluation of existing systems we derive a uni
 \end{itemize}
 
 \section{Implementation}
+- cross-platform through web standards
+- solve server behaviour through native proxy
+- diff-merge-patch
+- most-recent-common-ancestor
+- focus on ordered-sets with moves (Todo list)
+
 We describe implementation details like the technologies used, code structure and the testing framework to evaluate the system.
 
-As syncing is state based we need to track the entire history of a
-database.\\Every client has his own replica of the database and commits
+As syncing is state based we need to track the history of edits on each client.\\Each client has his own replica of the database and commits
 data locally.\\On every commit we create a commit object that links both
 to the new version of the data and the previous commit.\\If a client is
 connected to a server he will start the sync process on every commit. As
@@ -149,6 +155,25 @@ synclib2's architecture is distributed a server could itself be a client
 who is connected to other servers.\\To the latest commit on a database
 we refer to as the `head'.
 
+\subsection{Technology}
+- everything web-based --> only way to be cross-platform
+- note on alternatives (Lua, native)
+
+\subsection{Data Model}
+- support tracking different data structures (sets, lists, ordered sets and lists, dictionaries, trees, composite data structures)
+- need to implement diff, merge, patch for each
+- ensure conflicts are made explicit
+
+\subsection{Change History Tracking}
+- use content-adressable store
+- only store changes and reference unchanged data through hashs --> like git
+- commit links to data and parent commit
+
+\subsection{Most Recent Common Ancestor}
+- implementation as separate module
+- describe algorithm in background
+
+\subsection{Synchronization Protocol}
 Syncing follows the following protocol:
 
 \begin{verbatim}
@@ -172,3 +197,8 @@ stores even in a distributed, peer-to-peer setting.
 
 Updating the server's head uses optimistic locking. To update the head
 you need to include the last read head in your request.
+
+\subsection{Conflict Handling}
+
+\subsection{Integration with existing Application Logic}
+- demonstrate how to interface with standard MVC frameworks like Backbone, Ember.js

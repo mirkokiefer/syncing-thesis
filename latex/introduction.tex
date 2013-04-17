@@ -11,7 +11,11 @@ The only way to support this is by moving relevant parts of the application logi
 The new architecture comes at a high price - the additional client logic and persistence adds a lot of complexity. While in the thin client-fat server model developers only had to maintain a single technology set on the server, they now face different technologies on each platform they aim to support with a fat client.\\
 In addition to that the ability to edit data offline requires an entire new layer of application logic to manage the propagation and merging of changes and to resolve conflicts.\\
 
+- users have multiple devices
+- only partial data required offline
+
 \section{Goals of the thesis}
+Thesis problem statement
 This thesis aims to develop patterns and tools to make the development of offline capable, collaborative apps more productive and making their maintenance manageable.\\
 The focus lies on two core topics:
 \begin{itemize}
@@ -21,6 +25,12 @@ The focus lies on two core topics:
 
 These topics are closely related - if an application has to be available offline, the developer has to build client logic necessary to replace the server's tasks. Part of that logic is the ability to synchronize data with the server or even directly with other clients.\\
 The additional client logic has to be maintained and upgraded for new releases of the application. As the client logic is distributed among all users of the application, a code upgrade becomes more complex to manage than a simple server update. We will see how the same logic used to synchronize application data can be used for updating distributed application code.
+
+- 3-way merging for ordered XML is solved
+- focus on interfaces / integration into existing code
+- composite data structures / synchronization granularity
+- peer2peer (synchronization topology)
+- how manage constraints?
 
 \section{Structure of the thesis}
 Here you describe the structure of the thesis. For example:
