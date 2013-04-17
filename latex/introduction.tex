@@ -3,35 +3,49 @@
 
 \section{Motivation}
 Applications that allow users to collaborate on data on a central server are in widespread use. Popular examples are document authoring tools like Google Docs, project collaboration apps like Basecamp or Trello or even large scale collaboration projects like Wikipedia.\\
-The traditional architecture of these applications follows a client-server model where the server hosts the entire application logic and persistence. Users access the application through a thin client, most commonly a web browser, who only runs the logic required for rendering the user interface.\\
+\subsection{The Thin-Client, Fat-Server Model}
+The traditional architecture of these applications follows a client-server model where the server hosts the entire application logic and persistence. Users access the application through a thin client, most commonly a web browser. The browser only has display user interfaces that are pre-rendered by the server.\\
 This model works well when using desktop computers with a realiable, high-speed connection to the server.\\
-The widespread adoption of mobile devices forces developers to re-think this architecture. Users can now carry their devices with them and expect their applications to work outside their home or office network.
-Applications therefore have to work with limited mobile internet access or often no access at all.\\
-The only way to support this is by moving relevant parts of the application logic to the client and by replicating data for offline use.\\
-The new architecture comes at a high price - the additional client logic and persistence adds a lot of complexity. While in the thin client-fat server model developers only had to maintain a single technology set on the server, they now face different technologies on each platform they aim to support with a fat client.\\
-In addition to that the ability to edit data offline requires an entire new layer of application logic to manage the propagation and merging of changes and to resolve conflicts.\\
 
-- users have multiple devices
-- only partial data required offline
+\subsection{The Fat-Client, Fat-Server Model}
+Rising expectations in usability drove developers to increasingly move application logic to the client. Initially this has only been the logic required to render the user interfaces. The server still hosted most of the application logic to pre-compute all relevant data for the client.\\
+Moving the interface rendering to the client reduces the amount of data that has to be transferred and makes the application behave more responsive.
+
+\subsection{The Fat-Client, Thin-Server Model}
+The widespread adoption of mobile devices forces developers to re-think their architecture again. Users can now carry their devices with them and expect their applications to work outside their home or office network.
+Applications therefore have to work with limited mobile internet access or often no access at all.\\
+The only way to support this is by moving more of the application logic to the client and by replicating data for offline use. The clients are now not only responsible for rendering interfaces but also implement most of the application logic themselves.\\
+The new architecture comes at a high price - the additional client logic and persistence adds a lot of complexity. While in the thin client-fat server model developers only had to maintain a single technology set on the server, they now face different technologies on each platform they aim to support with a fat client.\\
+The ability to use the application offline requires an entire new layer of application logic to manage the propagation and merging of changes and to resolve conflicts.\\
+The only responsiblity of the server in this model is the propagation of data between clients.
+
+\subsection{The Client as a Server Model}
+Most users today carry a notebook, a smartphone and maybe even a table computer with them. They often want to work with the same data on different devices. Apps need to support workflows like adding some items to a Todo-Manager on a notebook and subsequently reviewing them on a smartphone. Today's applications only achieve this through  data synchronization between the devices and a central server. If the user is mobile and does not have reliable internet connection he is stuck with outdated data on his smartphone.\\
+This problem can only be resolved by supporting the direct synchronization between devices. The clients can now bascially act as servers themselves and manage propagation of data to other clients.\\
+The actual server does not have to disappear in this model. But just as the clients he is just another node on the network. The difference is that he is continuously connected to the internet and can therefore play a useful role as a fallback.\\
+Note that this only describes the extreme case - in most real-world applications we will see a hybrid-architecture where clients can synchronize most data directly but the server still manages security or enforces other constraints.\\
+Building such a distributed data synchronization engine is very complex and beyond the reach of a small team of app developers. It is also way beyond the scope of this thesis. As described in the next section we will focus on a set of use cases and questions.
 - add Things story on how hard it is
 
 \section{Goals of the thesis}
-Thesis problem statement
-This thesis aims to develop patterns and tools to make the development of offline capable, collaborative apps more productive and making their maintenance manageable.\\
-The focus lies on two core topics:
+This thesis aims to develop patterns and tools to make the development of offline capable, collaborative apps more productive.\\
+
+The guiding questions are:
 \begin{itemize}
-\item Managing distributed application logic
-\item Synchronizing offline changes
+\item How can we enable the operation of a collaborative app with unreliable network connection?
+\item How can we efficiently synchronize changed data directly between unreliably connected devices?
+\item How can we abstract the synchronization logic to be as unintrusive as possible to an application?\\
 \end{itemize}
 
-These topics are closely related - if an application has to be available offline, the developer has to build client logic necessary to replace the server's tasks. Part of that logic is the ability to synchronize data with the server or even directly with other clients.\\
-The additional client logic has to be maintained and upgraded for new releases of the application. As the client logic is distributed among all users of the application, a code upgrade becomes more complex to manage than a simple server update. We will see how the same logic used to synchronize application data can be used for updating distributed application code.
+A collaborative app that has to function with unreliable network connection implies that we can not rely on the traditional thin client model. We have to think about ways to make both data and logic available offline.
 
-- 3-way merging for ordered XML is solved
-- focus on interfaces / integration into existing code
-- composite data structures / synchronization granularity
-- peer2peer (synchronization topology)
-- how manage constraints?
+Being able to synchronize data directly between devices forces us to develop a distributed architecture.
+
+Efficient synchronization means that we aim to minimize the amount of redundant data sent between devices. We have to figure out ways to identify changes in the data.
+
+Combined with the requirement to be unintrusive we exclude solutions that require the application to explicitly track changes in the code. The identification of data changes should be decoupled from the main application logic. This ensures that an upgrade of traditional applications requires minimal effort.\\
+
+We will refine this set of requirements by breaking down common use cases and evaluating existing solutions that support offline-capable applications.
 
 \section{Structure of the thesis}
 Here you describe the structure of the thesis. For example:
