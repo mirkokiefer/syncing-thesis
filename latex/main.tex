@@ -49,7 +49,7 @@ is required.
 Syncing trees can trigger conflicts if sub trees have been modified
 concurrently.
 
-\subsection{Text Synchronization}
+\subsection{(Text Synchronization)}
 
 Collaborative document editors like Google Docs need to synchronize text
 that is concurrently edited.\\Google Docs currently does not support
@@ -85,7 +85,8 @@ Aspects to consider when evaluating strategies:
 \item Level of structural awareness (Textual, Syntactic, Semantic/Structural)
 \end{itemize}
 
-\section{Existing Systems}
+\section{Evaluating Existing Systems}
+Here we evaluate existing solutions based on the requirements.
 
 \subsection{git}
 
@@ -113,8 +114,13 @@ Aspects to consider when evaluating strategies:
   Supports peer-to-peer
 \end{itemize}
 
-\section{Evaluation of Existing Systems}
-Here we evaluate solutions like CouchDB, Dropbox, iCloud, git, (Google Docs), (Parse.com) based on the requirements.
+\subsection{(Backends-as-a-Service)}
+- parse.com
+- stackmob
+- deployd
+
+Most of them simply expose a REST-API but leave all the conflict handling work to the app developer.\\
+Are completely centralized.
 
 \section{Architecture of Synclib}
 Based on the requirements and the evaluation of existing systems we derive a unique architecture for a practical synchronization solution.
@@ -138,43 +144,60 @@ Based on the requirements and the evaluation of existing systems we derive a uni
   still support custom logic (e.g.~for conflict resolution)
 \end{itemize}
 
-\section{Implementation}
 - cross-platform through web standards
 - solve server behaviour through native proxy
 - diff-merge-patch
 - most-recent-common-ancestor
-- focus on ordered-sets with moves (Todo list)
 
+\section{Technologies used for Implementation}
 We describe implementation details like the technologies used, code structure and the testing framework to evaluate the system.
 
-As syncing is state based we need to track the history of edits on each client.\\Each client has his own replica of the database and commits
-data locally.\\On every commit we create a commit object that links both
-to the new version of the data and the previous commit.\\If a client is
-connected to a server he will start the sync process on every commit. As
-synclib2's architecture is distributed a server could itself be a client
-who is connected to other servers.\\To the latest commit on a database
-we refer to as the `head'.
-
-\subsection{Technology}
 - everything web-based --> only way to be cross-platform
+- client-side persistence with HTML5
 - note on alternatives (Lua, native)
 
-\subsection{Data Model}
-- support tracking different data structures (sets, lists, ordered sets and lists, dictionaries, trees, composite data structures)
-- need to implement diff, merge, patch for each
+\section{Differencing and Merging of Data Models}
+- explain diff, merge and patch
+- implement diff, merge and patch logic for primitive data structures
+  -> use them to recursively model complex data structures
 - ensure conflicts are made explicit
 
-\subsection{Change History Tracking}
+\subsection{Sets}
+\subsection{Ordered Lists}
+\subsection{Ordered Sets}
+\subsection{Dictionaries}
+used for object collections in data models
+\subsection{Ordered Dictionaries}
+most common for managing ordered object collections in data models
+can be modeled with dictionary and ordered set/list
+\subsection{Trees}
+- tree as an example for composite data model
+- efficient child tree pointers like in git
+
+\subsection{Composite Data Structures}
+- show how to represent complex data models as composite data structures
+
+\section{Storing and Commiting Changes}
+As syncing is state based we need to track the history of edits on each client.\\Each client has his own replica of the database and commits
+data locally.\\On every commit we create a commit object that links both
+to the new version of the data and the previous commit.\\
+
 - use content-adressable store
 - only store changes and reference unchanged data through hashs --> like git
 - commit links to data and parent commit
 
-\subsection{Most Recent Common Ancestor}
+\section{Finding Common Commits}
+- Most Recent Common Ancestor algorithm used for finding common commit of clients
+- described algorithm in background
 - implementation as separate module
-- describe algorithm in background
 
-\subsection{Synchronization Protocol}
-Syncing follows the following protocol:
+\section{Synchronization Protocol}
+If a client is connected to a server he will start the sync process on every commit. As
+synclib2's architecture is distributed a server could itself be a client
+who is connected to other servers.\\To the latest commit on a database
+we refer to as the `head'.
+
+Synchronization follows the following protocol:
 
 \begin{verbatim}
 Client has committed to its local database.
@@ -198,7 +221,12 @@ stores even in a distributed, peer-to-peer setting.
 Updating the server's head uses optimistic locking. To update the head
 you need to include the last read head in your request.
 
-\subsection{Conflict Handling}
+\section{Handling Conflicts}
 
-\subsection{Integration with existing Application Logic}
+\section{Integration with Application Logic}
 - demonstrate how to interface with standard MVC frameworks like Backbone, Ember.js
+
+\section{(Managing Changes to Distributed Logic)}
+- on the server its easy - we can use a distributed version control system
+- they don't run on the client -> we need an app-embedded solution
+
