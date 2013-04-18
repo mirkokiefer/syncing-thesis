@@ -135,11 +135,13 @@ Version control systems like git are usually more sophisticated - git treats eac
 We therefore need to evaluate carefully how much semantic understanding of an application's data a synchronization engine actually needs to be useful.
 
 \subsection{Causality Preservation}
-
+- consistent with user's intuition\\
+- happened-before relationship
 
 \subsection{Eventual Consistency}
 
 \subsection{Optimistic Synchronization}
+- don't lock data
 
 \subsection{Exposing Conflicts}
 
@@ -147,9 +149,6 @@ We therefore need to evaluate carefully how much semantic understanding of an ap
 
 \subsection{Integration with Existing Application Logic}
 
-
-(TODO: need to explain why this set of requirements, constraints on
-mobile devices\ldots{})
 
 Aspects to consider when evaluating strategies:
 
