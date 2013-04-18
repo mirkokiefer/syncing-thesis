@@ -4,12 +4,82 @@
 \section{Application Scenarios}
 We describe common synchronization scenarios based on popular mobile applications.
 
-\subsection{Relational Data Synchronization}
+\subsection{A Collaborative Task Manager}
 
-The Wunderlist app serves as an example for a common kind of data model
-that requires syncing of data in a relational schema.
+The seemingly simple scenario of a Task Manager turns out to be very complex to implement if enhanced with collaborative features and offline availability.
 
-Wunderlist's schema could be defined as the following:
+Let us first look at some user stories and then try to define a suitable data model for such an application.
+
+\subsubsection{User Story 1: Creating Projects}
+\begin{itemize}
+\item A User can create Projects in order to coordinate Tasks.
+\item A User can invite other Users as Project Members to a Project.
+\end{itemize}
+
+Examples for Projects created by User Rita would be:\\
+
+\begin{tabular}{ l l }
+Project Name & Members \\
+\hline
+Marketing Material & Rita, Tom, Allen \\
+Product Roadmap & Rita, Allen \\
+Sales Review & Rita, Lisa
+\end{tabular}
+
+\subsubsection{User Story 2: Creating and Editing Tasks}
+\begin{itemize}
+\item Project Members can add Tasks to a Project in order to manage responsibilities.
+\item A Task can have a due date and responsible project member assigned.
+\item A Task can be edited by Project Members and marked as done.
+\item A Task can be moved in the list of Tasks.
+\end{itemize}
+
+An example list of Tasks could be:\\
+
+\begin{tabular}{ l l l l }
+\multicolumn{4}{ c }{Project "Marketing Material"} \\
+Task & Due Date & Assignee & Done \\
+\hline
+Create event poster & 2013-08-12 & Rita & No\\
+Write blog entry on event & 2013-07-20 & Tom & Yes
+\end{tabular}
+
+\subsubsection{User Story 3: Commenting on Tasks}
+\begin{itemize}
+\item Project Members can add Comments to Tasks
+\end{itemize}
+
+Examples would be:\\
+
+\begin{tabular}{ l l l }
+\multicolumn{3}{ c }{Task "Create event poster" in Project "Marketing Material"} \\
+Member & Date & Comment \\
+\hline
+Rita & 2013-07-20 & Allen, I need you to create some graphics. \\
+Allen & 2014-07-20 & Ok, lets go through it tomorrow morning!
+\end{tabular}
+
+\subsubsection{User Story 3: User Workflows}
+\begin{itemize}
+\item In order to be productive a user needs to access all Tasks from any device.
+\item A user should be able to Edit and Create Projects and Tasks when disconnected from any network.
+\item The data should be kept as current as possible even if a user's device does not have reliable internet access.
+\end{itemize}
+
+An example workflow that should be supported:\\
+
+\begin{itemize}
+\item Rita works at the desktop computer in her office with high-speed internet access. She creates Project A and invites Allen.
+\item Allen works from home on his notebook with high-speed internet access. He reviews the Project and creates task A1.
+\item Rita is already on her way home but has mobile internet access on her smartphone. She receives the added task A1 and edits its title.
+\item Rita is still on the train but decides to continue working on her notebook. Her notebook does not have internet access but she can establish a direct connection to her smartphone via Wifi. The reception on her smartphone has dropped in the meanwhile. She receives the latest updates from her smartphone and adds a comment to task A1.
+\item Allen who is still at home can not receive Rita's comment as she is still on the train. In the meanwhile he creates a Task A2 in Project A.
+\item Rite gets home where she has internet access with her notebook. She receives Allen's created Task A2.
+\item Allen, who is still at his notebook, receives Rita's comment as soon as she connects to internet at home.
+\end{itemize}
+
+\subsubsection{Data Model}
+
 
 \begin{itemize}
 \item User (name, email, has Todo Lists)
@@ -29,7 +99,7 @@ Todo Items are ordered.
 Syncing lists of unordered object IDs never causes conflicts while
 syncing ordered object IDs can cause order conflicts.
 
-\subsection{Hierarchical Data Synchronization}
+\subsection{A File Sharing App}
 
 Dropbox synchronizes a file system - it is therefore a good example for
 syncing of hierarchical data.
