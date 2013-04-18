@@ -79,25 +79,15 @@ An example workflow that should be supported:\\
 \end{itemize}
 
 \subsubsection{Data Model}
+Based on the user stories we can derive a plausible data model for the application. We can map it to a straight-forward entity-relationship model as shown in figure \ref{fig:tasks-data-model}.\\
+The only complication is the requirement of Tasks per Project being ordered. We model this as a linked list by having a "Next Task" relationship.
 
-
-\begin{itemize}
-\item User (name, email, has Todo Lists)
-\item Invited User (name, email)
-\item Invited User List (has Invited Users)
-\item Todo Item (title, description, due date, belongs to Todo List)
-\item Todo List (name, belongs to Users, has Todo Items)
-\end{itemize}
-
-The User type has a singleton instance who represents the user of the
-app.\\Users can be invited to Todo Lists. As their list of Todo Lists is
-hidden from the current user Invited User is a separate type.\\Invited
-User List is simply a cached list of all users that have been invited in
-the past.\\While Invited User List is an unordered list, Todo Lists and
-Todo Items are ordered.
-
-Syncing lists of unordered object IDs never causes conflicts while
-syncing ordered object IDs can cause order conflicts.
+\begin{figure}[tasks-data-model]
+\centering
+\includegraphics[width=0.8\textwidth]{img/tasks-schema}
+\caption{A collaborative Task Manager's data model}
+\label{fig:tasks-data-model}
+\end{figure}
 
 \subsection{A File Sharing App}
 
