@@ -185,7 +185,7 @@ Rita has not seen state \emph{c} when making her edit.
 Although the time of her edit is after Allen's edit there is no \emph{happened-before} relationship between state \emph{c} and \emph{d}.\\
 On the next synchronization between Allen and Rita the system needs to identify this lack of causality as a \emph{conflict}.\\
 While this example is simple, the identification of conflicts among a large group of collaborators can be non-trivial.\\
-Depending on the amount of understanding the synchronization engine has on the data there are strategies to resolve conflicts automatically.
+Depending on the level of understanding the synchronization engine has on the data there are strategies to resolve conflicts automatically.
 The engine should be designed in a way that conflict resolution strategies can be ``plugged-in''.
 If no automatic resolution is possible the application should be able to present the conflict to the user and let him manually resolve it.
 
