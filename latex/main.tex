@@ -206,7 +206,12 @@ This can give us a hierarchical architecture which is both able to exploit the d
 The protocol used for synchronization should be generic enough to adapt to these different network setups.
 
 \subsection{Integration with Existing Application Logic}
+Most popular operating systems for mobile devices impose limitations on the kind of software that can be installed to it.
+Even if these limitations can be circumvented it provides a huge barrier to the install process of an app if external software is required.
 
+- must be embeddable - most databases are not
+
+- must not be intrusive to the rest of app
 
 
 Aspects to consider when evaluating strategies:
@@ -218,44 +223,11 @@ Aspects to consider when evaluating strategies:
 \item Level of structural awareness (Textual, Syntactic, Semantic/Structural)
 \end{itemize}
 
-\section{Evaluating Existing Systems}
-Here we evaluate existing solutions based on the requirements.
+\section{Architecture of CouchDB}
 
-\subsection{git}
+compare architecture with above requirements
 
-\begin{itemize}
-\item
-  Data structure: filesystem/tree
-\item
-  Merging: tree-based, three-way merge
-\item
-  Propagation: snapshot-based
-\item
-  Supports peer-to-peer
-\end{itemize}
-
-\subsection{CouchDB}
-
-\begin{itemize}
-\item
-  Data structure: key-value
-\item
-  Merging: tree-based
-\item
-  Propagation: stream-based
-\item
-  Supports peer-to-peer
-\end{itemize}
-
-\subsection{(Backends-as-a-Service)}
-- parse.com
-- stackmob
-- deployd
-
-Most of them simply expose a REST-API but leave all the conflict handling work to the app developer.\\
-Are completely centralized.
-
-\section{Architecture of Synclib}
+\section{Architecture of Histo}
 Based on the requirements and the evaluation of existing systems we derive a unique architecture for a practical synchronization solution.
 
 \begin{itemize}
