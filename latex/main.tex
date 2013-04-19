@@ -37,7 +37,7 @@ Sales Review & Rita, Lisa
 An example list of Tasks could be:\\
 
 \begin{tabular}{ l l l l }
-\multicolumn{4}{ c }{Project "Marketing Material"} \\
+\multicolumn{4}{ c }{Project ``Marketing Material''} \\
 Task & Due Date & Assignee & Done \\
 \hline
 Create event poster & 2013-08-12 & Rita & No\\
@@ -52,7 +52,7 @@ Write blog entry on event & 2013-07-20 & Tom & Yes
 Examples would be:\\
 
 \begin{tabular}{ l l l }
-\multicolumn{3}{ c }{Task "Create event poster" in Project "Marketing Material"} \\
+\multicolumn{3}{ c }{Task ``Create event poster'' in Project ``Marketing Material"} \\
 Member & Date & Comment \\
 \hline
 Rita & 2013-07-20 & Allen, I need you to create some graphics. \\
@@ -80,7 +80,7 @@ An example workflow that should be supported:\\
 
 \subsubsection{Data Model}
 Based on the user stories we can derive a plausible data model for the application. We can map it to a straight-forward entity-relationship model as shown in figure \ref{fig:tasks-data-model}.\\
-The only complication is the requirement of Tasks per Project being ordered. We model this as a linked list by having a "Next Task" relationship.
+The only complication is the requirement of Tasks per Project being ordered. We model this as a linked list by having a ``Next Task'' relationship.
 
 \begin{figure}[tasks-data-model]
 \centering
@@ -123,9 +123,14 @@ trigger conflicts.
 \label{sec:requirements}
 From the application scenarios we can derive a set of requirements for a synchronization solution.
 
+Phases of synchronization:
+- Update Detection
+- Update Propagation
+- Reconciliation
+
 \subsection{Flexible Data Model Support}
 A synchronization engine that is useful for a broad range of applications has to be able to deal with different data models. There is no magic algorithm that produces a perfect solution for an existing application. Synchronization can happen with increasing levels of sophistication depending on the amount of understanding of an application's data.\\
-A "dumb" solution would have no understanding of an app's data model at all - it simply sees the entire application data as one binary chunk.\\
+A ``dumb'' solution would have no understanding of an app's data model at all - it simply sees the entire application data as one binary chunk.\\
 A more clever solution would maybe have an understanding of entities like Projects, Tasks or Comments and would see the entity instances as binary data.\\
 It could get even finer grained and break up each entity instance into attributes which it recognizes as different pieces of data.\\
 We see that \emph{synchronization granularity} is one key aspect when evaluating solutions. The smallest pieces of information a syncing engine can not break up further we call \emph{atoms}. Atoms are usually aggregated into larger structures we call \emph{objects}. A Task instance could be treated as an object which composes the title and due date attributes as atoms.\\
@@ -134,16 +139,31 @@ Version control systems like git are usually more sophisticated - git treats eac
 
 We therefore need to evaluate carefully how much semantic understanding of an application's data a synchronization engine actually needs to be useful.
 
-\subsection{Causality Preservation}
-- consistent with user's intuition\\
-- happened-before relationship
+\subsection{Optimistic Synchronization}
+As we have seen in the application scenario it is necessary that objects are editable on multiple devices even if they are not connected to a network. Edits should be allowed concurrently to not block users from doing their work. This implies that there can not be a central locking mechanism that controls when users can synchronize their data for offline usage. We therefore trade strict consistency for availability of the data.\\
+Synchronization happens in an optimistic manner which means that we assume that temporarily inconsistent data will rarely lead to problems.
 
 \subsection{Eventual Consistency}
+The sequence of states an object goes through as its edited is called its \emph{history}. The history forms a directed graph with each state except the intial state having at least one ancestor. The \emph{current state} is the one that has no descendants. As edits can be made on different devices concurrently there can be multiple \emph{current states} at a time. If an object has multiple current states we refer to them as \emph{branches}.\\
+Our goal is to guarantee that after a finite number of synchronization events the object will eventually converge to the same state across all devices.
 
-\subsection{Optimistic Synchronization}
-- don't lock data
+\subsection{Causality Preservation and Conflicts}
+If an object diverges into multiple branches it will have to be reconciled during the synchronization process. When we receive states from a remote device we need to reason about how we can apply them to our own edit history.\\
+The \emph{happens-before} relationship defined by Lamport in \cite{Lamport:1978tr} helps to reason about this problem in an intuitive way. A state \emph{a} that \emph{happened before} state \emph{b} refers to the fact that the edits that led to \emph{b} could have been affected by \emph{a}. It is not necessarily related to the actual time of the edits that led to \emph{a} and \emph{b} as we can see in the following example:\\
 
-\subsection{Exposing Conflicts}
+Lets assume Rita and Allen work on the same object with their respective devices. The object has the initial state \emph{a}.
+
+\begin{itemize}
+\item 9:00 AM: Rita makes an edit to the object which leads to state \emph{b}.
+\item 9:30 AM: Allen synchronizes with Rita and edits which leads to state \emph{c}.
+\item 10:00 AM: Rita is offline and can not synchronize. She edits the object at state \emph{b} leading to state \emph{d}. 
+\end{itemize}
+
+As Allen has seen state \emph{b} when making his edit, state \emph{b} \emph{happened before} state \emph{c}.\\
+Rita has not seen state \emph{c} when making her edit. Although the time of her edit is after Allen's edit there is no \emph{happened-before} relationship between state \emph{c} and \emph{d}.\\
+On the next synchronization between Allen and Rita the system needs to identify this lack of causality as a \emph{conflict}.\\
+While this example is simple, the identification of conflicts among a large group of collaborators can be non-trivial.\\
+Depending on the amount of understanding the synchronization engine has on the data there are strategies to resolve conflicts automatically. The engine should be designed in a way that conflict resolution strategies can be ``plugged-in''. If no automatic resolution is possible the application should be able to present the conflict to the user and let him manually resolve it.
 
 \subsection{Peer-to-Peer Synchronization}
 
