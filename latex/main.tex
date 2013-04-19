@@ -189,7 +189,15 @@ Depending on the level of understanding the synchronization engine has on the da
 The engine should be designed in a way that conflict resolution strategies can be ``plugged-in''.
 If no automatic resolution is possible the application should be able to present the conflict to the user and let him manually resolve it.
 
-\subsection{Peer-to-Peer Synchronization}
+\subsection{Flexible Network Topologies}
+A traveling user who works both with multiple mobile devices needs to be able to sychronize data without requiring internet access. The synchronization engine should therefore be designed to handle peer-to-peer connections.\\
+Even in an office environment where users exchange large amounts of data a direct connection can be significantly faster than doing a round-trip through a server on the internet.
+For this setting a \emph{hybrid architecture} with local servers in the company network could be an interesting alternative.
+The local servers could provide fast synchronization among users inside the office while a remote server on the internet provides synchronization with users working from home.
+The local and remote servers are synchronizing in a peer-to-peer topology while the users interact with them in a client-server setup.\\
+This can give us a hierarchical architecture which is both able to exploit the different levels of network speed and guarantee a higher state of consistency through the centralized servers.\\
+
+The protocol used for synchronization should be generic enough to adapt to these different network setups.
 
 \subsection{Integration with Existing Application Logic}
 
