@@ -121,7 +121,12 @@ trigger conflicts.
 
 \section{Requirements}
 \label{sec:requirements}
-From the application scenarios we can derive a set of requirements for a synchronization solution.
+From the application scenarios we can derive a set of requirements for a synchronization solution.\\
+The listed requirements resemble the goals set for the Bayou architecture back in 1994 \cite{Demers:1994vj}. 
+Bayou had already proposed a distributed architecture with multiple devices acting as server.
+At that time the computational capabilities of mobile devices were very limited.
+Today even smartphones have more storage and stronger CPUs than most servers in 1994.
+So pairwise synchronization should not only be possible between servers but also between mobile devices directly.
 
 Phases of synchronization:
 - Update Detection
@@ -201,6 +206,7 @@ This can give us a hierarchical architecture which is both able to exploit the d
 The protocol used for synchronization should be generic enough to adapt to these different network setups.
 
 \subsection{Integration with Existing Application Logic}
+
 
 
 Aspects to consider when evaluating strategies:
