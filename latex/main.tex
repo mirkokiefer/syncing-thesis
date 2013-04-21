@@ -1,16 +1,13 @@
 
 \chapter{Designing a Synchronization Framework}\label{main}
 
-\section{Application Scenarios}
-We describe common synchronization scenarios based on popular mobile applications.
+\section{Application Scenario: A Collaborative Task Manager}
+Our goal is to develop a collaborative Task Manager that can still be used if disconnected from the network.
+We choose this scenario because we think it represents a common type of architecture and data model for mobile applications.
 
-\subsection{A Collaborative Task Manager}
+Let us first work out some user stories and then try to define a suitable data model for such an application.
 
-The seemingly simple scenario of a Task Manager turns out to be very complex to implement if enhanced with collaborative features and offline availability.
-
-Let us first look at some user stories and then try to define a suitable data model for such an application.
-
-\subsubsection{User Story 1: Creating Projects}
+\subsection{User Story 1: Creating Projects}
 \begin{itemize}
 \item A User can create Projects in order to coordinate Tasks.
 \item A User can invite other Users as Project Members to a Project.
@@ -26,7 +23,7 @@ Product Roadmap & Rita, Allen \\
 Sales Review & Rita, Lisa
 \end{tabular}
 
-\subsubsection{User Story 2: Creating and Editing Tasks}
+\subsection{User Story 2: Creating and Editing Tasks}
 \begin{itemize}
 \item Project Members can add Tasks to a Project in order to manage responsibilities.
 \item A Task can have a due date and responsible project member assigned.
@@ -44,7 +41,7 @@ Create event poster & 2013-08-12 & Rita & No\\
 Write blog entry on event & 2013-07-20 & Tom & Yes
 \end{tabular}
 
-\subsubsection{User Story 3: Commenting on Tasks}
+\subsection{User Story 3: Commenting on Tasks}
 \begin{itemize}
 \item Project Members can add Comments to Tasks
 \end{itemize}
@@ -59,7 +56,7 @@ Rita & 2013-07-20 & Allen, I need you to create some graphics. \\
 Allen & 2014-07-20 & Ok, lets go through it tomorrow morning!
 \end{tabular}
 
-\subsubsection{User Story 3: User Workflows}
+\subsection{User Story 3: User Workflows}
 \begin{itemize}
 \item In order to be productive a user needs to access all Tasks from any device.
 \item A user should be able to Edit and Create Projects and Tasks when disconnected from any network.
@@ -78,8 +75,8 @@ An example workflow that should be supported:\\
 \item Allen, who is still at his notebook, receives Rita's comment as soon as she connects to internet at home.
 \end{itemize}
 
-\subsubsection{Data Model}
-Based on the user stories we can derive a plausible data model for the application. We can map it to a straight-forward entity-relationship model as shown in figure \ref{fig:tasks-data-model}.\\
+\subsection{Data Model}
+Based on the user stories we can derive a plausible data model for the application. We can map it to an entity-relationship model as shown in figure \ref{fig:tasks-data-model}.\\
 The only complication is the requirement of Tasks per Project being ordered. We model this as a linked list by having a ``Next Task'' relationship.
 
 \begin{figure}[tasks-data-model]
@@ -88,36 +85,6 @@ The only complication is the requirement of Tasks per Project being ordered. We 
 \caption{A collaborative Task Manager's data model}
 \label{fig:tasks-data-model}
 \end{figure}
-
-
-\subsection{A File Sharing App}
-
-Dropbox synchronizes a file system - it is therefore a good example for
-syncing of hierarchical data.
-
-The data model is simple:
-
-\begin{itemize}
-\item Tree Item (name)
-\item Tree extends Tree Item (has children of type Tree Items)
-\item Data extends Tree Item (data)
-\end{itemize}
-
-The list of child Tree Items can either be ordered or unordered. While
-Dropbox does not sync the order of files there are scenarios where this
-is required.
-
-Syncing trees can trigger conflicts if sub trees have been modified
-concurrently.
-
-\subsection{(Text Synchronization)}
-
-Collaborative document editors like Google Docs need to synchronize text
-that is concurrently edited.\\Google Docs currently does not support
-offline editing.
-
-Syncing text is equal to the problem of syncing an ordered list and can
-trigger conflicts.
 
 \section{Requirements}
 \label{sec:requirements}
@@ -153,6 +120,18 @@ So if there are concurrent edits, git can not guarantee that merges are synctact
 Despite this git is useful enough to be used very successfully in large software projects.\\
 
 We therefore need to evaluate carefully how much semantic understanding of an application's data a synchronization engine actually needs to be useful.
+
+The data model of our application scenario is relatively simple but covers most of the modeling aspects an average mobile application needs:
+
+\begin{itemize}
+\item Entities and Instances
+\item (Ordered) Collections
+\item Attributes
+\item Relationships (one to one, one to many, many to many)
+\end{itemize}
+
+This set of modeling elements is represented in many client-side application frameworks like Ember.js, Backbone or Angular.
+If we can support synchronizing data with this type of schema it will make integration with existing frameworks fairly trivial.
 
 \subsection{Optimistic Synchronization}
 As we have seen in the application scenario it is necessary that objects are editable on multiple devices even if they are not connected to a network.
