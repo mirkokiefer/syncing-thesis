@@ -31,18 +31,36 @@ Here you discuss some basics for your work and outline existing research in the 
 - describe solution referring to standard algo
 
 \section{HTML5 and Offline Applications}
-HTML5 specifies a number of client-side storage options. Most are a work in process and still have to be adopted by all browser vendors.
+HTML5 specifies a number of client-side storage options. Most are a work in process and still have to be adopted by all browser vendors. IndexedDB is most likely going to be the standard for building offline-capable web applications. Combined with Cache Manifests, HTML5 provides all the tools necessary for building offline applications.
 
 \subsection{Web Storage}
-The simplest API is the \emph{localStorage} standard defined in the W3C's Web Storage specification \ref{webstorage}.\\
-It provides a key-value store which can store string values for string keys.
-
-- synchronous interface
-
-- space limit
+The simplest API is the \emph{localStorage} standard defined in the W3C's Web Storage specification \cite{webstorage}.\\
+It provides a key-value store accessible from JavaScript which can store string values for string keys.
+Most browsers currently set a storage limit of 5 MB per site.
+\emph{LocalStorage} is therefore only suitable for storing small volumes of data.\\
+Another limitation is the interface which is synchronous. As JavaScript is single-threaded, every read or write operation will block the entire application.
+Frequent or large-volume read/write operations can result in a bad user experience caused by a ``freezing'' user-interface.\\
+\emph{LocalStorage} is currently supported by all major browsers including its mobile variants.
 
 \subsection{Web SQL Database}
+A much more advanced implementation is specified by the now deprecated \emph{Web SQL} standard \cite{websql}. It defines a relational database similar to Sqlite including SQL support.\\
+The proposal was strongly opposed by the Mozilla Foundation who sees a SQL-based database as a bad fit for web applications \cite{mozilla_indexeddb}.\\
+The standard was therefore only implemented by Google Chrome, Safari and Opera and their mobile counterparts in Android and iOS.\\
+\emph{Web SQL} has been officially deprecated by the W3C and support by browsers is likely going to drop in the future.
 
 \subsection{Indexed Database}
+Instead of Web SQL the standard favored by the W3C and most browser vendors is \emph{IndexedDB}.\\
+\emph{IndexedDB} defines a lower-level interface for storing key/value pairs and setting up custom indexes.
+The While relatively simple, the API design is generic enough to cater for implementations of more complex databases on top.
+It would for example be possible to implement a \emph{Web SQL} database using \emph{IndexedDB}.\\
+IndexedDB supports storing large amounts of data and defines an asynchronous API.\\
+Unfortunately the standard has not yet been implemented across all major browsers.
+It is currently available in Mozilla Firefox, Google Chrome and Internet Explorer.
+Safari support is still missing as well as support in the default Android and iOS browser.\\
+Luckily most browsers who have not implemented IndexedDB yet, are still supporting Web SQL.
+There is a polyfill available that implements an IndexedDB interface using Web SQL \cite{indexeddb_polyfill}. Application developers can therefore already base their work on the IndexedDB interface while browser vendors are catching up.
 
-- offline resources
+\subsection{Cache Manifests}
+To truely work offline, an application has to make its static resources available locally as well.
+The \emph{cache manifest} defined in the HTML standard gives you the right tool \cite{cache_manifests}. It allows you to define a local cache of all application resources like HTML, CSS, JavaScript code or other static files.\\
+Flexible policies give fine-grained control over which resources should be available offline and which need network connection.
