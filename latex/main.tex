@@ -103,7 +103,7 @@ Phases of synchronization:
 \subsection{Flexible Data Model Support}
 A synchronization engine that is useful for a broad range of applications has to be able to deal with different data models. There is no magic algorithm that produces a perfect solution for an existing application.
 Synchronization can happen with increasing levels of sophistication depending on the amount of understanding of an application's data.\\
-A ``dumb'' solution would have no understanding of an app's data model at all - it simply sees the entire application data as one binary chunk.\\
+A ``dumb'' engine would have no understanding of an app's data model at all - it simply sees the entire application data as one binary chunk.\\
 A more clever solution would maybe have an understanding of entities like Projects, Tasks or Comments and would see the entity instances as binary data.\\
 It could get even finer grained and break up each entity instance into attributes which it recognizes as different pieces of data.\\
 We see that \emph{synchronization granularity} is one key aspect when evaluating solutions.
