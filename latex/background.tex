@@ -12,9 +12,13 @@ Let us start by defining some consistent terminology used throughout the thesis:
 \end{itemize}
 
 \section{Edit-Based Synchronization}
-- application has to track each edit
-
-- concurrent edits have to be transformed
+An application that tracks each edit and sends it in a stream to remote nodes follows an edit-based synchronization protocol.
+Edit-based synchronization is very common among real-time text editors like Google Docs.
+An edit usually represents an insert or delete operation at a certain position in the text.
+These edit operations are sent to remote nodes and are ``replayed'' on the remote side.
+As participating nodes can concurrently edit a document the stream of edit operations can not just be applied without modifications.
+The combination of local modifications and received edit operations from a remote node requires the transformation of the remote operations in order to be correctly applied.
+The family of algorithms developed to correctly transform the edit operations is called \emph{Operational Transformation}.
 
 - Operational Transformation
   --> complex and error prone
