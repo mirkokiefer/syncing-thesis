@@ -107,7 +107,7 @@ A ``dumb'' engine would have no awareness of an app's data model at all - it sim
 A more clever solution would maybe have an understanding of entities like Projects, Tasks or Comments and would see the entity instances as binary data.\\
 It could get even finer grained and break up each entity instance into attributes which it recognizes as different pieces of data.\\
 We see that \emph{synchronization granularity} is one key aspect when evaluating solutions.
-The smallest pieces of information a syncing engine can not break up further we call \emph{atoms}.
+The smallest pieces of information a synchronization engine can not break up further we call \emph{atoms}.
 Atoms are usually aggregated into larger structures we call \emph{objects}.
 A Task instance could be treated as an object which composes the title and due date attributes as atoms.\\
 In order to be useful a synchronization engine does not need perfect understanding of the data to be synchronized.
