@@ -1,7 +1,7 @@
 
 \chapter{Background}\label{background}
 
-Here you discuss some basics for your work and outline existing research in the area of your thesis by citing research papers like~\cite{Lindholm:2009wo} by Lindholm and~\cite{DeCandia:2007ui,Ratner:2001wz} Candia.
+
 
 \section{Edit-Based Synchronization}
 - application has to track each edit
@@ -23,19 +23,19 @@ Here you discuss some basics for your work and outline existing research in the 
 - Fraser2009 differential sync
 
 \section{Three-Way Merging}
-Three-way merging describes the concept for an algorithm that performs a merge operation on two objects based on a common ancestor.
+Three-way merging describes the concept for an algorithm that performs a merge operation on two objects based on a common ancestor.\\
 Let \emph{A} be the initial state of the object and let \emph{B} and \emph{C} be edited versions of \emph{A}.
 The goal is to merge \emph{B} and \emph{C} into a new object \emph{D}.\\
 The merge algorithm starts by identifying the differences between \emph{A} and \emph{B} and between \emph{A} and \emph{C}.\\
 All \emph{parts} of object \emph{B} that are neither changed in \emph{B} nor in \emph{C} are carried over into \emph{D}.\\
 All changes to parts of the object in \emph{B} that have not been changed in \emph{C} are directly accepted and added to \emph{D}.\\
-If the same parts are edited both in \emph{B} and \emph{C} we have a merge conflict that needs to be resolved.
+If the same parts are edited both in \emph{B} and \emph{C} we have a merge conflict that needs to be resolved.\\
 
 Three-way merging only describes the general concept but the actual algorithm will differ based on the type of objects that are merged.
 Text files are the most common type of object with lines seen as the \emph{parts}.
 The unix program \emph{diff3} implements a three-way merge variant for text files \cite{diff3}.\\
 Most modern version control systems implement three-way merging to allow lock-free collaboration on source code.
-\emph{Git} is a notable distributed content tracking system that implements three-way merging not only for text files but for entire file system trees \cite{git}.
+\emph{Git} is a notable distributed content tracking system that implements three-way merging not only for text files but for entire file system trees \cite{git}.\\
 
 Tancred Lindholm designed a three-way merging algorithm for entire XML-documents.
 With the \emph{3DM} tool there is even an implementation available \cite{Lindholm:2001uv}.
