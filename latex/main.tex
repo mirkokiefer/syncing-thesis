@@ -185,13 +185,11 @@ This can give us a hierarchical architecture which is both able to exploit the d
 The protocol used for synchronization should be generic enough to adapt to these different network setups.
 
 \subsection{Integration with Existing Application Logic}
-Most popular operating systems for mobile devices impose limitations on the kind of software that can be installed to it.
+Most popular operating systems for mobile devices impose restrictions on the kind of software that can be installed.
 Even if these limitations can be circumvented it provides a huge barrier to the install process of an app if external software is required.
-
-- must be embeddable - most databases are not
-
-- must not be intrusive to the rest of app
-
+For mobile applications it is therefore crucial that they can embed all their dependencies in the binary.
+The synchronization engine should therefore be designed as an embeddable library.
+Further it is important that the interfaces are designed to be as unintrusive into the application's logic as possible.
 
 Aspects to consider when evaluating strategies:
 
