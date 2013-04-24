@@ -20,11 +20,14 @@ These edit operations are sent to remote nodes and are ``replayed'' on the remot
 As participating nodes can concurrently edit a document the stream of edit operations can not just be applied without modifications.
 The combination of local modifications and received edit operations from a remote node requires the transformation of the remote operations in order to be correctly applied.
 The family of algorithms developed to correctly transform the edit operations is called \emph{Operational Transformation} \cite{Ellis:1998vf}.
-If some nodes are temporarily offline while continuing to edit, the correct transformation of many concurrent edit operations gets very complex and error-prone. It is hard to prove correctness of Operational Transformation algorithms.
+If some nodes are temporarily offline while continuing to edit, the correct transformation of many concurrent edit operations gets very complex and error-prone.
+It is hard to prove correctness of Operational Transformation algorithms.
+Research has therefore investigated options for data synchronization that do not require Operational Transformation.\\
 
-- Commutative Replicated Data Types
-  --> data types that only allow changes that commute
-  --> no transformation necessary
+\emph{Commutative Replicated Data Types} (CRDTs) have emerged as a viable alternative for specific use cases.
+A recent study by Shapiro et. al \cite{Shapiro:2011wy} presents a range of data types designed for synchronization without concurrency control.
+CRDTs are designed in a way that all edit operations commute when applied in causal order.
+Due to the restrictions on supported operations on data types, CRDTs are only applicable in a narrow set of scenarios.
 
 \section{State-Based Synchronization}
 - async through diff computation
