@@ -145,7 +145,9 @@ The history forms a directed graph with each state except the intial state havin
 The \emph{current state} is the one that has no descendants.
 As edits can be made on different devices concurrently there can be multiple \emph{current states} at a time.
 If an object has multiple current states we refer to them as \emph{branches}.\\
-Our goal is to guarantee that after a finite number of synchronization events the object will eventually converge to the same state across all devices.
+Our goal is to guarantee that after a finite number of synchronization events the object will eventually converge to the same state across all devices.\\
+This trade-off is enforced by the \emph{CAP-Theorem} which states that it is impossible to have strong consistency combined with partition tolerance \cite{Gilbert:2002uw}.\\
+Most mobile applications do not require strong consistency - the offline availability of data is usually a more important factor when judging the user experience. 
 
 \subsection{Causality Preservation and Conflicts}
 If an object diverges into multiple branches it will have to be reconciled during the synchronization process.
