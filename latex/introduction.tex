@@ -24,8 +24,9 @@ Most users today carry a notebook, a smartphone and maybe even a table computer 
 This problem can only be resolved by supporting the direct synchronization between devices. The clients can now basically act as servers themselves and manage propagation of data to other clients.\\
 The actual server does not have to disappear in this model. But just as the clients he is just another node on the network. The difference is that he is continuously connected to the internet and can therefore play a useful role as a fallback.\\
 Note that this only describes the extreme case - in most real-world applications we will see a hybrid-architecture where clients can synchronize most data directly but the server still manages security or enforces other constraints.\\
-Building such a distributed data synchronization engine is very complex and beyond the reach of a small team of app developers. It is also way beyond the scope of this thesis. As described in the next section we will focus on a set of use cases and questions.
-- add Things story on how hard it is
+Building such a distributed data synchronization engine including all relevant aspects is very complex and beyond the reach of a small team of app developers. It is also way beyond the scope of this thesis. As described in the next section we will focus on a set of use cases and problem statements.
+
+- add Things app story on how hard it is
 
 \section{Goals of the thesis}
 This thesis aims to develop patterns and tools to make the development of offline capable, collaborative apps more productive.\\
@@ -46,6 +47,14 @@ Efficient synchronization means that we aim to minimize the amount of redundant 
 Combined with the requirement to be unintrusive we exclude solutions that require the application to explicitly track changes in the code. The identification of data changes should be decoupled from the main application logic. This ensures that an upgrade of traditional applications requires minimal effort.\\
 
 We will refine this set of requirements by breaking down common use cases and evaluating existing solutions that support offline-capable applications.
+
+Important questions which are out of scope of this thesis are:
+
+\begin{itemize}
+\item \emph{Security}: How can we manage access rights and encryption in a distributed architecture?
+\item \emph{Device Discovery}: How can we discover devices in a network to collaborate with?
+\item \emph{Data Transmission}: How is the data propagated among devices on a technical level?
+\end{itemize}
 
 \section{Structure of the thesis}
 Here you describe the structure of the thesis. For example:
