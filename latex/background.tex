@@ -7,6 +7,7 @@ Let us start by defining some consistent terminology used throughout the thesis:
 \item \emph{Synchronization engine}: A framework that manages functional aspects of data synchronization we call a synchronization engine.
 \item \emph{Node}: A node represents a single instance of an application connected to other nodes for synchronization purposes. It could be a mobile device or a server connecting devices.
 \item \emph{Synchronization protocol}: The core part of a synchronization engine that describes the communication between nodes in a synchronization engine.
+\item \emph{Offline}: A node is offline if it is partitioned from the network.
 \item \emph{Object}: Objects can represent any kind of data like files or entities. Objects can be composed of \emph{parts} like lines (for files) or attributes (for entities).
 \item \emph{Atom}: An atom is an object that can not be divided into parts. Examples are a line in a file or a string attribute in an entity.
 \end{itemize}
@@ -18,10 +19,8 @@ An edit usually represents an insert or delete operation at a certain position i
 These edit operations are sent to remote nodes and are ``replayed'' on the remote side.
 As participating nodes can concurrently edit a document the stream of edit operations can not just be applied without modifications.
 The combination of local modifications and received edit operations from a remote node requires the transformation of the remote operations in order to be correctly applied.
-The family of algorithms developed to correctly transform the edit operations is called \emph{Operational Transformation}.
-
-- Operational Transformation
-  --> complex and error prone
+The family of algorithms developed to correctly transform the edit operations is called \emph{Operational Transformation} \cite{Ellis:1998vf}.
+If some nodes are temporarily offline while continuing to edit, the correct transformation of many concurrent edit operations gets very complex and error-prone. It is hard to prove correctness of Operational Transformation algorithms.
 
 - Commutative Replicated Data Types
   --> data types that only allow changes that commute
