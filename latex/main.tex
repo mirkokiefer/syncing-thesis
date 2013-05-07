@@ -93,7 +93,7 @@ The listed requirements resemble the goals set for the Bayou architecture back i
 Bayou had already proposed a distributed architecture with multiple devices acting as servers.
 At that time the computational capabilities of mobile devices were very limited.
 Today even smartphones have more storage and stronger CPUs than most servers in 1994.
-So pairwise synchronization should not only be possible between servers but also between mobile devices directly.
+Therefore pairwise synchronization should not only be possible between servers but also between mobile devices directly.
 
 \subsection{Flexible Data Model Support}
 A synchronization engine that is useful for a broad range of applications has to be able to deal with different data models. There is no magic algorithm that produces a perfect solution for an existing application.
@@ -172,22 +172,22 @@ If no automatic resolution is possible the application should be able to present
 \subsection{Flexible Network Topologies}
 A traveling user who works with multiple mobile devices needs to be able to sychronize data without requiring internet access.
 The synchronization engine should therefore be designed to handle peer-to-peer connections.\\
-Even in an office environment where users exchange large amounts of data a direct connection can be significantly faster than doing a round-trip through a server on the internet.
-For this setting a \emph{hybrid architecture} with local servers in the company network could be an interesting alternative.
-The local servers could provide fast synchronization among users inside the office while a remote server on the internet provides synchronization with users working from home.
+Even in an office environment where users exchange large amounts of data a direct connection can be significantly faster than doing a round-trip through a server on the internet.\\
+For this setting a \emph{hybrid architecture} with local servers in the company network could be an interesting alternative.\\
+The local servers could provide fast synchronization among users inside the office while a remote server on the internet provides synchronization with users working from home.\\
 The local and remote servers are synchronizing in a peer-to-peer topology while the users interact with them in a client-server setup.\\
-This can give us a hierarchical architecture which is both able to exploit the different levels of network speed and guarantee a higher state of consistency through the centralized servers.\\
+This gives us a hierarchical architecture which is both able to exploit the different levels of network speed and guarantee a higher state of consistency through the centralized servers.\\
 
 The protocol used for synchronization should be generic enough to adapt to these different network setups.
 
 \subsection{Integration with Existing Application Logic}
 Most popular operating systems for mobile devices impose restrictions on the kind of software that can be installed.
-Even if these limitations can be circumvented it provides a huge barrier to the install process of an app if external software is required.
+Even if these limitations can be circumvented it provides a huge barrier to the install process of an app if external software is required.\\
 For mobile applications it is therefore crucial that they can embed all their dependencies in the binary.
-The synchronization engine should therefore be designed as an embeddable library.
-Further it is important that the interfaces are designed to be as unintrusive into the application's logic as possible.
+The synchronization engine should therefore be designed as an embeddable library.\\
+Further it is important that the interfaces are designed to be as unintrusive into the application logic as possible.\\
 
-A state based synchronization strategy is required to ease the integration process. The key aspects \emph{update detection}, \emph{update propagation} and \emph{reconciliation} should be abstracted away from the application developer as much as possible.
+A state based synchronization strategy is required to ease the integration process. The low-level aspects of \emph{update detection}, \emph{update propagation} and \emph{reconciliation} should be abstracted away from the application developer as much as possible.\\
 At the same time the developer needs to be able to supply the logic for aspects of the synchronization that can not be solved generically. These include data model definition, conflict handling and technical aspects of messaging.
 
 \section{Architecture of CouchDB}
@@ -201,27 +201,24 @@ Based on the requirements and the evaluation of existing systems we derive a uni
 
 \begin{itemize}
 \item
-  \textbf{no timestamps}: state-based 3-way merging
+  \textbf{No Timestamps}: state-based 3-way merging
 \item
-  \textbf{no change tracing}: change tracing is not necessary - support
+  \textbf{No Change Tracing}: change tracing is not necessary - support
   diff computation on the fly
 \item
-  \textbf{data agnostic}: leave diff and merge of the actual data to
+  \textbf{Data Agnostic}: leave diff and merge of the actual data to
   plugins
 \item
-  \textbf{distributed}: syncing does not require a central server
+  \textbf{Distributed}: synchronization does not require a central server
 \item
-  \textbf{be small}: only implement the functional parts of syncing -
+  \textbf{Functional Design}: only implement the functional parts of synchronization -
   leave everything else to the application (transport, persistence)
 \item
-  \textbf{sensitive defaults}: have defaults that \emph{just work} but
-  still support custom logic (e.g.~for conflict resolution)
+  \textbf{Sensitive Defaults}: have defaults that \emph{just work} but
+  still support custom logic (e.g. for conflict resolution)
+\item
+  \textbf{Cross-Platform}: be available on every major platform through the use of Web Standards
 \end{itemize}
-
-- cross-platform through web standards
-- solve server behaviour through native proxy
-- diff-merge-patch
-- most-recent-common-ancestor
 
 \section{Technologies used for Implementation}
 We describe implementation details like the technologies used, code structure and the testing framework to evaluate the system.

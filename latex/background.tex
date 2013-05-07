@@ -46,15 +46,13 @@ Due to the restrictions on supported operations on data types, CRDTs are only ap
 
 \section{History-Based Synchronization}
 Snapshot-based methods work by tracking and relating an application's data state over time.
-Instead of sending a sequential stream of raw updates, each client collects additional meta-data that allows more complex reasoning about the state of each client.
-A prominent example is the distributed content tracking system \emph{git} \cite{git} which can resolve the most complex peer-to-peer synchronization scenarios.
+Instead of sending a sequential stream of raw updates, each client collects additional meta-data that allows more complex reasoning about the state of each client.\\
+A prominent example is the distributed content tracking system \emph{git} \cite{git} which can resolve the most complex peer-to-peer synchronization scenarios.\\
 Git achieves this by storing the entire history of a project's database on each client.
-Each edit made to objects in the database is stored as a commit object and related to its ancestors.
-Through the resulting commit graph each client can identify the exact subset of updates each remote node has to receive in order to be in sync.
+Each edit made to objects in the database is stored as a commit object and related to its ancestors.\\
+Through the resulting commit graph each client can identify the exact subset of updates each remote node has to receive in order to be in sync.\\
 While it sounds extremely inefficient to store the entire history of a database, git manages to do this in a very efficient way through a \emph{Content Addressable Store} and data compression.
 It is not uncommon that the uncompressed form of the current state of a git project is larger than the project's entire history.
-
-- Fraser2009 differential sync
 
 \section{Three-Way Merging}
 Three-way merging describes the concept for an algorithm that performs a merge operation on two objects based on a common ancestor.\\
@@ -69,7 +67,7 @@ Three-way merging only describes the general concept but the actual algorithm wi
 Text files are the most common type of object with lines seen as the \emph{parts}.
 The unix program \emph{diff3} implements a three-way merge variant for text files \cite{diff3}.\\
 Most modern version control systems implement three-way merging to allow lock-free collaboration on source code.
-\emph{Git} is a notable distributed content tracking system that implements three-way merging not only for text files but for entire file system trees \cite{git}.\\
+\emph{Git} applies three-way merging not only for text files but for entire file system trees \cite{git}.\\
 
 Tancred Lindholm designed a three-way merging algorithm for XML-documents.
 With the \emph{3DM} tool there is even an implementation available \cite{Lindholm:2001uv}.
