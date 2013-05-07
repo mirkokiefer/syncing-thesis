@@ -229,8 +229,10 @@ We describe implementation details like the technologies used, code structure an
 
 \section{Differencing and Merging of Data Models}
 - explain diff, merge and patch
+
 - implement diff, merge and patch logic for primitive data structures
   -> use them to recursively model complex data structures
+
 - ensure conflicts are made explicit
 
 \subsection{Sets}
@@ -254,13 +256,18 @@ data locally.\\On every commit we create a commit object that links both
 to the new version of the data and the previous commit.\\
 
 - use content-adressable store
+
 - only store changes and reference unchanged data through hashs --> like git
+
 - commit links to data and parent commit
 
 \section{Differencing Across Commits}
 - Most Recent Common Ancestor algorithm used for finding common commit of clients
+
 - walk commit graph until MRCA
+
 - recursive application of MRCA on every fork in graph
+
 - implementation as separate module
 
 \section{Synchronization Protocol}
@@ -302,5 +309,6 @@ you need to include the last read head in your request.
 The additional client logic has to be maintained and upgraded for new releases of the application. As the client logic is distributed among all users of the application, a code upgrade becomes more complex to manage than a simple server update. We will see how the same logic used to synchronize application data can be used for updating distributed application code.
 
 - on the server its easy - we can use a distributed version control system
+
 - they don't run on the client -> we need an app-embedded solution
 
