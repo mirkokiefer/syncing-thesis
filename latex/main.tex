@@ -260,9 +260,10 @@ to the new version of the data and the previous commit.\\
 - only store changes and reference unchanged data through hashs --> like git
 - commit links to data and parent commit
 
-\section{Finding Common Commits}
+\section{Differencing Across Commits}
 - Most Recent Common Ancestor algorithm used for finding common commit of clients
-- described algorithm in background
+- walk commit graph until MRCA
+- recursive application of MRCA on every fork in graph
 - implementation as separate module
 
 \section{Synchronization Protocol}
