@@ -1,7 +1,7 @@
 
 \chapter{Background}\label{background}
 
-Let us start by defining some consistent terminology used throughout the thesis:
+We will start by defining some consistent terminology used throughout the thesis:
 
 \begin{itemize}
 \item \emph{Synchronization engine}: A framework that manages functional aspects of data synchronization we call a synchronization engine.
@@ -12,17 +12,31 @@ Let us start by defining some consistent terminology used throughout the thesis:
 \item \emph{Atom}: An atom is an object that can not be divided into parts. Examples are a line in a file or literal attributes like strings or numbers in an entity.
 \end{itemize}
 
-\section{Edit-Based Synchronization}
-An application that tracks each edit and sends it in a stream to remote nodes follows an edit-based synchronization protocol.
-Edit-based synchronization is very common among real-time document editors like Google Docs.\\
+Most synchronization algorithms can be divided into three major components.
+\begin{enumerate}
+\item \emph{Update Detection} refers to the process of identifying changes to the data on each client.
+If updates are  stored explicitly we categorize the algorithm as \emph{edit-based} which applies to most \emph{stream-based} approaches.
+\emph{State based} synchronization usually run a differencing algorithm on each synchronization operation to detect updates.
+\item \emph{Update Propagation} describes the algorithm's component which implements the propagation protocol among the synchronizing clients.
+The design of the propagation protocol eventually defines which kinds of network topologies the algorithm can support.
+\item \emph{Reconciliation} is the final phase where the client updates are merged and conflicts identified.
+In a centralized scenario this part is usually carried by the server.
+Distributed architectures supporting peer-to-peer synchronization are much more complex as all clients have to reconcile the received updates in an eventually consistent way.
+\end{enumerate}
+
+\section{Stream-Based Synchronization}
+An application that tracks each edit and sends it in a stream to remote nodes follows a stream-based synchronization protocol.
+Stream-based synchronization is very common among real-time document editors like Google Docs.\\
 
 An edit usually represents an insert or delete operation at a certain position in the text.
 These edit operations are broadcasted to remote nodes and then ``replayed''.
 As participating nodes can concurrently edit a document the stream of edit operations can not just be applied without modifications.\\
 The combination of local modifications and received edit operations from a remote node requires the transformation of the remote operations in order to be correctly applied.\\
-The family of algorithms developed to correctly transform the edit operations is called \emph{Operational Transformation} \cite{Ellis:1998vf}.\\
-If some nodes are temporarily offline while continuing to edit, the correct transformation of many concurrent edit operations becomes very complex and error-prone.
-It is hard to prove correctness of Operational Transformation algorithms.\\
+The family of algorithms developed to correctly transform the edit operations is described as \emph{Operational Transformation} \cite{Ellis:1998vf}.\\
+If some nodes are temporarily offline while continuing to edit, the correct transformation of many concurrent edit operations becomes very complex and error-prone.\\
+A practical problem in modern user interfaces is that it is hard to correctly capture all edits made to data.
+If a single edit is missed the result is a fork possibly rendering all future update operations as incorrect.
+Packet loss due to unreliable network connections have also be taken into account which further complicates the design of a robust algorithm.\\
 Research has therefore investigated options for data synchronization that do not require Operational Transformation.\\
 
 \emph{Commutative Replicated Data Types} (CRDTs) have emerged as a viable alternative for specific use cases.
@@ -30,17 +44,17 @@ A recent study by Shapiro et. al presents a range of data types designed for syn
 CRDTs are designed in a way that all edit operations commute when applied in causal order.
 Due to the restrictions on supported operations on data types, CRDTs are only applicable in a narrow set of scenarios.
 
-\section{State-Based Synchronization}
-- async through diff computation
-
-- easier to integrate
+\section{History-Based Synchronization}
+Snapshot-based methods work by tracking and relating an application's data state over time.
+Instead of sending a sequential stream of raw updates, each client collects additional meta-data that allows more complex reasoning about the state of each client.
+A prominent example is the distributed content tracking system \emph{git} \cite{git} which can resolve the most complex peer-to-peer synchronization scenarios.
+Git achieves this by storing the entire history of a project's database on each client.
+Each edit made to objects in the database is stored as a commit object and related to its ancestors.
+Through the resulting commit graph each client can identify the exact subset of updates each remote node has to receive in order to be in sync.
+While it sounds extremely inefficient to store the entire history of a database, git manages to do this in a very efficient way through a \emph{Content Addressable Store} and data compression.
+It is not uncommon that the uncompressed form of the current state of a git project is larger than the project's entire history.
 
 - Fraser2009 differential sync
-
-Phases of synchronization:
-- Update Detection
-- Update Propagation
-- Reconciliation
 
 \section{Three-Way Merging}
 Three-way merging describes the concept for an algorithm that performs a merge operation on two objects based on a common ancestor.\\
