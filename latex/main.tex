@@ -191,13 +191,34 @@ A state based synchronization strategy is required to ease the integration proce
 At the same time the developer needs to be able to supply the logic for aspects of the synchronization that can not be solved generically. These include data model definition, conflict handling and technical aspects of messaging.
 
 \section{Architecture of CouchDB}
+CouchDB is a document-oriented database known for its data replication feature.
+It currently is a popular tool for master-less replication directly between devices.\\
+With multiple implementations being available for server, smartphone or in-browser deployment it seems like an excellent fit for our requirements.\\
+
+The original implementation of CouchDB exposes an HTTP interface for all interactions with the database.
+This makes it possible to write web applications directly targeting CouchDB as the server, eleminating any middleware in between.\\
+If an application developer is able to design his application within the constraints of CouchDB being the only backend, it is called a \emph{CouchApp}.\\
+CouchApps have the interesting property of being completely replicatable between CouchDB instances.
+So an entire working application can be deployed to a device just by replicating it from a remote CouchDB instance.\\
+Unfortunately only few applications get by with CouchDB being the only backend required.\\
+
+With \emph{PouchDB} there has recently emerged a CouchDB implementation inside the browser in pure JavaScript.
+It makes use of HTML5's IndexedDB as the storage layer and can therefore be included into a web application without requiring any plugins.\\
+PouchDB exposes a similar interface like CouchDB and can fully replicated with an actual CouchDB instance on a server.\\
+
+CouchDB's data model is relatively simple - it mainly supports the storage of JSON-documents.
+Each document has an ID under which it can be efficiently retrieved and updated.
+There is no query language like SQL available as the stored JSON-documents are not required to have any fixed schema.
+If effecient access to documents based on some of its properties is required, CouchDB allows the definition of \emph{views}.
+Views are created by providing a map and possibly a reduce function.
+The map function is used to define an index, while the reduce function can be used to efficiently compute aggregates.
 
 compare architecture with above requirements
 
 replication protocol
 
 \section{Architecture of Histo}
-Based on the requirements and the evaluation of existing systems we derive a unique architecture for a practical synchronization solution.
+Based on the requirements and the evaluation of CouchDB we derive a new architecture for a practical synchronization solution.
 
 \begin{itemize}
 \item
