@@ -191,8 +191,8 @@ A state based synchronization strategy is required to ease the integration proce
 At the same time the developer needs to be able to supply the logic for aspects of the synchronization that can not be solved generically. These include data model definition, conflict handling and technical aspects of messaging.
 
 \section{Architecture of CouchDB}
-CouchDB is a document-oriented database known for its data replication feature.
-It currently is a popular tool for master-less replication directly between devices.\\
+CouchDB is a document-oriented database known for its data synchronization feature.
+It currently is a popular tool for master-less synchronization directly between devices.\\
 With multiple implementations being available for server, smartphone or in-browser deployment it seems like an excellent fit for our requirements.\\
 
 The original implementation of CouchDB exposes an HTTP interface for all interactions with the database.
@@ -204,14 +204,41 @@ Unfortunately only few applications get by with CouchDB being the only backend r
 
 With \emph{PouchDB} there has recently emerged a CouchDB implementation inside the browser in pure JavaScript.
 It makes use of HTML5's IndexedDB as the storage layer and can therefore be included into a web application without requiring any plugins.\\
-PouchDB exposes a similar interface like CouchDB and can fully replicated with an actual CouchDB instance on a server.\\
+PouchDB exposes a similar interface like CouchDB and can fully synchronize with an actual CouchDB instance on a server.\\
 
 CouchDB's data model is relatively simple - it mainly supports the storage of JSON-documents.
-Each document has an ID under which it can be efficiently retrieved and updated.
-There is no query language like SQL available as the stored JSON-documents are not required to have any fixed schema.
+Each document has an ID under which it can be efficiently retrieved and updated.\\
+There is no query language like SQL available as the stored JSON-documents are not required to have any fixed schema.\\
 If effecient access to documents based on some of its properties is required, CouchDB allows the definition of \emph{views}.
 Views are created by providing a map and possibly a reduce function.
-The map function is used to define an index, while the reduce function can be used to efficiently compute aggregates.
+The map function is used to define an index, while the reduce function can be used to efficiently compute aggregates.\\
+
+An important aspect of CouchDB is that all its operations are lockless.
+It achieves this by writing all data to an append-only data structure therefore never updating any data in-place.
+Every update of a document creates a new version of it - similar to how some version control systems operate.\\
+On each write of a new version, CouchDB requires that the current version ID of the document is passed.
+This guarantees that the client has read the current version before he is able to write any updates.
+If two clients concurrently update the same JSON-document, the first update that reaches the database succeeds and thereby creates a new version ID.
+The second concurrent update will therefore be rejected as the client did supply an outdated version ID.
+CouchDB treats this as an update conflict and notifies the second client.
+The second client can then review the changes of the first client, possibly merge it with his changes and re-send it with the correct version ID.
+This concept is often referred to as \emph{Optimistic Locking}.\\
+
+In the case of concurrent edits on two instances of the same database the conflict handling is more complex.
+Concurrent writes can no longer be linearized through optimistic locking as the two database instances are possibly disconnected.
+CouchDB solves this by applying concepts of \emph{Multi-Version Concurrency Control}.
+Both instances can update the same documents thereby creating two conflicting versions.
+All versions of a document point to its ancestor resulting in a version tree.
+If the database instances synchronize each other both instances will end up with both conflicting versions of the document.
+CouchDB uses a deterministic algorithm to choose one of the instances as a winner.
+As this choice is random to the user of an application it is often not the desired result.
+It is therefore possible to either pick a different conflicting version as the winner or merge both versions to a new revision.
+
+\subsection{Synchronization Protocol}
+
+\subsection{Fulfillment of Requirements}
+As a schemaless database CouchDB at least supports the storage of any kind of data model.
+Its awareness of the type of data is at the same time very low.
 
 compare architecture with above requirements
 
