@@ -1,0 +1,103 @@
+\section{Requirements}
+\label{sec:requirements}
+From the application scenarios we can derive a set of requirements for a synchronization solution.\\
+The listed requirements resemble the goals set for the Bayou architecture back in 1994 \cite{Demers:1994vj}. 
+Bayou had already proposed a distributed architecture with multiple devices acting as servers.
+At that time the computational capabilities of mobile devices were very limited.
+Today even smartphones have more storage and stronger CPUs than most servers in 1994.
+Therefore pairwise synchronization should not only be possible between servers but also between mobile devices directly.
+
+\subsection{Flexible Data Model Support}
+A synchronization engine that is useful for a broad range of applications has to be able to deal with different data models. There is no magic algorithm that produces a perfect solution for an existing application.
+Synchronization can happen with increasing levels of sophistication depending on the level of structural awareness of an application's data.\\
+A ``dumb'' engine would have no awareness of an app's data model at all - it simply sees the entire application data as one binary chunk.\\
+A more clever solution would maybe have an understanding of entities like Projects, Tasks or Comments and would see the entity instances as binary data.\\
+It could get even finer grained and break up each entity instance into attributes which it recognizes as different pieces of data.\\
+We see that \emph{synchronization granularity} is one key aspect when defining requirements.
+The smallest pieces of information a synchronization engine can not break up further we call \emph{atoms}.
+Atoms are usually aggregated into larger structures we call \emph{objects}.
+A Task instance could be treated as an object which composes the title and due date attributes as atoms.\\
+In order to be useful a synchronization engine does not need perfect understanding of the data to be synchronized.
+Popular applications like Dropbox can provide useful synchronization of files without having any semantic understanding of their content.
+For Dropbox each file is an atom - if a user adds a paragraph to a Word document, Dropbox only recognizes a change of the entire file.
+This means if two users concurrently modify the same document at different places, Dropbox has no way to merge the changes correctly and will trigger a conflict.\\
+Version control systems like git are usually more sophisticated - git treats each line in a file as an atom and can therefore often successfully merge concurrent changes.
+Git still does not have any syntactic or even semantic awareness of the code that is written in the files it synchronizes.
+So if there are concurrent edits, git can not guarantee that merges are syntactically or semantically correct.
+Despite this seemingly low level of structural awareness, git is used very successfully in large software projects.\\
+
+The data model of our application scenario is relatively simple but covers most of the modeling aspects the average mobile application needs:
+
+\begin{itemize}
+\item Entities and Instances
+\item (Ordered) Collections
+\item Attributes
+\item Relationships (one to one, one to many, many to many)
+\end{itemize}
+
+This set of modeling elements is represented in many client-side application frameworks like Ember.js, Backbone or Angular.
+If we can support synchronizing data with this type of schema it will make integration with existing frameworks fairly trivial.\\
+We therefore require that the synchronization engine needs to have a structural awareness of at least the listed modeling components.
+
+\subsection{Optimistic Synchronization}
+As we have seen in the application scenario it is necessary that objects are editable on multiple devices even if they are not connected to a network.
+Edits should be allowed concurrently to not block users from doing their work.
+This implies that there can not be a central locking mechanism that controls when users can synchronize their data for offline usage.
+We therefore trade strict consistency for availability of the data.\\
+Synchronization happens in an optimistic manner which means that we assume that temporarily inconsistent data will rarely lead to problems.
+
+\subsection{Eventual Consistency}
+The sequence of states an object goes through as its edited is called its \emph{history}.
+The history forms a directed graph with each state except the intial state having at least one ancestor.
+The \emph{current state} is the one that has no descendants.
+As edits can be made on different devices concurrently there can be multiple \emph{current states} at a time.
+If an object has multiple current states we refer to them as \emph{branches}.\\
+Our goal is to guarantee that after a finite number of synchronization events the object will eventually converge to the same state across all devices.\\
+This trade-off is enforced by the \emph{CAP-Theorem} which states that it is impossible to have strong consistency combined with partition tolerance \cite{Gilbert:2002uw}.\\
+Most mobile applications do not require strong consistency - the offline availability of data is usually a more important factor when judging the user experience. 
+
+\subsection{Causality Preservation and Conflicts}
+If an object diverges into multiple branches it will have to be reconciled during the synchronization process.
+When we receive states from a remote device we need to reason about how we can apply them to our own edit history.\\
+The \emph{happens-before} relationship defined by Lamport in \cite{Lamport:1978tr} helps to reason about this problem in an intuitive way.
+A state \emph{a} that \emph{happened before} state \emph{b} refers to the fact that the edits that led to \emph{b} could have been affected by \emph{a}.
+It is not necessarily related to the actual time of the edits that led to \emph{a} and \emph{b} as we can see in the following example:\\
+
+Lets assume Rita and Allen work on the same object with their respective devices.
+The object has the initial state \emph{a}.
+
+\begin{itemize}
+\item 9:00 AM: Rita makes an edit to the object which leads to state \emph{b}.
+\item 9:30 AM: Allen synchronizes with Rita and edits which leads to state \emph{c}.
+\item 10:00 AM: Rita is offline and can not synchronize. She edits the object at state \emph{b} leading to state \emph{d}. 
+\end{itemize}
+
+As Allen has seen state \emph{b} when making his edit, state \emph{b} \emph{happened before} state \emph{c}.\\
+Rita has not seen state \emph{c} when making her edit.
+Although the time of her edit is after Allen's edit there is no \emph{happened-before} relationship between state \emph{c} and \emph{d}.\\
+On the next synchronization between Allen and Rita the system needs to identify this lack of causality as a \emph{conflict}.\\
+While this example is simple, the identification of conflicts among a large group of collaborators can be non-trivial.\\
+Depending on the level of understanding the synchronization engine has on the data there are strategies to resolve conflicts automatically.
+The engine should be designed in a way that conflict resolution strategies can be ``plugged-in''.
+If no automatic resolution is possible the application should be able to present the conflict to the user and let him manually resolve it.
+
+\subsection{Flexible Network Topologies}
+A traveling user who works with multiple mobile devices needs to be able to sychronize data without requiring internet access.
+The synchronization engine should therefore be designed to handle peer-to-peer connections.\\
+Even in an office environment where users exchange large amounts of data a direct connection can be significantly faster than doing a round-trip through a server on the internet.\\
+For this setting a \emph{hybrid architecture} with local servers in the company network could be an interesting alternative.\\
+The local servers could provide fast synchronization among users inside the office while a remote server on the internet provides synchronization with users working from home.\\
+The local and remote servers are synchronizing in a peer-to-peer topology while the users interact with them in a client-server setup.\\
+This gives us a hierarchical architecture which is both able to exploit the different levels of network speed and guarantee a higher state of consistency through the centralized servers.\\
+
+The protocol used for synchronization should be generic enough to adapt to these different network setups.
+
+\subsection{Integration with Existing Application Logic}
+Most popular operating systems for mobile devices impose restrictions on the kind of software that can be installed.
+Even if these limitations can be circumvented it provides a huge barrier to the install process of an app if external software is required.\\
+For mobile applications it is therefore crucial that they can embed all their dependencies in the binary.
+The synchronization engine should therefore be designed as an embeddable library.\\
+Further it is important that the interfaces are designed to be as unintrusive into the application logic as possible.\\
+
+A state based synchronization strategy is required to ease the integration process. The low-level aspects of \emph{update detection}, \emph{update propagation} and \emph{reconciliation} should be abstracted away from the application developer as much as possible.\\
+At the same time the developer needs to be able to supply the logic for aspects of the synchronization that can not be solved generically. These include data model definition, conflict handling and technical aspects of messaging.
