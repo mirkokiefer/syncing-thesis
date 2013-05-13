@@ -25,11 +25,17 @@ Based on the requirements and the evaluation of CouchDB we derive a new architec
 \section{Technologies used for Implementation}
 We describe implementation details like the technologies used, code structure and the testing framework to evaluate the system.
 
+TODO:
+
 - everything web-based --> only way to be cross-platform
+
 - client-side persistence with HTML5
+
 - note on alternatives (Lua, native)
 
 \section{Differencing and Merging of Data Models}
+TODO:
+
 - explain diff, merge and patch
 
 - implement diff, merge and patch logic for primitive data structures
@@ -42,11 +48,14 @@ We describe implementation details like the technologies used, code structure an
 \subsection{Ordered Sets}
 \subsection{Dictionaries}
 used for object collections in data models
+
 \subsection{Ordered Dictionaries}
 most common for managing ordered object collections in data models
+
 can be modeled with dictionary and ordered set/list
 \subsection{Trees}
 - tree as an example for composite data model
+
 - efficient child tree pointers like in git
 
 \subsection{Composite Data Structures}
@@ -198,8 +207,17 @@ if (commonAncestor == sourceTrackingHead) {
 \end{lstlisting}
 
 \section{Handling Conflicts}
+TODO:
+
+- application specific, no general solution
+
+- automatic resolution strategies
+
+- manual resolution through user
 
 \section{Optimizations}
+TODO:
+
 Only keep limited history.
 
 Clients who are disconnected for too long have to fetch redundant data.
@@ -207,4 +225,6 @@ Clients who are disconnected for too long have to fetch redundant data.
 Ideal case: remember until oldest head of nodes.
 
 \section{Integration with Application Logic}
+TODO:
+
 - demonstrate how to interface with standard MVC frameworks like Backbone, Ember.js
