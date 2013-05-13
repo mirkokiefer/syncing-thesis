@@ -336,24 +336,62 @@ It could be implemented as a separate application possibly even running on a dif
 The Synchronizer could be run in regular intervals or explicitly triggered by changes in the Source node.\\
 
 The latest commit on a node we refer to as the \emph{head}.
+A node has a \emph{master head} which refers to the version of the data considered to be `true' by the node.\\
+For each remote node it synchronizes with, the node keeps a \emph{remote tracking head}.\\
+A remote tracking head represents what the local node considers to be the current state of a remote node.
 
-Synchronization follows the following protocol:
+Synchronization follows a two-step protocol, step one propagates all changed data from Source to Target, step two executes a local merge operation.
+
+\subsubsection{Propagation}
+Propagation follows the following protocol:
 
 \begin{enumerate}
 \item Read all commit IDs since the last synced commit from Source and write them to Target.
-\item Let the Target compute the common ancestor commit ID of Target's and Source's head.
+\item Let the Target compute the common ancestor commit ID of Target's and Source's master heads.
 \item Read all changed data since the common ancestor commit from Source and write to Target.
-\item If the common ancestor equals the Source's head:\\
-  The Source has not changed since the last synchronization. The Target's head is ahead of Source.\\
+\item Set the Target's remote tracking head of Source to Source's master head.
+\end{enumerate}
+
+Once these steps are executed, the Target node has the current state of Source available locally.\\
+The Target's head still refers to the same state as the Source data has not been merged.\\
+
+Listing \ref{propagation-protocol} summarizes the protocol as pseudo-code.
+
+\begin{lstlisting}[caption=Propagation Protocol, label=propagation-protocol]
+
+commitIDsSource = source.getCommitIDsSince(lastSyncedCommit)
+
+target.writeCommitIDs(commitIDsSource)
+
+commonAncestor = target.getCommonAncestor(target.head.master, source.head.master)
+
+changedData = source.changedDataSince(commonAncestor)
+
+target.writeData(changedData)
+
+\end{lstlisting}
+
+\subsubsection{Merging}
+Even if the Source is disconnected at this stage, the Target has all the necessary information to process the merge offline:\\
+
+\begin{itemize}
+\item The Target's master head we refer to as the \emph{master head}.\\
+\item The Target's remote tracking branch for the Source we refer to as the \emph{Source tracking head}.
+\end{itemize}
+
+\begin{enumerate}
+\item Compute the common ancestor of the master head and the Source tracking head. (The common ancestor could also be re-used from the propagation step.)
+\item If the common ancestor equals the Source tracking head:\\
+  The Source has not changed since the last synchronization. The master head is ahead of the Source tracking head.\\
   The algorithm can stop here.
-\item If the common ancestor equals the Target's head:\\
+\item If the common ancestor equals the master head:\\
   The Target has not changed since the last synchronization.\\
   The Source's head is ahead of Target.\\
-  We can fast-forward the Target's head to Source's head.
-\item If the common ancestor is neither the Source's nor the Target's head:\\
+  We can fast-forward the master head to the Source tracking head.
+\item If the common ancestor is neither the Source tracking head nor the master head:\\
   Both Source and Target must have changed data since the last synchronization.\\
-  We run a three-way merge of the common ancestor, Source's head and Target's head.\\
-  We commit the result as the new head to Target.
+  We run a three-way merge of the common ancestor, Source tracking head and master head.\\
+  We commit the result as the new master head.
 \end{enumerate}
 
 This protocol is able to minimize the amount of data sent between synced
@@ -362,34 +400,48 @@ stores even in a distributed, peer-to-peer setting.\\
 Updating the Target's head uses optimistic locking.
 To update the head you need to include the last read head in your request.
 So both the fast-forward operation or the commit of a merge result can be rejected if the Target has been updated in the meantime.
-If this happens the Synchronizer simply has to re-run the algorithm.\\
+If this happens the Synchronizer simply has to re-run the merge algorithm.\\
 
-We can express the protocol in pseudo-code as shown in listing \ref{sync-protocol}.
+The merging process can be described in pseudo-code as shown in figure \ref{merging-protocol}.
 
-\begin{lstlisting}[caption=Synchronization Protocol, label=sync-protocol]
+\begin{lstlisting}[caption=Merging Protocol, label=merging-protocol]
 
-commitIDsSource = source.getCommitIDsSince(lastSyncedCommit)
+masterHead = target.head.master
+sourceTrackingHead = target.head.sourceID
 
-target.writeCommitIDs(commitIDsSource)
+commonAncestor = target.getCommonAncestor(masterHead, sourceTrackingHead)
 
-commonAncestor = target.getCommonAncestor(target.head, source.head)
-
-changedData = source.changedDataSince(commonAncestor)
-
-target.writeData(changedData)
-
-if (commonAncestor == source.head)
+if (commonAncestor == sourceTrackingHead) {
   // do nothing
-else if (commonAncestor == target.head)
-  target.setHead(source.head)
-else
+
+} else if (commonAncestor == masterHead) {
+  // fast-forward master head
+  try {
+    // when updating the head we have to pass in the previous head:
+    target.setHead(sourceTrackingHead, masterHead)
+  } catch {
+    // the master head has been updated in the meantime
+    // start over
+  }
+
+} else {
   commonAncestorData = target.getData(commonAncestor)
-  sourceHeadData = source.getData()
-  targetHeadData = target.getData()
+  sourceHeadData = target.getData(sourceTrackingHead)
+  targetHeadData = target.getData(masterHead)
+
   mergedData = three-way-merge(commonAncestorData, sourceHeadData, targetHeadData)
+
   // commit object linking commit data with its ancestors:
-  commitObject = createCommit(mergedData, [source.head, target.head])
-  target.commit(commitObject)
+  commitObject = createCommit(mergedData, [masterHead, sourceTrackingHead])
+
+  try {
+    // when updating the head we have to pass in the previous head:
+    target.commit(commitObject, masterHead)    
+  } catch {
+    // the master head has been updated in the meantime
+    // start over
+  }
+}
 
 \end{lstlisting}
 
