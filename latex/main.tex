@@ -329,34 +329,40 @@ to the new version of the data and the previous commit.\\
 - implementation as separate module
 
 \section{Synchronization Protocol}
-If a client is connected to a server he will start the sync process on every commit. As
-synclib2's architecture is distributed a server could itself be a client
-who is connected to other servers.\\To the latest commit on a database
-we refer to as the `head'.
+Synchronization always happens from a \emph{Source} node to a \emph{Target} node.
+If it is run simultaneously with Source and Target exchanged, it keeps both nodes in sync with each other.\\
+The algorithm is designed to be able to run independently of the Source or Target.
+It could be implemented as a separate application possibly even running on a different device - as long as it has access to both the Source and Target node.\\
+The Synchronizer could be run in regular intervals or explicitly triggered by changes in the Source node.\\
+
+The latest commit on a node we refer to as the \emph{head}.
 
 Synchronization follows the following protocol:
 
 \begin{verbatim}
-Client has committed to its local database.
-Client pushs all commits since the last synced commit to Server.
-Client asks Server for the common ancestor of client's head and the server's head
-Client pushs all changed data since the common ancestor to Server.
+Read all commits since the last synced commit from Source and write them to Target.
+Let the Target compute the common ancestor of Target's and Source's head.
+Read all changed data since the common ancestor from Source and write to Target.
 
-if common ancestor == server head
-  // there is no data to merge
-  try fast-forward of server's head to client's head
-  if failed (someone else updated server's head in the meantime) then start over
+if common ancestor == Source's head
+  // Source has not changed since last sync, Target is ahead of Source.
+  // Do nothing.
+else if common ancestor == Target's head
+  // Target has not changed since last sync. Source is ahead of Target.
+  Fast-forward Target's head to Source's head.
 else
-  Client asks Server for all commits + data since the common ancestor
-  Client does a local merge and commits it to the local database
-  start over
+  // Both Source and Target have changed data since last sync.
+  Run three-way merge of common ancestor, Source's head and Target's head.
+  Commit result as new head to Target.
 \end{verbatim}
 
 This protocol is able to minimize the amount of data sent between synced
 stores even in a distributed, peer-to-peer setting.
 
-Updating the server's head uses optimistic locking. To update the head
-you need to include the last read head in your request.
+Updating the Target's head uses optimistic locking.
+To update the head you need to include the last read head in your request.
+So both the fast-forward operation or the commit of a merge result can be rejected if the Target has been updated in the meantime.
+If this happens the Synchronizer simply has to re-run the algorithm.
 
 \section{Handling Conflicts}
 
