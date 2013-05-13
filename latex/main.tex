@@ -252,7 +252,7 @@ CouchDB's distributed synchronization protocol supports a broad range of network
 
 To build a more suitable solution for our requirements we can build on most of CouchDB's design decisions.\\
 The major room for improvement lies in stronger data model awareness thereby relieving the application developer of repetitive merging logic.\\
-We will also investigate an alternative synchronization protocol by making heavier usage of collected meta data.
+We will also investigate an alternative synchronization protocol by collecting additional meta data on edits.
 
 \section{Architecture of Histo}
 Based on the requirements and the evaluation of CouchDB we derive a new architecture for a practical synchronization solution.
@@ -394,6 +394,13 @@ else
 \end{lstlisting}
 
 \section{Handling Conflicts}
+
+\section{Optimizations}
+Only keep limited history.
+
+Clients who are disconnected for too long have to fetch redundant data.
+
+Ideal case: remember until oldest head of nodes.
 
 \section{Integration with Application Logic}
 - demonstrate how to interface with standard MVC frameworks like Backbone, Ember.js
