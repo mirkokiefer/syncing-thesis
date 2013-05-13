@@ -339,30 +339,59 @@ The latest commit on a node we refer to as the \emph{head}.
 
 Synchronization follows the following protocol:
 
-\begin{verbatim}
-Read all commits since the last synced commit from Source and write them to Target.
-Let the Target compute the common ancestor of Target's and Source's head.
-Read all changed data since the common ancestor from Source and write to Target.
-
-if common ancestor == Source's head
-  // Source has not changed since last sync, Target is ahead of Source.
-  // Do nothing.
-else if common ancestor == Target's head
-  // Target has not changed since last sync. Source is ahead of Target.
-  Fast-forward Target's head to Source's head.
-else
-  // Both Source and Target have changed data since last sync.
-  Run three-way merge of common ancestor, Source's head and Target's head.
-  Commit result as new head to Target.
-\end{verbatim}
+\begin{enumerate}
+\item Read all commit IDs since the last synced commit from Source and write them to Target.
+\item Let the Target compute the common ancestor commit ID of Target's and Source's head.
+\item Read all changed data since the common ancestor commit from Source and write to Target.
+\item If the common ancestor equals the Source's head:\\
+  The Source has not changed since the last synchronization. The Target's head is ahead of Source.\\
+  The algorithm can stop here.
+\item If the common ancestor equals the Target's head:\\
+  The Target has not changed since the last synchronization.\\
+  The Source's head is ahead of Target.\\
+  We can fast-forward the Target's head to Source's head.
+\item If the common ancestor is neither the Source's nor the Target's head:\\
+  Both Source and Target must have changed data since the last synchronization.\\
+  We run a three-way merge of the common ancestor, Source's head and Target's head.\\
+  We commit the result as the new head to Target.
+\end{enumerate}
 
 This protocol is able to minimize the amount of data sent between synced
-stores even in a distributed, peer-to-peer setting.
+stores even in a distributed, peer-to-peer setting.\\
 
 Updating the Target's head uses optimistic locking.
 To update the head you need to include the last read head in your request.
 So both the fast-forward operation or the commit of a merge result can be rejected if the Target has been updated in the meantime.
-If this happens the Synchronizer simply has to re-run the algorithm.
+If this happens the Synchronizer simply has to re-run the algorithm.\\
+
+We can express the protocol in pseudo-code as shown in listing \ref{sync-protocol}.
+
+\begin{lstlisting}[caption=Synchronization Protocol, label=sync-protocol]
+
+commitIDsSource = source.getCommitIDsSince(lastSyncedCommit)
+
+target.writeCommitIDs(commitIDsSource)
+
+commonAncestor = target.getCommonAncestor(target.head, source.head)
+
+changedData = source.changedDataSince(commonAncestor)
+
+target.writeData(changedData)
+
+if (commonAncestor == source.head)
+  // do nothing
+else if (commonAncestor == target.head)
+  target.setHead(source.head)
+else
+  commonAncestorData = target.getData(commonAncestor)
+  sourceHeadData = source.getData()
+  targetHeadData = target.getData()
+  mergedData = three-way-merge(commonAncestorData, sourceHeadData, targetHeadData)
+  // commit object linking commit data with its ancestors:
+  commitObject = createCommit(mergedData, [source.head, target.head])
+  target.commit(commitObject)
+
+\end{lstlisting}
 
 \section{Handling Conflicts}
 
