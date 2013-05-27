@@ -107,6 +107,31 @@ Further it is important that the interfaces are designed to be as unintrusive in
 A state based synchronization strategy is required to ease the integration process. The low-level aspects of \emph{update detection}, \emph{update propagation} and \emph{reconciliation} should be abstracted away from the application developer as much as possible.\\
 At the same time the developer needs to be able to supply the logic for aspects of the synchronization that can not be solved generically. These include data model definition, conflict handling and technical aspects of messaging.
 
+\subsection{Cross-Platform}
+The application described in our scenario has to run on a multitude of devices and platforms.
+
+Notable platforms that should be supported are:
+
+\begin{itemize}
+\item Desktop Operating Systems: Microsoft Windows, OSX and Linux distributions
+\item Mobile Operating Systems: Android, iOS
+\item Server Operating Systems: Linux distributions
+\end{itemize}
+
+With such a broad range of platforms it is important to target a cross-platform environment to avoid having to maintain separate implementations for each platform.
+
+\subsection{Other Requirements}
+The ideal synchronization framework would support an even broader range of requirements.\\
+We intentionally leave out the technical aspects of data transmission between nodes.
+There is a broad range of protocols available to transfer data on the Internet and directly between devices.
+A generic synchronization solution should be agnostic to the data transmission protocol.
+Important is only the exposure of a data transmission interface so that adapters can be implemented for specific protocols.\\
+Peer discovery is another important technical aspect that needs to be solved for any real application.
+There already exist solutions for this problems, examples being the various implementations of zeroconf \cite{gunes2002ip} including Apple's Bonjour service or the competing Universal Plug 'n' Play (UPnP) \cite{miller2001home} standard by Microsoft.\\
+Security related aspects like peer authenticating and encrypted data transmission are other requirements which are important but beyond the scope of this thesis.
+
+\subsection{Summary}
+
 TODO:
 
 - add summary of requirements
