@@ -1,4 +1,3 @@
-\chapter{Designing a Synchronization Framework}\label{main}
 
 \section{Application Scenario: A Collaborative Task Manager}
 Our goal is to develop a collaborative Task Manager that can still be used if disconnected from the network.
@@ -8,11 +7,11 @@ Let us first work out some user stories and then try to define a suitable data m
 
 \subsection{User Story 1: Creating Projects}
 \begin{itemize}
-\item A User can create Projects in order to coordinate Tasks.
-\item A User can invite other Users as Project Members to a Project.
+\item A \emph{User} can create \emph{Projects} in order to coordinate \emph{Tasks}.
+\item A \emph{User} can invite other \emph{Users} as \emph{Project Members} to a \emph{Project}.
 \end{itemize}
 
-Examples for Projects created by User Rita would be:\\
+Examples for \emph{Projects} created by User Rita would be:\\
 
 \begin{tabular}{ l l }
 Project Name & Members \\
@@ -24,13 +23,13 @@ Sales Review & Rita, Lisa
 
 \subsection{User Story 2: Creating and Editing Tasks}
 \begin{itemize}
-\item Project Members can add Tasks to a Project in order to manage responsibilities.
-\item A Task can have a due date and responsible project member assigned.
-\item A Task can be edited by Project Members and marked as done.
-\item A Task can be moved in the list of Tasks.
+\item \emph{Project Members} can add \emph{Tasks} to a \emph{Project} in order to manage responsibilities.
+\item A \emph{Task} can have a due date and responsible project member assigned.
+\item A \emph{Task} can be edited by Project Members and marked as done.
+\item A \emph{Task} can be moved in the list of Tasks.
 \end{itemize}
 
-An example list of Tasks could be:\\
+An example list of \emph{Tasks} could be:\\
 
 \begin{tabular}{ l l l l }
 \multicolumn{4}{ c }{Project ``Marketing Material''} \\
@@ -56,31 +55,40 @@ Allen & 2014-07-20 & Ok, lets go through it tomorrow morning!
 \end{tabular}
 
 \subsection{User Story 3: User Workflows}
+
+TODO:
+
+- add workflow graphic
+
 \begin{itemize}
-\item In order to be productive a user needs to access all Tasks from any device.
-\item A user should be able to Edit and Create Projects and Tasks when disconnected from any network.
-\item The data should be kept as current as possible even if a user's device does not have reliable internet access.
+\item In order to be productive a user needs to access all \emph{Tasks} from any device.
+\item A user should be able to edit and create \emph{Projects} and \emph{Tasks} when disconnected from any network.
+\item The data should be kept as current as possible even if a user's device does not have reliable Internet access.
 \end{itemize}
 
 An example workflow that should be supported:\\
 
 \begin{itemize}
-\item Rita works at the desktop computer in her office with high-speed internet access. She creates Project A and invites Allen.
-\item Allen works from home on his notebook with high-speed internet access. He reviews the Project and creates task A1.
-\item Rita is already on her way home but has mobile internet access on her smartphone. She receives the added task A1 and edits its title.
-\item Rita is still on the train but decides to continue working on her notebook. Her notebook does not have internet access but she can establish a direct connection to her smartphone via Wifi. The reception on her smartphone has dropped in the meanwhile. She receives the latest updates from her smartphone and adds a comment to task A1.
-\item Allen who is still at home can not receive Rita's comment as she is still on the train. In the meanwhile he creates a Task A2 in Project A.
-\item Rite gets home where she has internet access with her notebook. She receives Allen's created Task A2.
-\item Allen, who is still at his notebook, receives Rita's comment as soon as she connects to internet at home.
+\item Rita works at the desktop computer in her office with high-speed Internet access. She creates project A and invites Allen.
+\item Allen works from home on his notebook with high-speed Internet access. He reviews project A and creates task A1.
+\item Rita is already on her way home but has mobile Internet access on her smartphone. She receives the added task A1 and edits its title.
+\item Rita is still on the train but decides to continue working on her notebook. Her notebook does not have Internet access but she can establish a direct connection to her smartphone via Wifi. The reception on her smartphone has dropped in the meanwhile. She receives the latest updates from her smartphone and adds a comment to task A1.
+\item Allen who is still at home can not receive Rita's comment as she is still on the train. In the meanwhile he creates a task A2 in project A.
+\item Rite gets home where she has Internet access with her notebook. She receives Allen's created task A2.
+\item Allen, who is still at his notebook, receives Rita's comment as soon as she connects to Internet at home.
 \end{itemize}
 
 \subsection{Data Model}
-Based on the user stories we can derive a plausible data model for the application. We can map it to an entity-relationship model as shown in figure \ref{fig:tasks-data-model}.\\
-The only complication is the requirement of Tasks per Project being ordered. We model this as a linked list by having a ``Next Task'' relationship.
+Based on the user stories we can derive a plausible data schema for the application. We can map it to an entity-relationship schema as shown in figure \ref{fig:tasks-data-schema}.\\
+The only complication is the requirement of \emph{Tasks} per \emph{Project} being ordered. We model this as a linked list by having a ``Next Task'' relationship.
 
-\begin{figure}[tasks-data-model]
+\begin{figure}[tasks-data-schema]
 \centering
 \includegraphics[width=0.8\textwidth]{img/tasks-schema}
-\caption{A collaborative Task Manager's data model}
-\label{fig:tasks-data-model}
+\caption{A collaborative Task Manager's data schema}
+\label{fig:tasks-data-schema}
 \end{figure}
+
+TODO:
+
+- use more common notation or add legend

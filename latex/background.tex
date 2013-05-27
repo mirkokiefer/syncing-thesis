@@ -1,7 +1,20 @@
 
-\chapter{Background}\label{background}
+\chapter{Background}
+\label{sec:background}
+TODO:
 
-We will start by defining some consistent terminology used throughout the thesis:
+- refer to standard publications on transaction management, p2p replication
+
+- explain why transactions are not suitable
+
+\section{Basic Notions}
+TODO:
+
+- reverse definition starting by atoms --> synchronization
+
+- reference popular synchronization protocols
+
+We will start by explaining some basic terminology and try to systematically define what data synchronization is about.
 
 \begin{itemize}
 \item \emph{Synchronization engine}: A framework that manages functional aspects of data synchronization we call a synchronization engine.
@@ -12,15 +25,15 @@ We will start by defining some consistent terminology used throughout the thesis
 \item \emph{Atom}: An atom is an object that can not be divided into parts. Examples are a line in a file or literal attributes like strings or numbers in an entity.
 \end{itemize}
 
-Most synchronization algorithms can be divided into three major components.
+Phases of synchronization:
 \begin{enumerate}
 \item \emph{Update Detection} refers to the process of identifying changes to the data on each client.
 If updates are  stored explicitly we categorize the algorithm as \emph{edit-based} which applies to most \emph{stream-based} approaches.
 \emph{State based} synchronization usually run a differencing algorithm on each synchronization operation to detect updates.
 \item \emph{Update Propagation} describes the algorithm's component which implements the propagation protocol among the synchronizing clients.
 The design of the propagation protocol eventually defines which kinds of network topologies the algorithm can support.
-\item \emph{Reconciliation} is the final phase where the client updates are merged and conflicts identified.
-In a centralized scenario this part is usually carried by the server.
+\item \emph{Reconciliation} is the final phase where the client updates are merged and conflicts are identified.
+In a centralized scenario this part is usually carried out by the server.
 Distributed architectures supporting peer-to-peer synchronization are much more complex as all clients have to reconcile the received updates in an eventually consistent way.
 \end{enumerate}
 
@@ -29,7 +42,7 @@ An application that tracks each edit and sends it in a stream to remote nodes fo
 Stream-based synchronization is very common among real-time document editors like Google Docs.\\
 
 An edit usually represents an insert or delete operation at a certain position in the text.
-These edit operations are broadcasted to remote nodes and then ``replayed''.
+These edit operations are broadcast to remote nodes and then ``replayed''.
 As participating nodes can concurrently edit a document the stream of edit operations can not just be applied without modifications.\\
 The combination of local modifications and received edit operations from a remote node requires the transformation of the remote operations in order to be correctly applied.\\
 The family of algorithms developed to correctly transform the edit operations is described as \emph{Operational Transformation} \cite{Ellis:1998vf}.\\
@@ -40,13 +53,18 @@ Packet loss due to unreliable network connections have also be taken into accoun
 Research has therefore investigated options for data synchronization that do not require Operational Transformation.\\
 
 \emph{Commutative Replicated Data Types} (CRDTs) have emerged as a viable alternative for specific use cases.
-A recent study by Shapiro et. al presents a range of data types designed for synchronization without concurrency control \cite{Shapiro:2011wy}.\\
-CRDTs are designed in a way that all edit operations commute when applied in causal order.
+A recent study by Shapiro et al. presents a range of data types designed for synchronization without concurrency control \cite{Shapiro:2011wy}.\\
+CRDTs are designed in a way that all edit operations commute when applied in \emph{causal order}.
+Section \ref{sec:main.requirements.causality} goes into more detail about causal ordering of events.
 Due to the restrictions on supported operations on data types, CRDTs are only applicable in a narrow set of scenarios.
+
+TODO:
+
+- more details about OT and CRDTs
 
 \section{History-Based Synchronization}
 Snapshot-based methods work by tracking and relating an application's data state over time.
-Instead of sending a sequential stream of raw updates, each client collects additional meta-data that allows more complex reasoning about the state of each client.\\
+Instead of sending a sequential stream of raw updates, each client collects additional metadata that allows more complex reasoning about the state of each client.\\
 A prominent example is the distributed content tracking system \emph{git} \cite{git} which can resolve the most complex peer-to-peer synchronization scenarios.\\
 Git achieves this by storing the entire history of a project's database on each client.
 Each edit made to objects in the database is stored as a commit object and related to its ancestors.\\
@@ -55,6 +73,7 @@ While it sounds extremely inefficient to store the entire history of a database,
 It is not uncommon that the uncompressed form of the current state of a git project is larger than the project's entire history.
 
 \section{Three-Way Merging}
+\label{sec:background.merging}
 Three-way merging describes the concept for an algorithm that performs a merge operation on two objects based on a common ancestor.\\
 Let \emph{A} be the initial state of the object and let \emph{B} and \emph{C} be edited versions of \emph{A}.
 The goal is to merge \emph{B} and \emph{C} into a new object \emph{D}.\\
@@ -62,12 +81,24 @@ The merge algorithm starts by identifying the differences between \emph{A} and \
 All \emph{parts} of object \emph{B} that are neither changed in \emph{B} nor in \emph{C} are carried over into \emph{D}.\\
 All changes to parts of the object in \emph{B} that have not been changed in \emph{C} are directly accepted and added to \emph{D}.\\
 If the same parts are edited both in \emph{B} and \emph{C} we have a merge conflict that needs to be resolved.\\
-
-Three-way merging only describes the general concept but the actual algorithm will differ based on the type of objects that are merged.
+There is no universal algorithm for resolving conflicts.
+Different types of data and applications require different types of conflict resolution strategies.
+In many cases conflict resolution can not even be done in an automated way but has to be left to the user of an application.\\
+Even the term \emph{three-way merging} only describes a general concept but the actual algorithm will differ based on the type of objects that are merged.
 Text files are the most common type of object with lines seen as the \emph{parts}.
 The unix program \emph{diff3} implements a three-way merge variant for text files \cite{diff3}.\\
 Most modern version control systems implement three-way merging to allow lock-free collaboration on source code.
 \emph{Git} applies three-way merging not only for text files but for entire file system trees \cite{git}.\\
+With git we have a great example of a hierarchical conflict resolution strategy:
+
+\begin{itemize}
+\item If two developers concurrently edit the same directory git tries to resolve this conflict by descending into the directory and looking at individual files.
+\item If the developers edited different files git can automatically resolve the conflict by accepting both changes.
+\item If the same file was edited concurrently git tries to descend a level deeper by looking at edits made to individual lines.
+\item If different lines were edited concurrently it can again resolve the conflict by accepting both changes.
+\item Only in the unlikely event that both developers edited the same line git has no way to automatically resolve the conflict.
+It will delegate the conflict resolution to the developers who will have to manually merge both changes.
+\end{itemize}
 
 Tancred Lindholm designed a three-way merging algorithm for XML-documents.
 With the \emph{3DM} tool there is even an implementation available \cite{Lindholm:2001uv}.
@@ -107,8 +138,8 @@ The standard was therefore only implemented by Google Chrome, Safari and Opera a
 \subsection{Indexed Database}
 Instead of Web SQL the standard favored by the W3C and most browser vendors is \emph{IndexedDB}.\\
 \emph{IndexedDB} defines a lower-level interface for storing key/value pairs and setting up custom indexes.
-The While relatively simple, the API design is generic enough to cater for implementations of more complex databases on top.
-It would for example be possible to implement a \emph{Web SQL} database using \emph{IndexedDB}.\\
+While relatively simple, the API design is generic enough to cater for implementations of more complex databases on top.
+It would, for example, be possible to implement a \emph{Web SQL} database using \emph{IndexedDB}.\\
 IndexedDB supports storing large amounts of data and defines an asynchronous API.\\
 Unfortunately the standard has not yet been implemented across all major browsers.
 It is currently available in Mozilla Firefox, Google Chrome and Internet Explorer.
@@ -118,5 +149,5 @@ There is a polyfill available that implements an IndexedDB interface using Web S
 
 \subsection{Cache Manifests}
 To truely work offline, an application has to make its static resources available locally as well.
-The \emph{cache manifest} defined in the HTML standard gives you the right tool \cite{cache_manifests}. It allows you to define a local cache of all application resources like HTML, CSS, JavaScript code or other static files.\\
+The \emph{cache manifest} defined in the HTML standard gives developers the right tool \cite{cache_manifests}. It allows you to define a local cache of all application resources like HTML, CSS, JavaScript code or other static files.\\
 Flexible policies give fine-grained control over which resources should be available offline and which need network connection.
