@@ -1,11 +1,6 @@
 
 \chapter{Background}
 \label{sec:background}
-TODO:
-
-- refer to standard publications on transaction management, p2p replication
-
-- explain why transactions are not suitable
 
 \section{Basic Notions}
 TODO:
@@ -36,6 +31,22 @@ The design of the propagation protocol eventually defines which kinds of network
 In a centralized scenario this part is usually carried out by the server.
 Distributed architectures supporting peer-to-peer synchronization are much more complex as all clients have to reconcile the received updates in an eventually consistent way.
 \end{enumerate}
+
+\section{ACID Properties and Transactions}
+
+TODO:
+
+- master-less database, no global coordinater
+
+- offline by default --> no globally serializable commits, two-phase commit no suitable
+
+- atomicity (all or nothing commit) only on local nodes
+
+- only eventual consistency
+
+- isolation: has to be relaxed as we cannot allow locking --> concurrent transactions cannot be serialized, use lowest level of isolation ("Read uncommitted", concurrent commits to local databases will eventually be consistent
+
+- durability: only local durability, global durability can not be guaranteed in a master-less database
 
 \section{Stream-Based Synchronization}
 An application that tracks each edit and sends it in a stream to remote nodes follows a stream-based synchronization protocol.

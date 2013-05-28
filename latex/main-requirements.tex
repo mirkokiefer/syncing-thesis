@@ -90,11 +90,13 @@ TODO:
 \subsection{Flexible Network Topologies}
 A traveling user who works with multiple mobile devices needs to be able to sychronize data without requiring Internet access.
 The synchronization engine should therefore be designed to handle peer-to-peer connections.\\
-Even in an office environment where users exchange large amounts of data a direct connection can be significantly faster than doing a round-trip through a server on the Internet.\\
-For this setting a \emph{hybrid architecture} with local servers in the company network could be an interesting alternative.\\
+Even in an office environment where users exchange large amounts of data a direct connection can be significantly faster than doing a round-trip through a server on the Internet.
+For this setting a \emph{hybrid architecture} with local servers in the company network could be an interesting alternative.
 The local servers could provide fast synchronization among users inside the office while a remote server on the Internet provides synchronization with users working from home.\\
-The local and remote servers are synchronizing in a peer-to-peer topology while the users interact with them in a client-server setup.\\
-This gives us a hierarchical architecture which is both able to exploit the different levels of network speed and guarantee a higher state of consistency through the centralized servers.\\
+The local and remote servers are synchronizing in a peer-to-peer topology while the users interact with them in a client-server setup.
+This gives us a hierarchical architecture which is both able to exploit the different levels of network speed and guarantee a higher state of robustness through the centralized servers.
+A hierachical architecture can counter the higher risks of failure on clients like notebooks or smartphones.
+The more durable and always connected server nodes should be able to recover data loss on client nodes.\\
 The protocol used for synchronization should be generic enough to adapt to these different network setups.
 
 \subsection{Integration with Existing Application Logic}
