@@ -88,6 +88,7 @@ TODO:
 - support three-way merging
 
 \subsection{Flexible Network Topologies}
+\label{sec:main.requirements.topologies}
 A traveling user who works with multiple mobile devices needs to be able to sychronize data without requiring Internet access.
 The synchronization engine should therefore be designed to handle peer-to-peer connections.\\
 Even in an office environment where users exchange large amounts of data a direct connection can be significantly faster than doing a round-trip through a server on the Internet.
@@ -131,6 +132,10 @@ Important is only the exposure of a data transmission interface so that adapters
 Peer discovery is another important technical aspect that needs to be solved for any real application.
 There already exist solutions for this problems, examples being the various implementations of zeroconf \cite{gunes2002ip} including Apple's Bonjour service or the competing Universal Plug 'n' Play (UPnP) \cite{miller2001home} standard by Microsoft.\\
 Security related aspects like peer authenticating and encrypted data transmission are other requirements which are important but beyond the scope of this thesis.
+
+TODO:
+
+- managing access to subsets of data
 
 \subsection{Summary}
 
