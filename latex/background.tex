@@ -1,36 +1,48 @@
 
 \chapter{Background}
 \label{sec:background}
+We will start this chapter by explaining the core aspects of data synchronization.
+After setting it in context with traditional properties of distributed databases we will present some of the popular approaches to synchronization.\\
+Some technical background on the practicality of local data storage based on HTML5 will follow.\\
+This will give us a solid background to develop and reason about our own data synchronization framework.
 
-\section{Basic Notions}
-TODO:
+\section{Defining Data Synchronization}
+Let us introduce some basic terminology and try to systematically define what data synchronization is about.
 
-- reverse definition starting by atoms --> synchronization
-
-- reference popular synchronization protocols
-
-We will start by explaining some basic terminology and try to systematically define what data synchronization is about.
-
-\begin{itemize}
-\item \emph{Synchronization engine}: A framework that manages functional aspects of data synchronization we call a synchronization engine.
-\item \emph{Node}: A node represents a single instance of an application connected to other nodes for synchronization purposes. It could be a mobile device or a server connecting devices.
-\item \emph{Synchronization protocol}: The core part of a synchronization engine that describes the communication between nodes in a synchronization engine.
-\item \emph{Offline}: A node is offline if it is partitioned from the network.
-\item \emph{Object}: Objects can represent any kind of data like files or entities. Objects can be composed of \emph{parts} like lines (for files) or attributes (for entities).
-\item \emph{Atom}: An atom is an object that can not be divided into parts. Examples are a line in a file or literal attributes like strings or numbers in an entity.
-\end{itemize}
-
-Phases of synchronization:
-\begin{enumerate}
-\item \emph{Update Detection} refers to the process of identifying changes to the data on each client.
-If updates are  stored explicitly we categorize the algorithm as \emph{edit-based} which applies to most \emph{stream-based} approaches.
-\emph{State based} synchronization usually run a differencing algorithm on each synchronization operation to detect updates.
-\item \emph{Update Propagation} describes the algorithm's component which implements the propagation protocol among the synchronizing clients.
-The design of the propagation protocol eventually defines which kinds of network topologies the algorithm can support.
-\item \emph{Reconciliation} is the final phase where the client updates are merged and conflicts are identified.
+\emph{Atoms} are what we define as the lowest level of data that cannot be devided into smaller parts.
+Every application may have a custom definition of atoms.
+For a file synchronizer it may be entire files, for a source code management system it may be lines in a file, for a collaborative task manager it may be literal values like strings, numbers or dates.\\
+Atoms can be aggregated to \emph{objects}.
+A source code management system may define objects as a sequence of lines aggregated to a file.
+The task manager could aggregate values like strings and dates to task objects.
+Objects can themselves be aggregated further into larger objects.
+File objects can be combined to directory objects, task objects into larger structures like a project.
+Aggregation of objects can also be seens as relationships between objects.\\
+A collaborative application has multiple users working on different devices on a related set of data.
+They are either connected directly or via servers who live on the local network or the Internet.
+Each device, be it a user's device or a server, we define as a \emph{node}.
+Nodes can be connected through various network topologies like peer-to-peer, client-server or a hierarchical architecture.
+In section \ref{sec:main.requirements.topologies} we will go into more detail about different network topologies.\\
+The nodes of mobile users are likely to be partitioned from their network and therefore have to be able to work in \emph{offline} mode.
+Therefore application data has to be available locally so that users are not blocked from using their application.
+Even when connected to a network it can be beneficial to maintain data locally to increase the responseness of the application.
+In a collaborative application, edits that are made locally will have to be \emph{synchronized} with other participating nodes.\\
+The process of synchronization can be divided into three phases.
+Local edits first have to be identified before they can be sent to other nodes.
+We refer to this step as the \emph{update detection} phase.
+Some applications may explicitly track each edit as its made and store the history of edit operations.
+This \emph{edit-based} approach is necessary for \emph{stream-based synchronization} which we explain in section \ref{sec:background.stream-based}.\\
+If edits are not tracked directly we have to run a differencing algorithm to detect updates.
+This requires us to keep previous states of the data and is detailed further in section \ref{sec:background.history-based} on \emph{history-based synchronization}.\\
+Once updates are detected we continue with the \emph{update propagation} phase.
+A stream of edit operations or the differencing output is sent to the collaborating nodes.
+The details will be explained in the respective sections on the stream or history based approaches.\\
+In a final phase the received data has to be \emph{reconceiled} with the local data on each node.
+Updates have to be merged and conflicts are identified.
 In a centralized scenario this part is usually carried out by the server.
-Distributed architectures supporting peer-to-peer synchronization are much more complex as all clients have to reconcile the received updates in an eventually consistent way.
-\end{enumerate}
+Distributed architectures supporting peer-to-peer synchronization are much more complex as all clients have to reconcile the received updates in an eventually consistent way.\\
+\emph{Update detection}, \emph{update propagation} and \emph{update reconciliation} combined are what we define as \emph{data synchronization}.
+Underlying to each phase can be complex protocols which are often highly application specific.\\
 
 \section{ACID Properties and Transactions}
 
@@ -49,6 +61,7 @@ TODO:
 - durability: only local durability, global durability can not be guaranteed in a master-less database
 
 \section{Stream-Based Synchronization}
+\label{sec:background.stream-based}
 An application that tracks each edit and sends it in a stream to remote nodes follows a stream-based synchronization protocol.
 Stream-based synchronization is very common among real-time document editors like Google Docs.\\
 
@@ -74,6 +87,7 @@ TODO:
 - more details about OT and CRDTs
 
 \section{History-Based Synchronization}
+\label{sec:background.history-based}
 Snapshot-based methods work by tracking and relating an application's data state over time.
 Instead of sending a sequential stream of raw updates, each client collects additional metadata that allows more complex reasoning about the state of each client.\\
 A prominent example is the distributed content tracking system \emph{git} \cite{git} which can resolve the most complex peer-to-peer synchronization scenarios.\\
