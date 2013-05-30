@@ -41,8 +41,19 @@ In a final phase the received data has to be \emph{reconceiled} with the local d
 Updates have to be merged and conflicts are identified.
 In a centralized scenario this part is usually carried out by the server.
 Distributed architectures supporting peer-to-peer synchronization are much more complex as all clients have to reconcile the received updates in an eventually consistent way.\\
+
+Summarizing these terms:
+
+\begin{itemize}
+\item \textbf{Atoms} are the literal values that can not be divided further.
+\item \textbf{Objects} aggregate atoms or other objects into larger structures.
+\item \textbf{Nodes} are the collaborating devices in an application.
+\item The \textbf{update detection} phase identifies local data changes on each node.
+\item During \textbf{update propagation} changed data is sent to collaborating nodes.
+\item \textbf{Reconciliation} merges data received from other nodes and identifies conflicts.
+\end{itemize}
+
 \emph{Update detection}, \emph{update propagation} and \emph{update reconciliation} combined are what we define as \emph{data synchronization}.
-Underlying to each phase can be complex protocols which are often highly application specific.\\
 
 \section{ACID Properties and Transactions}
 
