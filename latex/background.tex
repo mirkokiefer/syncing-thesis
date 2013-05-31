@@ -56,6 +56,33 @@ Summarizing these terms:
 \emph{Update detection}, \emph{update propagation} and \emph{update reconciliation} combined are what we define as \emph{data synchronization}.
 
 \section{ACID Properties and Transactions}
+The nodes of a collaborative, mobile application with replicated data represent a distributed database.
+Distributed database systems have been a focus of research for decades.
+Traditionally, the incentive to make databases distributed has been to provide fault tolerance, increase read/write throughput or to increase storage capacities.
+Mobile applications need data replication to reduce frequent network access resulting in a better user experience.
+Traditional distributed databases used to back enterprise applications running entirely in server farms.
+Servers are connected through reliable and high-speed networks.
+Network partitions are the absolute exception.\\
+On mobile devices network partitions or slow connections are the norm.
+Users want to work with their notebooks even when not being in an office environment with reliable Internet access.
+Mobile networks are still comparatively slow and unreliable.\\
+Back in 1981 Jim Gray defined the properties of a reliable transaction system \cite{Gray:1981wi}.
+They are referred to as the ACID (Atomicity, Consistency, Isolation, Durability) properties - a term coined by Andreas Reuter and Theo Härder \cite{Reuter1983}.
+Consistency is defined as the property ensuring that a database can only transition between valid states.
+One way to achieve this is to use locking so that a record can not be edited concurrently.
+In an always-connected server environment transactions are measured in seconds - locking of data can therefore be acceptable.
+In a mobile setting this is not an option as transactions can easily last days.
+A mobile user who wants to edit some data while travelling without network connection should certainly not block all other users from doing their work.
+Using locking concepts in such a scenario would not only be a an inconvenience for the users but would actually lead to a high-rate of deadlocks.
+As Jim Gray states, the rate of deadlocks goes up with the square of the level of concurrency and the fourth power of the transaction size \cite{Gray3}.\\
+A common alternative to locking is \emph{multiversion concurrency-control} where readers can still access the prior version of data being editd by another user.
+Distributed databases usually use a two-phase commit protocol to gurantee strong consistency.
+Each participant has to agree in order to successfully complete a transaction.
+In a mobile setting with long periods of disconnection each commit could take hours or days to be acknowledged by all nodes.
+This is further complicated as nodes are often not fixed and can be added or removed from a mobile application at any time.
+
+
+In a distributed database this property can only 
 
 TODO:
 
