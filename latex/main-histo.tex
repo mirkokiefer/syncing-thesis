@@ -37,6 +37,7 @@ TODO:
 - note on alternatives (Lua, native)
 
 \section{Differencing and Merging of Objects}
+
 TODO:
 
 - explain diff, merge and patch
@@ -70,6 +71,8 @@ As syncing is state based we need to track the history of edits on each client.\
 data locally.\\On every commit we create a commit object that links both
 to the new version of the data and the previous commit.\\
 
+TODO:
+
 - use content-adressable store
 
 - only store changes and reference unchanged data through hashs --> like git
@@ -78,6 +81,9 @@ to the new version of the data and the previous commit.\\
 
 \section{Differencing Across Commits}
 \label{main.diff-across-commits}
+
+TODO:
+
 - Most Recent Common Ancestor algorithm used for finding common commit of clients
 
 - walk commit graph until MRCA
@@ -210,6 +216,7 @@ if (commonAncestor == sourceTrackingHead) {
 \end{lstlisting}
 
 \section{Handling Conflicts}
+
 TODO:
 
 - application specific, no general solution
@@ -219,6 +226,7 @@ TODO:
 - manual resolution through user
 
 \section{Synchronization Topologies}
+
 TODO:
 
 - document different supported topologies
@@ -232,15 +240,17 @@ TODO:
 - hierarchical (office server + cloud server)
 
 \section{Optimizations}
+
 TODO:
 
-Only keep limited history.
+- Only keep limited history.
 
-Clients who are disconnected for too long have to fetch redundant data.
+- Clients who are disconnected for too long have to fetch redundant data.
 
-Ideal case: remember until oldest head of nodes.
+- Ideal case: remember until oldest head of nodes.
 
 \section{Integration with Application Logic}
+
 TODO:
 
-- demonstrate how to interface with standard MVC frameworks like Backbone, Ember.js
+- demonstrate how to interface with standard MVC frameworks like Backbone, Ember.js, Angular
