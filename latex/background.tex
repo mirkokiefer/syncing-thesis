@@ -136,7 +136,7 @@ TODO:
 \label{sec:background.history-based}
 Snapshot-based methods work by tracking and relating an application's data state over time.
 Instead of sending a sequential stream of raw updates, each client collects additional metadata that allows more complex reasoning about the state of each client.\\
-A prominent example is the distributed content tracking system \emph{git} \cite{git} which can resolve the most complex peer-to-peer synchronization scenarios.\\
+A prominent example is the distributed content tracking system \emph{git} \cite{swicegood2008pragmatic} which can resolve the most complex peer-to-peer synchronization scenarios.\\
 Git achieves this by storing the entire history of a project's database on each client.
 Each edit made to objects in the database is stored as a commit object and related to its ancestors.\\
 Through the resulting commit graph each client can identify the exact subset of updates each remote node has to receive in order to be in sync.\\
@@ -182,11 +182,15 @@ As XML supports the expression of a broad range of data types this is probably o
 - describe solution referring to standard algo
 
 \section{Content Adressable Storage}
-- copy on write
-
-- simple verification of data, free checksums
-
-- git as example
+A content adressable store (CAS) allows data to be retrieved based on its content rather than by its location.
+When writing an object typically a cryptographic hash function is used to compute its hash.
+The hash then becomes the address of the object under which it is written.
+It implies that data objects are always copied on write as their storage location is defined by its content.
+The ZFS filesystem uses this concept internally to achieve fast snapshotting and strong data verification \cite{strobl2008zfs}.\\
+Creating a snapshot of an object does not require any copying - the filesystem only has to keep the current version of the object as updates are made.\\
+Data verification is given for free as well - an object can simply be re-hashed on a read and compared to the hash its stored at.\\
+Git is another system making use of a CAS as it needs to keep all previous versions of each object \cite{swicegood2008pragmatic}.\\
+Our own synchronization framework described in chapter \ref{sec:main.histo} will use the concept of a CAS.
 
 \section{HTML5 and Offline Applications}
 HTML5 specifies a number of client-side storage options. Most are a work in process and still have to be adopted by all browser vendors. IndexedDB is most likely going to be the standard for building offline-capable web applications. Combined with Cache Manifests, HTML5 provides all the tools necessary for building offline applications.
