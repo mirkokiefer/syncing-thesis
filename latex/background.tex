@@ -75,11 +75,15 @@ In a mobile setting this is not an option as transactions can easily last days.
 A mobile user who wants to edit some data while travelling without network connection should certainly not block all other users from doing their work.
 Using locking concepts in such a scenario would not only be a an inconvenience for the users but would actually lead to a high-rate of deadlocks.
 As Jim Gray states, the rate of deadlocks goes up with the square of the level of concurrency and the fourth power of the transaction size \cite{gray1981strawman}.\\
-A common alternative to locking is \emph{multiversion concurrency-control} where readers can still access the prior version of data being editd by another user.
-Distributed databases usually use a two-phase commit protocol to gurantee strong consistency.
+A common alternative to locking is \emph{multiversion concurrency-control} where readers can still access the prior version of data being edited by another user.
+Distributed databases usually use a two-phase commit protocol to gurantee strong consistency \cite{bernstein1987concurrency}.
 Each participant has to agree in order to successfully complete a transaction.
 In a mobile setting with long periods of disconnection each commit could take hours or days to be acknowledged by all nodes.
 This is further complicated as nodes are often not fixed and can be added or removed from a mobile application at any time.
+Given these constraints it is only possible to guarantee \emph{eventual consistency}.
+Data will be consistently propagated across all nodes given a long enough period of time over which no changes are made.
+Eventual consistency is increasingly adopted in multi-master databases like CouchDB \cite{anderson2010couchdb} and DynamoDB \cite{DeCandia:2007ui}.
+The CouchDB model will be presented in detail in section \ref{sec:main.couchdb}.
 
 
 TODO:
