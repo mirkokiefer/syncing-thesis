@@ -74,11 +74,10 @@ On the next synchronization between Allen and Rita the system needs to identify 
 While this example is simple, the identification of conflicts among a large group of collaborators can be non-trivial.\\
 Depending on the level of understanding the synchronization engine has on the data there are strategies to resolve conflicts automatically.
 The engine should be designed in a way that conflict resolution strategies can be ``plugged-in''.
-If no automatic resolution is possible the application should be able to present the conflict to the user and let him manually resolve it.
-
-TODO:
-
-- support three-way merging
+If no automatic resolution is possible the application should be able to present the conflict to the user and let him manually resolve it.\\
+Merging of updates and conflict resolution should be based on three-way merging.
+This means each client has to keep previous versions of edited objects.
+The concept of three-way merging is explained in section \ref{sec:background.merging}.
 
 \subsection{Flexible Network Topologies}
 \label{sec:main.requirements.topologies}
@@ -123,7 +122,7 @@ There is a broad range of protocols available to transfer data on the Internet a
 A generic synchronization solution should be agnostic to the data transmission protocol.
 Important is only the exposure of a data transmission interface so that adapters can be implemented for specific protocols.\\
 Peer discovery is another important technical aspect that needs to be solved for any real application.
-There already exist solutions for this problems, examples being the various implementations of zeroconf \cite{gunes2002ip} including Apple's Bonjour service or the competing Universal Plug `n' Play (UPnP) \cite{miller2001home} standard by Microsoft.\\
+There already exist solutions for this problems, examples being the various implementations of zeroconf \cite{gunes2002ip} including Apple's Bonjour service or the competing Universal Plug n' Play (UPnP) \cite{miller2001home} standard by Microsoft.\\
 Security related aspects like peer authenticating and encrypted data transmission are other important requirements.
 Some applications need granular control on which parts of the data are transferred to which nodes, which parts are editable etc.
 In this thesis we assume that all collaborating users keep an entire data store in sync.
