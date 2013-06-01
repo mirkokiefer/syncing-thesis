@@ -7,6 +7,7 @@ Some technical background on the practicality of local data storage based on HTM
 This will give us a solid background to develop and reason about our own data synchronization framework.
 
 \section{Defining Data Synchronization}
+\label{sec:background.definition}
 Let us introduce some basic terminology and try to systematically define what data synchronization is about.
 
 \emph{Atoms} are what we define as the lowest level of data that cannot be devided into smaller parts.
@@ -25,8 +26,14 @@ Nodes can be connected through various network topologies like peer-to-peer, cli
 In section \ref{sec:main.requirements.topologies} we will go into more detail about different network topologies.\\
 The nodes of mobile users are likely to be partitioned from their network and therefore have to be able to work in \emph{offline} mode.
 Therefore application data has to be available locally so that users are not blocked from using their application.
-Even when connected to a network it can be beneficial to maintain data locally to increase the responseness of the application.
-In a collaborative application, edits that are made locally will have to be \emph{synchronized} with other participating nodes.\\
+Even when connected to a network it can be beneficial to maintain data locally to increase the responseness of the application.\\
+Objects can be edited while the node is offline.
+The sequence of states an object goes through as its edited is called its \emph{history}.
+The history forms a directed graph with each state except the initial state having at least one ancestor.
+The \emph{current state} is the one that has no descendants.
+As edits can be made on different devices concurrently there can be multiple \emph{current states} at a time.
+If an object has multiple current states we refer to them as \emph{branches}.\\
+The updates across all nodes have to be \emph{synchronized} in order to bring all branches to the same state\\
 The process of synchronization can be divided into three phases.
 Local edits first have to be identified before they can be sent to other nodes.
 We refer to this step as the \emph{update detection} phase.
@@ -48,6 +55,8 @@ Summarizing these terms:
 \item \textbf{Atoms} are the literal values that can not be divided further.
 \item \textbf{Objects} aggregate atoms or other objects into larger structures.
 \item \textbf{Nodes} are the collaborating devices in an application.
+\item Updates of an object leads to multiple \textbf{states} which are linked in its \textbf{history}.
+\item Each object can have multiple current states across multiple nodes referred to as \textbf{branches}.
 \item The \textbf{update detection} phase identifies local data changes on each node.
 \item During \textbf{update propagation} changed data is sent to collaborating nodes.
 \item \textbf{Reconciliation} merges data received from other nodes and identifies conflicts.
@@ -55,7 +64,8 @@ Summarizing these terms:
 
 \emph{Update detection}, \emph{update propagation} and \emph{update reconciliation} combined are what we define as \emph{data synchronization}.
 
-\section{ACID Properties and Transactions}
+\section{Transactions and Consistency}
+\label{sec:background.transactions}
 The nodes of a collaborative, mobile application with replicated data represent a distributed database.
 Distributed database systems have been a focus of research for decades.
 Traditionally, the incentive to make databases distributed has been to provide fault tolerance, increase read/write throughput or to increase storage capacities.
@@ -66,39 +76,35 @@ Network partitions are the absolute exception.\\
 On mobile devices network partitions or slow connections are the norm.
 Users want to work with their notebooks even when not being in an office environment with reliable Internet access.
 Mobile networks are still comparatively slow and unreliable.\\
+
 Back in 1981 Jim Gray defined the properties of a reliable transaction system \cite{Gray:1981wi}.
-They are referred to as the ACID (Atomicity, Consistency, Isolation, Durability) properties - a term coined by Andreas Reuter and Theo Härder \cite{haerder1983principles}.
-Consistency is defined as the property ensuring that a database can only transition between valid states.
+They are referred to as the ACID (Atomicity, Consistency, Isolation, Durability) properties - a term coined by  Theo Härder and Andreas Reuter \cite{haerder1983principles}.\\
+\emph{Consistency} is defined as the property ensuring that a database can only transition between valid states.
 One way to achieve this is to use locking so that a record can not be edited concurrently.
 In an always-connected server environment transactions are measured in seconds - locking of data can therefore be acceptable.
 In a mobile setting this is not an option as transactions can easily last days.
 A mobile user who wants to edit some data while travelling without network connection should certainly not block all other users from doing their work.
 Using locking concepts in such a scenario would not only be a an inconvenience for the users but would actually lead to a high-rate of deadlocks.
 As Jim Gray states, the rate of deadlocks goes up with the square of the level of concurrency and the fourth power of the transaction size \cite{gray1981strawman}.\\
-A common alternative to locking is \emph{multiversion concurrency-control} where readers can still access the prior version of data being edited by another user.
+A common alternative to locking is \emph{multiversion concurrency-control} (MVCC) where readers can still access the prior version of data being edited by another user \cite{Bernstein:1981ut}.\\
+With regards to the ACID property \emph{Isolation}, MVCC refers to the most relaxed level of \emph{``Read Uncommitted''} which allows concurrent updates and reading of uncommitted data.\\
+
 Distributed databases usually use a two-phase commit protocol to gurantee strong consistency \cite{bernstein1987concurrency}.
 Each participant has to agree in order to successfully complete a transaction.
 In a mobile setting with long periods of disconnection each commit could take hours or days to be acknowledged by all nodes.
 This is further complicated as nodes are often not fixed and can be added or removed from a mobile application at any time.
-Given these constraints it is only possible to guarantee \emph{eventual consistency}.
+The two-phase commit algorithm requires a coordinator node which collects the votes of all collaborators and commits if the result is positive.
+In a peer-to-peer synchronization scenario with nodes unpredictably going offline this approach will not work as we can not define a reliable coordinator.\\
+The \emph{CAP-Theorem} actually states in detail that it is impossible to have strong consistency combined with partition tolerance \cite{Gilbert:2002uw}.\\
+Given these constraints we can only guarantee \emph{eventual consistency}.
 Data will be consistently propagated across all nodes given a long enough period of time over which no changes are made.
 Eventual consistency is increasingly adopted in multi-master databases like CouchDB \cite{anderson2010couchdb} and DynamoDB \cite{DeCandia:2007ui}.
-The CouchDB model will be presented in detail in section \ref{sec:main.couchdb}.
-
-
-TODO:
-
-- master-less database, no global coordinater
-
-- offline by default --> no globally serializable commits, two-phase commit no suitable
-
-- atomicity (all or nothing commit) only on local nodes
-
-- only eventual consistency
-
-- isolation: has to be relaxed as we cannot allow locking --> concurrent transactions cannot be serialized, use lowest level of isolation ("Read uncommitted", concurrent commits to local databases will eventually be consistent
-
-- durability: only local durability, global durability can not be guaranteed in a master-less database
+CouchDB which uses a combination of MVCC and eventual consistency will be reviewed in detail in section \ref{sec:main.couchdb}.\\
+\emph{Atomicity} is defined as transactions either passing entirely or leaving the database unchanged if a part fails.
+When choosing eventual consistency it is clear that we can not guarantee that a transaction succeeds across all nodes.
+Atomicity can only be guaranteed on a per-node level with transaction results eventually being propagated.\\
+Guaranteeing \emph{Durability} faces the same problem with nodes not being under a centralized control.
+Durability on a global level can only be guaranteed if reliable server components are part of synchronization topology.
 
 \section{Stream-Based Synchronization}
 \label{sec:background.stream-based}

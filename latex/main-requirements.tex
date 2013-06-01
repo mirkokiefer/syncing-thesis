@@ -44,18 +44,11 @@ We therefore require that the synchronization engine needs to have a structural 
 As we have seen in the application scenario it is necessary that objects are editable on multiple devices even if they are not connected to a network.
 Edits should be allowed concurrently to not block users from doing their work.
 This implies that there can not be a central locking mechanism that controls when users can synchronize their data for offline usage.
-We therefore trade strict consistency for availability of the data.\\
+We therefore trade strong consistency for availability of the data.\\
 Synchronization happens in an optimistic manner which means that we assume that temporarily inconsistent data will rarely lead to problems.
-
-\subsection{Eventual Consistency}
-The sequence of states an object goes through as its edited is called its \emph{history}.
-The history forms a directed graph with each state except the intial state having at least one ancestor.
-The \emph{current state} is the one that has no descendants.
-As edits can be made on different devices concurrently there can be multiple \emph{current states} at a time.
-If an object has multiple current states we refer to them as \emph{branches}.\\
-Our goal is to guarantee that after a finite number of synchronization events the object will eventually converge to the same state across all devices.\\
-This trade-off is enforced by the \emph{CAP-Theorem} which states that it is impossible to have strong consistency combined with partition tolerance \cite{Gilbert:2002uw}.\\
-Most mobile applications do not require strong consistency - the offline availability of data is usually a more important factor when judging the user experience. 
+Most mobile applications do not require strong consistency - the offline availability of data is usually a more important factor when judging the user experience.\\
+Our goal is to guarantee that after a finite number of synchronization events all objects will eventually converge to the same state across all devices.
+This property is referred to as \emph{eventual consistency} and explained in section \ref{sec:background.transactions}.\\
 
 \subsection{Causality Preservation and Conflicts}
 \label{sec:main.requirements.causality}
