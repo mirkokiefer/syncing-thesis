@@ -163,6 +163,20 @@ The merge algorithm starts by identifying the differences between \emph{A} and \
 All \emph{parts} of object \emph{B} that are neither changed in \emph{B} nor in \emph{C} are carried over into \emph{D}.\\
 All changes to parts of the object in \emph{B} that have not been changed in \emph{C} are directly accepted and added to \emph{D}.\\
 If the same parts are edited both in \emph{B} and \emph{C} we have a merge conflict that needs to be resolved.\\
+Figure \ref{fig:background.merging.success} shows a simple scenario where a merge can be successfully made.
+In figure \ref{fig:background.merging.conflict} we have concurrent edits of the same property resulting in a conflict.\\
+\begin{figure}[merge-success]
+  \centering
+  \includegraphics[width=0.8\textwidth]{img/three-way-merging}
+  \caption{A successful three-way merge}
+  \label{fig:background.merging.success}
+\end{figure}
+\begin{figure}[merge-conflict]
+  \centering
+  \includegraphics[width=0.8\textwidth]{img/three-way-merging-conflict}
+  \caption{Concurrent updates of the same property result in a conflict}
+  \label{fig:background.merging.conflict}
+\end{figure}
 There is no universal algorithm for resolving conflicts.
 Different types of data and applications require different types of conflict resolution strategies.
 In many cases conflict resolution can not even be done in an automated way but has to be left to the user of an application.\\
