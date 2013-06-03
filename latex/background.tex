@@ -175,11 +175,32 @@ Tancred Lindholm designed a three-way merging algorithm for XML-documents.
 With the \emph{3DM} tool there is even an implementation available \cite{Lindholm:2001uv}.
 As XML supports the expression of a broad range of data types this is probably one of the most generic implementations.
 
-\section{Most Recent Common Ancestor}
-\label{background.mrca}
-- describe problem with graphs
+\section{Lowest Common Ancestor}
+\label{background.lca}
 
-- describe solution referring to standard algo
+As described in section \ref{sec:background.definition} the changing states of an object being updated are linked in its state \emph{history}.
+Each object state links back to its ancestor thereby forming a directed acyclic graph.\\
+The lowest common ancestor (LCA) of two states A and B in the history graph is defined as the common ancestor C with the lowest distance to A and B.
+The distance between two states is defined as the number of edges between them.
+Figure \ref{fig:background.lca.one} shows an example where A and B have two common ancestors C and D but only C being the lowest common ancestor.\\
+There are cases where the LCA is ambigous - in figure \ref{fig:background.lca.two} both C and D have the same distance to A and B.\\
+The LCA problem has long been solved through various approaches.
+Czumaj et al. presented a simple method solving the problem on  $ n $ nodes and $ m $ edges in $\mathcal O(n*m)$ \cite{Czumaj:2007ht}.\\
+An alternative approach by Bender et al. is able to compute LCA queries in constant time after $\mathcal O(n^3) $ pre-processing step \cite{Bender:2005dg}.
+
+\begin{figure}[lca-one]
+  \centering
+  \includegraphics[width=0.5\textwidth]{img/lca1}
+  \caption{C is the lowest common ancestor of A and B}
+  \label{fig:background.lca.one}
+\end{figure}
+
+\begin{figure}[lca-two]
+  \centering
+  \includegraphics[width=0.5\textwidth]{img/lca2}
+  \caption{Both C and D are lowest common ancestors of A and B}
+  \label{fig:background.lca.two}
+\end{figure}
 
 \section{Content Adressable Storage}
 A content adressable store (CAS) allows data to be retrieved based on its content rather than by its location.
