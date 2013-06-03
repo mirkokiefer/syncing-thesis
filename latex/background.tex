@@ -18,12 +18,11 @@ Let us introduce some basic terminology and try to systematically define what da
 \emph{Atoms} are what we define as the lowest level of data that cannot be devided into smaller parts.
 Every application may have a custom definition of atoms.
 For a file synchronizer it may be entire files, for a source code management system it may be lines in a file, for a collaborative task manager it may be literal values like strings, numbers or dates.\\
-Atoms can be aggregated to \emph{objects}.
+Atoms can be aggregated to larger structures as \emph{objects}.
 A source code management system may define objects as a sequence of lines aggregated to a file.
-The task manager could aggregate values like strings and dates to task objects.
-Objects can themselves be aggregated further into larger objects.
-File objects can be combined to directory objects, task objects into larger structures like a project.
-Aggregation of objects can also be seens as relationships between objects.\\
+The task manager could aggregate values like strings and dates to task objects by keeping them as `title' and `due date' properties.
+Objects can themselves be aggregated further into larger objects by declaring relationships between them.
+File objects can be combined to directory objects, task objects into a larger structure like a project.\\
 A collaborative application has multiple users working on different devices on a related set of data.
 They are either connected directly or via servers who live on the local network or the Internet.
 Each device, be it a user's device or a server, we define as a \emph{node}.
@@ -54,7 +53,7 @@ Updates have to be merged and conflicts are identified.
 In a centralized scenario this part is usually carried out by the server.
 Distributed architectures supporting peer-to-peer synchronization are much more complex as all clients have to reconcile the received updates in an eventually consistent way.\\
 
-Summarizing these terms:
+Let us review these terms through figure \ref{fig:background.definition.terms} and a short summary:
 
 \begin{itemize}
 \item \textbf{Atoms} are the literal values that can not be divided further.
@@ -66,6 +65,13 @@ Summarizing these terms:
 \item During \textbf{update propagation} changed data is sent to collaborating nodes.
 \item \textbf{Reconciliation} merges data received from other nodes and identifies conflicts.
 \end{itemize}
+
+\begin{figure}[definitions]
+  \centering
+  \includegraphics[width=0.8\textwidth]{img/definitions}
+  \caption{The relationship of atoms, objects, nodes and the state history}
+  \label{fig:background.definition.terms}
+\end{figure}
 
 \emph{Update detection}, \emph{update propagation} and \emph{update reconciliation} combined are what we define as \emph{data synchronization}.
 
