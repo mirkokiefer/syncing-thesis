@@ -4,6 +4,7 @@ CouchDB is a document-oriented database known for its data synchronization featu
 It currently is a popular tool for master-less synchronization directly between devices.\\
 With multiple implementations being available for server, smartphone or in-browser deployment it seems like an excellent fit for our requirements.\\
 There is no official documentation of CouchDB's internals - the sources used for our analysis is the CouchDB Guide written by core developers \cite{anderson2010couchdb}, the CouchDB Wiki \cite{couchdb_wiki} and the source code \cite{couchdb_source} for details of the replication protocol.
+Note that the CouchDB authors actually refer to synchronization as `replication'.
 
 The original implementation of CouchDB exposes an HTTP interface for all interactions with the database.
 This makes it possible to write web applications directly targeting CouchDB as the server, eleminating any middleware in between.\\
@@ -45,12 +46,27 @@ As this choice is random to the user of an application it is often not the desir
 It is therefore possible to either pick a different conflicting version as the winner or merge both versions to a new revision.
 
 \subsection{Synchronization Protocol}
+CouchDB does not really have a synchronization protocol at all - it is actually a fairly simple algorithm that uses only the existing HTTP interfaces.
+A `CouchDB synchronizer' therefore does not even have to run inside CouchDB but can be an external program that only needs access to the public interfaces of two CouchDB instances.
+What makes CouchDB's synchronization work is at the core a \emph{changes stream} that is accessible through an HTTP interface as well.
+Every update of a document triggers an update of the changes stream thereby adding a new entry with an update sequence ID, the new version ID of the updated document and the document ID itself.
+At any point the changes stream includes all updates made to the database.\\
 
-TODO:
+The synchronization process from a CouchDB instance A to B follows the following steps:
 
-- define
+\begin{enumerate}
+\item Read the \emph{last source sequence ID} stored on B - it represents the last update it read on the previous synchronization.
+\item Read a few entries from the changes stream of A starting at the last source sequence ID.
+\item Send B the set of document revisions - B responds with the subset of those not stored in B.
+\item Fetch the missing document revisions from A and write them to B.
+\item Update the last source sequence ID on B.
+\item Restart the process if there are remaining updates.
+\end{enumerate}
 
-- add flow graphic
+All steps only use public interfaces exposed by both instances.
+Continuous synchronization can be implemented trivially by infinitely repeating the steps.\\
+As explained before the process may result in conflicting document versions.
+It is the responsibility of the application developer to handle those conflicts after each synchronization.
 
 \subsection{Fulfillment of Requirements}
 As a schemaless database CouchDB at least supports the storage of any kind of data model.
