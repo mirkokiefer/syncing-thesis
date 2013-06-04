@@ -24,7 +24,54 @@ Based on the requirements and the evaluation of CouchDB we derive a new architec
   \textbf{Cross-Platform}: be available on every major platform through the use of Web Standards
 \end{itemize}
 
-\section{Differencing and Merging of Objects}
+\section{Differencing and Merging of Models}
+As described in section \ref{sec:background.definition} synchronization always starts with an update detection phase.
+One our our design goals is to relieve the application developer from manual change tracing.
+We therefore need to implement a differencing algorithm for the types of models described in section \ref{sec:main.requirements.data-models}.\\
+The meta model definition in the form of entities, their attributes and relationships does not have to be synchronized as it should be part of the application code.
+We have to focus on synchronizing the actual data which is structured through entity instances, their attribute values and relationships to other instances.
+Most modern web application frameworks realize one-to-one relationships by simply having an attribute storing the related instance's ID.
+One-to-many relationships are realized through an attribute having a collection of 
+instance IDs.\\
+Instance collections often have a relevant order that needs to be preserved.
+An example is the list of tasks in a project that is displayed to the user.
+The user wants to be able to change the order of tasks and the order should be persisted.\\
+Summarizing the kind of structures we need to synchronize:
+
+\begin{itemize}
+\item Instances with their attribute values
+\item Attribute values that can be literals or instance IDs (modeling one-to-one relations)
+\item Attribute values that can be ordered collections (modeling one-to-many relations)
+\end{itemize}
+
+To show correctness of a differencing algorithm we need to define sample model states with expected differencing results.
+Based on an ancestor state all users start with we define several possible branch states.
+For each branch state we will define the difference to the ancestor state.
+This set of data can then be used as a test case for our implementation.\\
+
+Our ancestor state:\\
+
+\begin{tabular}{ l l l l }
+\multicolumn{4}{ c }{Projects} \\
+ID & Project Name & Members & Tasks \\
+\hline
+1 & Marketing Material & Rita, Tom, Allen & 1, 2, 3, 4 \\
+2 & Product Roadmap & Rita, Allen & 5 \\
+\end{tabular} \\
+
+`Members' is an unordered collection of users - we define the user's IDs identical to their names.\\
+`Tasks' is an ordered collection of tasks IDs.\\
+
+\begin{tabular}{ l l l l l }
+\multicolumn{5}{ c }{Tasks} \\
+ID & Title & Due Date & Assignee & Done \\
+\hline
+1 & Create event poster & 2013-08-12 & Rita & No \\
+2 & Write blog entry on event & 2013-07-20 & Tom & No \\
+3 & Prepare field study & 2013-07-22 & Rita & No \\
+4 & Call partner agencies & 2013-07-22 & Rita & No \\
+5 & Update priority sheet & 2013-07-13 & Allen & No
+\end{tabular} \\
 
 TODO:
 
