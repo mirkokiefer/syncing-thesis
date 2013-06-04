@@ -72,22 +72,21 @@ It is the responsibility of the application developer to handle those conflicts 
 As a schemaless database CouchDB at least supports the storage of any kind of data model.
 Its awareness of the type of data is at the same time very low.\\
 When synchronizing databases CouchDB treats every JSON-document as an \emph{atom}.
-There is no way to give CouchDB an increased level of awareness of an application's data model.\\
-Application developers are therefore forced to write a large amount of additional merging logic inside their application.\\
-Flexible data model support is therefore given while it requires additional app-specific logic to cater for CouchDB's lack of structural awareness.\\
+There is no way to give CouchDB an increased level of awareness of an application's data model.
+Application developers are forced to write a large amount of additional merging logic inside their application.\\
+\emph{Flexible data model} support is therefore given while it requires additional app-specific logic to cater for CouchDB's lack of structural awareness.\\
+The CouchDB model of multi-version concurrency control fulfills the requirement of \emph{optimistic synchronization}.
+Concurrently edited data on multiple CouchDB instances is \emph{eventually consistent} if synchronized with each other.\\
+The optimistic locking mechanism combined with a document's version tree ensures \emph{causality preservation} and exposure of \emph{conflicts}.\\
+CouchDB's distributed synchronization protocol supports {flexible network topologies}.\\
+\emph{Cross-platform support} is given with implementations available for servers, mobile devices and even web browsers.\\
 
-The CouchDB model of multi-version concurrency control fulfills the requirement of optimistic synchronization.\\
-Concurrently edited data on multiple CouchDB instances is eventually consistent if synchronized with each other.\\
-The optimistic locking mechanism combined with a document's version tree ensures causality preservation.
-
-CouchDB's distributed synchronization protocol supports a broad range of network topologies.\\
-
-To build a more suitable solution for our requirements we can build on most of CouchDB's design decisions.\\
-The major room for improvement lies in stronger data model awareness thereby relieving the application developer of repetitive merging logic.\\
-We will also investigate an alternative synchronization protocol by collecting additional meta data on edits.
+To build a more suitable solution for our requirements we can build on many of CouchDB's design decisions.\\
+Major room for improvement lies in stronger data model awareness thereby relieving the application developer of repetitive logic and improving \emph{unobtrusive integration} into an application.\\
+CouchDB only remembers the version history of a document in the form of version IDs.
+The actual documents are not retained not even those of common ancestors in the case of conflicts.
+CouchDB's version history can therefore only be used to identify conflicts but does not support \emph{three-way merging}.
 
 TODO:
 
 - Contrast synchronization with the way git works
-
-- no three-way merges because ancestors are not tracked on merge and compaction deletes all non-leaf documents
