@@ -130,6 +130,14 @@ Synchronizing only subsets of data with selected nodes can possibly be modeled t
 
 \subsection{Summary}
 
-TODO:
+We can summary the defined requirements as the following:
 
-- add summary of requirements
+\begin{enumerate}
+\item \textbf{Flexible Data Models}: be able to synchronize data models including entities with attributes and relationships, entity instances and instance collections.
+\item \textbf{Optimistic Synchronization}: no locking of data while ensuring eventual consistency.
+\item \textbf{Causality Preservation and Conflicts}: preserve causality defined by the happened-before relationship and expose conflicts.
+\item \textbf{Flexible Network Topologies}: design a protocol that is able to synchronize data in a peer-to-peer, client-server or hierarchical architecture.
+\item \textbf{Integration}: be as unobtrusive to an application as possible.
+\item \textbf{Cross-Platform}: be able to run on modern desktop and mobile platforms.
+\end{enumerate}
+
