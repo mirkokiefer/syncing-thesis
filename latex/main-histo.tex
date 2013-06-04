@@ -24,17 +24,6 @@ Based on the requirements and the evaluation of CouchDB we derive a new architec
   \textbf{Cross-Platform}: be available on every major platform through the use of Web Standards
 \end{itemize}
 
-\section{Technologies Used for Implementation}
-We describe implementation details like the technologies used, code structure and the testing framework to evaluate the system.
-
-TODO:
-
-- everything web-based --> only way to be cross-platform
-
-- client-side persistence with HTML5
-
-- note on alternatives (Lua, native)
-
 \section{Differencing and Merging of Objects}
 
 TODO:
@@ -64,6 +53,12 @@ can be modeled with dictionary and ordered set/list
 \subsection{Models}
 - show how to represent complex data models by combining the data structures above
 
+- instances are key-value sets
+
+- collections are ordered sets
+
+- take ordered-list diff as granted
+
 \section{Storing and Commiting Changes}
 \label{main.committing}
 As syncing is state based we need to track the history of edits on each client.\\Each client has his own replica of the database and commits
@@ -85,9 +80,9 @@ TODO:
 
 - Most Recent Common Ancestor algorithm used for finding common commit of clients
 
-- walk commit graph until MRCA
+- walk commit graph until LCA
 
-- recursive application of MRCA on every fork in graph
+- recursive application of LCA on every fork in graph
 
 - implementation as separate module
 
