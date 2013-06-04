@@ -49,29 +49,78 @@ Based on an ancestor state all users start with we define several possible branc
 For each branch state we will define the difference to the ancestor state.
 This set of data can then be used as a test case for our implementation.\\
 
-Our ancestor state:\\
-
 \begin{tabular}{ l l l l }
-\multicolumn{4}{ c }{Projects} \\
+\multicolumn{4}{ c }{\textbf{Ancestor state A of Projects}} \\
 ID & Project Name & Members & Tasks \\
 \hline
-1 & Marketing Material & Rita, Tom, Allen & 1, 2, 3, 4 \\
+1 & Marketng Material & Rita, Tom, Allen & 1, 2, 3, 4 \\
 2 & Product Roadmap & Rita, Allen & 5 \\
 \end{tabular} \\
 
 `Members' is an unordered collection of users - we define the user's IDs identical to their names.\\
 `Tasks' is an ordered collection of tasks IDs.\\
+We will leave out the details about other entities as the project instances already cover all required modeling aspects.\\
 
-\begin{tabular}{ l l l l l }
-\multicolumn{5}{ c }{Tasks} \\
-ID & Title & Due Date & Assignee & Done \\
+\begin{tabular}{ l l l l }
+\multicolumn{4}{ c }{\textbf{State B of Projects}} \\
+ID & Project Name & Members & Tasks \\
 \hline
-1 & Create event poster & 2013-08-12 & Rita & No \\
-2 & Write blog entry on event & 2013-07-20 & Tom & No \\
-3 & Prepare field study & 2013-07-22 & Rita & No \\
-4 & Call partner agencies & 2013-07-22 & Rita & No \\
-5 & Update priority sheet & 2013-07-13 & Allen & No
+1 & Marketing Material & Rita, Tom & 1, 4, 2, 3, 6 \\
+2 & Product Planning & Rita, Allen & 5 \\
 \end{tabular} \\
+\\
+
+\begin{tabular}{ l l l l }
+\multicolumn{4}{ c }{\textbf{State C of Projects}} \\
+ID & Project Name & Members & Tasks \\
+\hline
+1 & Marketing Strategy & Rita, Tom, Allen & 4, 1, 2, 3 \\
+2 & Product Strategy & Rita, Allen & 5, 7 \\
+\end{tabular} \\
+\\
+
+The respective differencing outputs of A-B and A-C are defined as the following:\\
+
+\begin{tabularx}{\textwidth}{ l X l X }
+\multicolumn{4}{ c }{\textbf{Expected diff A-B}} \\
+ID & Project Name & Members & Tasks \\
+\hline
+1 & insert `i' behind index 5 & remove `Allen' & move index 3 behind index 0 \newline insert 6 behind index 3 \\
+2 & remove from index 8 to 15 \newline insert `Planning' behind index 7 & unchanged & unchanged \\
+\end{tabularx} \\
+\\
+
+\begin{tabularx}{\textwidth}{ l X l X }
+\multicolumn{4}{ c }{\textbf{Expected diff A-C}:} \\
+ID & Project Name & Members & Tasks \\
+\hline
+1 & unchanged & unchanged & move index 3 behind index -1 \\
+2 & remove from index 8 to 15 \newline insert `Strategy' behind index 7 & unchanged & insert 7 behind index 0 \\
+\end{tabularx} \\
+
+In this differencing output we actually do not treat the project name as an atom but actually go a level deeper and difference its characters.\\
+Depending on the application this might not be necessary.
+A simpler output which treats the project titles as atoms would look like this:\\
+
+\begin{tabular}{ l l l l }
+\multicolumn{2}{ c }{\textbf{Simpler `Project Name' diff A-B}} \\
+ID & Project Name \\
+\hline
+1 & change to `Marketing Material' \\
+2 & change to `Product Planning' \\
+\end{tabular} \\
+\\
+
+\begin{tabular}{ l l l l }
+\multicolumn{2}{ c }{\textbf{Simpler `Project Name' diff A-C}} \\
+ID & Project Name \\
+\hline
+1 & change to `Marketing Strategy' \\
+2 & change to `Product Strategy' \\
+\end{tabular} \\
+\\
+
+The choice of differencing granularity will affect what we will see as conflicts in the merging stage.
 
 TODO:
 
