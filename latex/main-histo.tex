@@ -79,7 +79,9 @@ ID & Project Name & Members & Tasks \\
 \end{tabular} \\
 \\
 
-The respective differencing outputs of A-B and A-C are defined as the following:\\
+The respective differencing outputs of A-B and A-C are defined as the following.
+Note that all index positions are seen as relative to the origin state.
+So even if one diff contains multiple insert, move or remove operations they are given as if they were all applied simultaneously to the origin state.\\
 
 \begin{tabularx}{\textwidth}{ l X l X }
 \multicolumn{4}{ c }{\textbf{Expected diff A-B}} \\
@@ -94,7 +96,7 @@ ID & Project Name & Members & Tasks \\
 \multicolumn{4}{ c }{\textbf{Expected diff A-C}:} \\
 ID & Project Name & Members & Tasks \\
 \hline
-1 & unchanged & unchanged & move index 3 behind index -1 \\
+1 & insert `i' behind index 5 \newline remove from index 9 to 17 \newline insert `Strategy' behind index 8 & unchanged & move index 3 behind index -1 \\
 2 & remove from index 8 to 15 \newline insert `Strategy' behind index 7 & unchanged & insert 7 behind index 0 \\
 \end{tabularx} \\
 
