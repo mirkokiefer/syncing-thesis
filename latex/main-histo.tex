@@ -24,12 +24,14 @@ Based on the requirements and the evaluation of CouchDB we derive a new architec
   \textbf{Cross-Platform}: be available on every major platform through the use of Web Standards
 \end{itemize}
 
-\section{Differencing and Merging of Models}
+\section{Merging of Models}
+In this section we will focus on the core merging semantics leaving out details about update propagation which will be discussed later in section \ref{sec:main.protocol}.\\
 As described in section \ref{sec:background.definition} synchronization always starts with an update detection phase.
+Before we can start to merge branches we need to know about what has changed.
 One our our design goals is to relieve the application developer from manual change tracing.
 We therefore need to implement a differencing algorithm for the types of models described in section \ref{sec:main.requirements.data-models}.\\
-The meta model definition in the form of entities, their attributes and relationships does not have to be synchronized as it should be part of the application code.
-We have to focus on synchronizing the actual data which is structured through entity instances, their attribute values and relationships to other instances.
+The meta model definition in the form of entities, their attributes and relationships is usually static and does not have to be merged.
+We have to focus on merging the actual data which is structured through entity instances, their attribute values and relationships to other instances.
 Most modern web application frameworks realize one-to-one relationships by simply having an attribute storing the related instance's ID.
 One-to-many relationships are realized through an attribute having a collection of 
 instance IDs.\\
@@ -44,6 +46,25 @@ Summarizing the kind of structures we need to synchronize:
 \item Attribute values that can be ordered collections (modeling one-to-many relations)
 \end{itemize}
 
+We have described three-way merging semantics in section \ref{sec:background.merging}.
+Our algorithm will be structured into three distinct phases.
+Starting with a differencing phase we identify the changes made in two branches of our state B and C since our common ancestor state A.
+Should an application decide to explicitly track changes it could actually leave this phase out and still benefit from the rest of our merging algorithm.\\
+If follows a diff merging phase where the two diff results A-B and A-C are combined into one diff.
+As its only input is the two diffs it does not require access to the actual states A, B or C.
+In this phase we can have conflicts if the two branches contain updates to the same parts of the state.\\
+The merged diff can then be applied to the origin state A in order to create the actual merged state.
+For this step we require a patch algorithm.
+
+Let us summarize the tree steps of the complete merge process of two branches:
+
+\begin{itemize}
+\item \textbf{Differencing}: we diff branch B and C with their common ancestor A.
+\item \textbf{Merging}: we merge the two diffs A-B and A-C to a new diff result.
+\item \textbf{Patching}: we apply the merged diffs as a patch to A which results in the merged state D.
+\end{itemize}
+
+\subsection{Differencing}
 To show correctness of a differencing algorithm we need to define sample model states with expected differencing results.
 Based on an ancestor state all users start with we define several possible branch states.
 For each branch state we will define the difference to the ancestor state.
@@ -124,6 +145,12 @@ ID & Project Name \\
 
 The choice of differencing granularity will affect what we will see as conflicts in the merging stage.
 
+\subsection{Merging of Diffs}
+
+
+
+\subsection{Patching}
+
 TODO:
 
 - explain diff, merge and patch
@@ -133,23 +160,7 @@ TODO:
 
 - ensure conflicts are made explicit
 
-\subsection{Sets}
-\subsection{Ordered Lists}
-\subsection{Ordered Sets}
-\subsection{Dictionaries}
-used for object collections in data models
-
-\subsection{Ordered Dictionaries}
-most common for managing ordered object collections in data models
-
-can be modeled with dictionary and ordered set/list
-\subsection{Trees}
-- tree as an example for composite data model
-
 - efficient child tree pointers like in git
-
-\subsection{Models}
-- show how to represent complex data models by combining the data structures above
 
 - instances are key-value sets
 
@@ -187,6 +198,7 @@ TODO:
 - use per-commit diff to find full data diff across commits
 
 \section{Synchronization Protocol}
+\label{sec:main.protocol}
 Synchronization always happens from a \emph{Source} node to a \emph{Target} node.
 If it is run simultaneously with Source and Target exchanged, it keeps both nodes in sync with each other.\\
 The algorithm is designed to be able to run independently of the Source or Target.
