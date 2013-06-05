@@ -159,7 +159,7 @@ Our `Members' attribute does not have a relevant order, it can be mapped to a no
 The `Tasks' attribute has a significant order and therefore has to be mapped to an \emph{ordered set}.\\
 If we do not treat string values as atoms we have to represent them as an \emph{ordered list}.\\
 
-To summarize - we have to find differencing algorithms for these data structures:
+To summarize - for the following data structures we need an algorithm that finds the difference from an origin state A to a changed state B:
 
 \begin{itemize}
 \item \textbf{Dictionaries}: to model entity instances.
@@ -171,8 +171,59 @@ Ordered list or string data structures have been the main focus in previous rese
 Myers presented an efficient algorithm with $\mathcal O(n*d) $ time and space complexity to difference two strings A and B with
 $ n $ representing the sum of the lengths of two strings and $ d $ the size of the shortest edit script transforming A to B \cite{Myers:1986wi}.
 The shortest edit script is equivalent to the result of a differencing algorithm.
-As in practical applications differences are usually small the algorithm performs well.
+As in practical applications differences are usually small the algorithm performs well.\\
+Taking the ordered list difference algorithm as given, it can easily be re-used to build an algorithm for ordered sets.
+Ordered lists can only have differences in the form of \emph{insert} or \emph{remove} operations.
+Ordered sets extend this - the simultaneous remove and insert of a globally unique element is now considered as a move operation.\\
 
+To implement an ordered set algorithm we can therefore take the output of the ordere list algorithm and scan the result for the remove and insert of the same element.
+This can be efficiently implemented through a hash:
+
+\begin{enumerate}
+\item Scan the diff result and build a hash for all removed elements.
+\item Scan the result again and test for all inserted elements whether they are included in the hash.
+\item If a match is found replace the remove and insert operations through a single move operation in the result.
+\end{enumerate}
+
+The time complexity of building a hash can be estimated with $\mathcal O(n log(n)) $ with $ n $ representing set size.
+The match searching has linear time complexity.
+We therefore only add $\mathcal O(n log(n)) $ complexity to Myers difference algorithm for a naive solution for ordered sets.\\
+
+For simple sets we can implement a naive solution through two hashs of the respective set entries combined with a scan through each set:
+
+\begin{enumerate}
+\item Add all entries of set A to a hash $ H_A $ and those of set B to a different hash $ H_B $.
+\item Scan set A and test for matches in hash $ H_B $.
+\item If no match is found add a remove operation to the result.
+\item Scan set B and test for matches in hash $ H_A $.
+\item If no match is found add an insert operation to the result.
+\end{enumerate}
+
+\emph{Insert} and \emph{remove} are the only operations in a set.\\
+The time complexity for building each hash is again $ \mathcal O(n log(n)) $.
+Searching for matches has linear complexity which results in a time complexity $\mathcal O(n log(n)) $ for the entire algorithm.\\
+
+A dictionary data structure has \emph{insert}, \emph{remove} and \emph{update} operations.
+If the instance described through the dictionary has a fixed set of attributes it would actually only need to support an update operation.
+In modern web applications it is not uncommon that there is no fixed data schema.
+It is often the case that new attributes are added to instances at runtime.
+Even if there is a fixed schema it might be changed through a software update with old instances not being migrated to the new schema.
+We should therefore support the full set of dictionary operations in our difference algorithm.
+
+A simple and efficient solution is to again use two hashes for fast lookup combined with a scan through both dictionaries:
+
+\begin{enumerate}
+\item All all keys and values of dictionary A to hash $ H_A $ and those of dictionary B to hash $ H_B $.
+\item Scan through all key-value entries of A.
+\item If the key is not included in hash $ H_B $, add a remove operation to the result.
+\item If the key is included and the value in $ H_B $ is different, add an update operation.
+\item Scan through all key-value entries of B.
+\item If the key is not included in hash $ H_A $, add an insert operation to the result.
+\end{enumerate}
+
+Building the hash is again estimated with time complexity $ \mathcal O(n log(n)) $, scanning both dictionaries has linear time complexity. The combined time complexity is therefore again $ \mathcal O(n log(n)) $.\\
+Depending on the application, its instances are often already implemented with hash-like lookup performance - in this case we could skip step 1.
+The time complexity is in this case only linear.
 
 \subsection{Diff Merging Test Case}
 
