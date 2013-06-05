@@ -223,7 +223,15 @@ A simple and efficient solution is to again use two hashes for fast lookup combi
 
 Building the hash is again estimated with time complexity $ \mathcal O(n log(n)) $, scanning both dictionaries has linear time complexity. The combined time complexity is therefore again $ \mathcal O(n log(n)) $.\\
 Depending on the application, its instances are often already implemented with hash-like lookup performance - in this case we could skip step 1.
-The time complexity is in this case only linear.
+The time complexity is in this case only linear.\\
+
+Differencing of our entire data is actually a hierachical process combining all of these algorithms.\\
+At the highest level we have a set of project IDs where we use our set difference algorithm to identify removed or new projects.
+For each project we then need to dive a level deeper and difference the actual instances - here we use the dictionary algorithm.
+If our project only has atoms as attribute values the process stops here.
+If there are string values we might choose to do finer grained differencing using the respective algorithm.
+If we have one-to-many relationships in the instance we have to compute an (ordered) set difference.\\
+The same process has to be repeated for each entity's instances.
 
 \subsection{Diff Merging Test Case}
 
