@@ -64,7 +64,7 @@ Let us summarize the tree steps of the complete merge process of two branches:
 \item \textbf{Patching}: we apply the merged diffs as a patch to A which results in the merged state D.
 \end{itemize}
 
-\subsection{Differencing}
+\subsection{Differencing Test Case}
 To show correctness of a differencing algorithm we need to define sample model states with expected differencing results.
 Based on an ancestor state all users start with we define several possible branch states.
 For each branch state we will define the difference to the ancestor state.
@@ -145,9 +145,38 @@ ID & Project Name \\
 
 The choice of differencing granularity will affect what we will see as conflicts in the merging stage.
 
-\subsection{Merging of Diffs}
+\subsection{Differencing Algorithm}
+Differencing algorithms have been studied extensively.
+There exist efficient solutions for a range of data structures.
+It is not a focus of our thesis to develop the most efficient differencing algorithm matching our scenario.
+Our goal in this section is to show the practical feasibility of the three-way merging component in our architecture.
+We favor a simple solution, re-using existing concepts so that we can broaden our focus on an other areas of our synchronization solution.\\
+The test case defined in the previous section can be decomposed and mapped to common data structures.\\
+An instance, in our example a project, actually represents a \emph{dictionary} data structure or a set of key-value entries.
+The dictionary keys are mapped to the attribute names and the dictionary values to the respective attribute value.\\
+Attribute values that represent collections of instance IDs can be mapped to \emph{sets}.
+Our `Members' attribute does not have a relevant order, it can be mapped to a normal set.
+The `Tasks' attribute has a significant order and therefore has to be mapped to an \emph{ordered set}.\\
+If we do not treat string values as atoms we have to represent them as an \emph{ordered list}.\\
+
+To summarize - we have to find differencing algorithms for these data structures:
+
+\begin{itemize}
+\item \textbf{Dictionaries}: to model entity instances.
+\item \textbf{Sets and Ordered Sets}: to model instance relationships.
+\item \textbf{Ordered Lists / Strings}: to model string values of instance attributes.
+\end{itemize}
+
+Ordered list or string data structures have been the main focus in previous research on difference algorithms.
+Myers presented an efficient algorithm with $\mathcal O(n*d) $ time and space complexity to difference two strings A and B with
+$ n $ representing the sum of the lengths of two strings and $ d $ the size of the shortest edit script transforming A to B \cite{Myers:1986wi}.
+The shortest edit script is equivalent to the result of a differencing algorithm.
+As in practical applications differences are usually small the algorithm performs well.
 
 
+\subsection{Diff Merging Test Case}
+
+\subsection{Diff Merging Algorithm}
 
 \subsection{Patching}
 
