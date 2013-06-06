@@ -2,10 +2,6 @@
 \chapter{Background}
 \label{sec:background}
 
-TODO:
-
-- maybe add longest common subsequence
-
 We will start this chapter by explaining the core aspects of data synchronization.
 After setting it in context with traditional properties of distributed databases we will present some of the popular approaches to synchronization.\\
 Some technical background on the practicality of local data storage based on HTML5 will follow.\\
@@ -130,7 +126,7 @@ The family of algorithms developed to correctly transform the edit operations is
 If some nodes are temporarily offline while continuing to edit, the correct transformation of many concurrent edit operations becomes very complex and error-prone.\\
 A practical problem in modern user interfaces is that it is hard to correctly capture all edits made to data.
 If a single edit is missed the result is a fork possibly rendering all future update operations as incorrect.
-Packet loss due to unreliable network connections have also be taken into account which further complicates the design of a robust algorithm.\\
+Packet loss due to unreliable network connections have to be taken into account which further complicates the design of a robust algorithm.\\
 Research has therefore investigated options for data synchronization that do not require Operational Transformation.\\
 
 \emph{Commutative Replicated Data Types} (CRDTs) have emerged as a viable alternative for specific use cases.

@@ -25,13 +25,13 @@ Based on the requirements and the evaluation of CouchDB we derive a new architec
 \end{itemize}
 
 \section{Merging of Models}
-In this section we will focus on the core merging semantics leaving out details about update propagation which will be discussed later in section \ref{sec:main.protocol}.\\
+In this section we will focus on the core merging semantics which is part of the synchronization protocol developed in \ref{sec:main.protocol}.\\
 As described in section \ref{sec:background.definition} synchronization always starts with an update detection phase.
 Before we can start to merge branches we need to know about what has changed.
 One our our design goals is to relieve the application developer from manual change tracing.
 We therefore need to implement a differencing algorithm for the types of models described in section \ref{sec:main.requirements.data-models}.\\
 The meta model definition in the form of entities, their attributes and relationships is usually static and does not have to be merged.
-We have to focus on merging the actual data which is structured through entity instances, their attribute values and relationships to other instances.
+We focus on merging the actual data which is structured through entity instances, their attribute values and relationships to other instances.
 Most modern web application frameworks realize one-to-one relationships by simply having an attribute storing the related instance's ID.
 One-to-many relationships are realized through an attribute having a collection of 
 instance IDs.\\
@@ -46,8 +46,8 @@ Summarizing the kind of structures we need to synchronize:
 \item Attribute values that can be ordered collections (modeling one-to-many relations)
 \end{itemize}
 
-We have described three-way merging semantics in section \ref{sec:background.merging}.
-Our algorithm will be structured into three distinct phases.
+We have described three-way merging as a general concept in section \ref{sec:background.merging}.
+Our own algorithm will be structured into three distinct phases.
 Starting with a differencing phase we identify the changes made in two branches of our state B and C since our common ancestor state A.
 Should an application decide to explicitly track changes it could actually leave this phase out and still benefit from the rest of our merging algorithm.\\
 If follows a diff merging phase where the two diff results A-B and A-C are combined into one diff.
