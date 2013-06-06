@@ -76,6 +76,8 @@ ID & Project Name & Members & Tasks \\
 \hline
 1 & Marketng Material & Rita, Tom, Allen & 1, 2, 3, 4 \\
 2 & Product Roadmap & Rita, Allen & 5 \\
+3 & Staffing & Rita & 9, 10\\
+4 & Finances & Allen & 11
 \end{tabular} \\
 
 `Members' is an unordered collection of users - we define the user's IDs identical to their names.\\
@@ -88,6 +90,9 @@ ID & Project Name & Members & Tasks \\
 \hline
 1 & Marketing Material & Rita, Tom & 1, 4, 2, 3, 6 \\
 2 & Product Planning & Rita, Allen & 5 \\
+3 & Staffing & Rita & 9, 10\\
+4 & Finances & Allen & 11, 12\\
+5 & Sales Planning & Rita, Tom & \\
 \end{tabular} \\
 \\
 
@@ -109,19 +114,26 @@ So even if one diff contains multiple insert, move or remove operations they are
 ID & Project Name & Members & Tasks \\
 \hline
 1 & insert `i' behind index 5 & remove `Allen' & move index 3 behind index 0 \newline insert 6 behind index 3 \\
-2 & remove from index 8 to 15 \newline insert `Planning' behind index 7 & unchanged & unchanged \\
+2 & remove from index 8 to 15 \newline insert `Planning' behind index 7 &  &  \\
+4 & & & insert 12 behind index 0 \\
+5 & \multicolumn{3}{ c }{--------- insert ---------}
 \end{tabularx} \\
 \\
+
+The new project with ID 5 is marked entirely as an insert operation without the need to difference the actual attribute values.\\
+Project ID 4 is not included in the diff as it has not been changed.
 
 \begin{tabularx}{\textwidth}{ l X l X }
 \multicolumn{4}{ c }{\textbf{Expected diff A-C}:} \\
 ID & Project Name & Members & Tasks \\
 \hline
-1 & insert `i' behind index 5 \newline remove from index 9 to 17 \newline insert `Strategy' behind index 8 & unchanged & move index 3 behind index -1 \\
-2 & remove from index 8 to 15 \newline insert `Strategy' behind index 7 & unchanged & insert 7 behind index 0 \\
+1 & insert `i' behind index 5 \newline remove from index 9 to 17 \newline insert `Strategy' behind index 8 &  & move index 3 behind index -1 \\
+2 & remove from index 8 to 15 \newline insert `Strategy' behind index 7 &  & insert 7 behind index 0 \\
+3 & \multicolumn{3}{ c }{--------- remove ---------} \\
+4 & \multicolumn{3}{ c }{--------- remove ---------}
 \end{tabularx} \\
 
-In this differencing output we actually do not treat the project name as an atom but actually go a level deeper and difference its characters.\\
+In this differencing output we do not treat the project name as an atom but go a level deeper and difference its characters.\\
 Depending on the application this might not be necessary.
 A simpler output which treats the project titles as atoms would look like this:\\
 
@@ -129,8 +141,8 @@ A simpler output which treats the project titles as atoms would look like this:\
 \multicolumn{2}{ c }{\textbf{Simpler `Project Name' diff A-B}} \\
 ID & Project Name \\
 \hline
-1 & change to `Marketing Material' \\
-2 & change to `Product Planning' \\
+1 & update to `Marketing Material' \\
+2 & update to `Product Planning' \\
 \end{tabular} \\
 \\
 
@@ -138,8 +150,8 @@ ID & Project Name \\
 \multicolumn{2}{ c }{\textbf{Simpler `Project Name' diff A-C}} \\
 ID & Project Name \\
 \hline
-1 & change to `Marketing Strategy' \\
-2 & change to `Product Strategy' \\
+1 & update to `Marketing Strategy' \\
+2 & update to `Product Strategy' \\
 \end{tabular} \\
 \\
 
@@ -225,13 +237,22 @@ Building the hash is again estimated with time complexity $ \mathcal O(n * log(n
 Depending on the application, its instances are often already implemented with hash-like lookup performance - in this case we could skip step 1.
 The time complexity is in this case only linear.\\
 
-Differencing of our entire data is actually a hierachical process combining all of these algorithms.\\
-At the highest level we have a set of project IDs where we use our set difference algorithm to identify removed or new projects.
-For each project we then need to dive a level deeper and difference the actual instances - here we use the dictionary algorithm.
-If our project only has atoms as attribute values the process stops here.
-If there are string values we might choose to do finer grained differencing using the respective algorithm.
-If we have one-to-many relationships in the instance we have to compute an (ordered) set difference.\\
-The same process has to be repeated for each entity's instances.
+Differencing of our entire data is actually a hierachical process combining all of these algorithms.
+Our strategy is to start at the highest-level representing sub-structures using their cryptographic hash.
+Whenever we identify an update on the hash of a sub-structure we do a finer grained diff on the structure itself:
+
+\begin{enumerate}
+\item Represent all instances of an entity as a dictionary with instance IDs as keys and a cryptographic hash of their attribute values as dictionary values.
+\item Use the dictionary diff algorithm to identify inserted, removed and updated instances. Add the insert and remove operations to the result.
+\item Represent each updated instance as a dictionary with keys being attribute names and values being a cryptographic hash of attribute values.
+\item Use the dictionary diff algorithm to identify inserted, removed and updated attributes.
+\item Add the insert and remove operations to the result. Add all update operations with atoms as attribute values to the result.
+\item For each updated attribute with string values run the ordered list diff algorithm and add it to the result.
+\item For each updated attribute containing an (ordered) set of instance IDs (one-to-many relationship) run the (ordered) set diff algorithm and add it to the result.
+\end{enumerate}
+
+What we describe here is a new difference algorithm integrating a set of more specialized algorithms.
+This approach can not only be applied to difference entity-relationship models, it can actually be adapted for any kind of model with a hierarchical structure. 
 
 \subsection{Diff Merging Test Case}
 
@@ -266,7 +287,7 @@ TODO:
 
 - use content-adressable store
 
-- only store changes and reference unchanged data through hashs --> like git
+- only store changes and reference  data through hashs --> like git
 
 - commit links to data and parent commit
 
