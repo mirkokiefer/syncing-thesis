@@ -159,6 +159,16 @@ ID & Project Name \\
 
 The choice of differencing granularity will affect what we will see as conflicts in the merging stage.
 
+Pivot:
+
+- diff and merge are both a hierarchical process
+
+- start on layer 1 with diff, merge diffs
+
+- on each conflict do a diff on these objects only
+
+- merge the objects, on each conflict repeat...
+
 \subsection{Differencing Algorithm}
 \label{sec:main.histo.merging.diff-algo}
 Differencing algorithms have been studied extensively.
@@ -333,6 +343,16 @@ TODO:
 - implementation as separate module
 
 - use per-commit diff to find full data diff across commits
+
+Maybe Pivot?:
+
+- use changes stream like couch - each commit with its new blob hashes (diff)
+
+- should work, if you have read until a commit you have all its ancestors, even branches
+
+- a lot simpler than cross-commit diff computation
+
+- ok it might only result in redundant branches propagated - but that should be rare
 
 \section{Synchronization Protocol}
 \label{sec:main.protocol}
