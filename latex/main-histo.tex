@@ -25,6 +25,7 @@ Based on the requirements and the evaluation of CouchDB we derive a new architec
 \end{itemize}
 
 \section{Merging of Models}
+\label{sec:main.histo.merging}
 In this section we will focus on the core merging semantics which is part of the synchronization protocol developed in \ref{sec:main.protocol}.\\
 As described in section \ref{sec:background.definition} synchronization always starts with an update detection phase.
 Before we can start to merge branches we need to know about what has changed.
@@ -65,6 +66,7 @@ Let us summarize the tree steps of the complete merge process of two branches:
 \end{itemize}
 
 \subsection{Differencing Test Case}
+\label{sec:main.histo.merging.diff-test}
 To show correctness of a differencing algorithm we need to define sample model states with expected differencing results.
 Based on an ancestor state all users start with we define several possible branch states.
 For each branch state we will define the difference to the ancestor state.
@@ -158,6 +160,7 @@ ID & Project Name \\
 The choice of differencing granularity will affect what we will see as conflicts in the merging stage.
 
 \subsection{Differencing Algorithm}
+\label{sec:main.histo.merging.diff-algo}
 Differencing algorithms have been studied extensively.
 There exist efficient solutions for a range of data structures.
 It is not a focus of our thesis to develop the most efficient differencing algorithm matching our scenario.
@@ -255,10 +258,35 @@ What we describe here is a new difference algorithm integrating a set of more sp
 This approach can not only be applied to difference entity-relationship models, it can actually be adapted for any kind of model with a hierarchical structure. 
 
 \subsection{Diff Merging Test Case}
+\label{sec:main.histo.merging.merge-test}
+Given the diffs A-B and A-C from section \ref{sec:main.histo.merging.diff-test} we define an expected outcome of a merge.\\
+We apply the concept of three-way merging:
+
+\begin{itemize}
+\item If only one diff operates on a structure we carry the change over to the result.
+\item If both diffs update the same structure in different ways we mark it as a conflict.
+\end{itemize}
+
+\begin{tabularx}{\textwidth}{ l X l X }
+\multicolumn{4}{ c }{\textbf{Expected merge of diffs A-B and A-C}} \\
+ID & Project Name & Members & Tasks \\
+\hline
+1 & insert `i' behind index 5 (B, C) \newline remove from index 9 to 17 (C) \newline insert `Strategy' behind index 8 (C)
+& remove `Allen'
+& move index 3 behind index 0 (B, \textbf{conflict 1}) \newline insert 6 behind index 3 (B) \newline move index 3 behind index -1 (C, \textbf{conflict 1})\\
+2 & remove from index 8 to 15 (B, C) \newline insert `Planning' behind index 7 (B) \newline insert `Strategy' behind index 7 (C) &  &  insert 7 behind index 0 (C) \\
+3 & \multicolumn{3}{ c }{--------- remove (C) ---------} \\
+4 & & & insert 12 behind index 0 (B, \textbf{conflict 2}) \\
+4 & \multicolumn{3}{ c }{--------- remove (C, \textbf{conflict 2}) ---------} \\
+5 & \multicolumn{3}{ c }{--------- insert (B) ---------}
+\end{tabularx} \\
+\\
 
 \subsection{Diff Merging Algorithm}
+\label{sec:main.histo.merging.merge-test}
 
 \subsection{Patching}
+\label{sec:main.histo.patching}
 
 TODO:
 
