@@ -48,7 +48,7 @@ Summarizing the kind of structures we need to synchronize:
 \end{itemize}
 
 We have described three-way merging as a general concept in section \ref{sec:background.merging}.
-Our own algorithm will be structured into three distinct phases.
+Our own algorithm will be structured into three types of algorithms.
 Starting with a differencing phase we identify the changes made in two branches of our state B and C since our common ancestor state A.
 Should an application decide to explicitly track changes it could actually leave this phase out and still benefit from the rest of our merging algorithm.\\
 If follows a diff merging phase where the two diff results A-B and A-C are combined into one diff.
@@ -65,12 +65,15 @@ Let us summarize the tree steps of the complete merge process of two branches:
 \item \textbf{Patching}: we apply the merged diffs as a patch to A which results in the merged state D.
 \end{itemize}
 
-\subsection{Differencing Test Case}
+\subsection{Diff and Merge Scenario}
 \label{sec:main.histo.merging.diff-test}
-To show correctness of a differencing algorithm we need to define sample model states with expected differencing results.
-Based on an ancestor state all users start with we define several possible branch states.
-For each branch state we will define the difference to the ancestor state.
-This set of data can then be used as a test case for our implementation.\\
+To show correctness of a merge algorithm we need to define sample model states with expected merge results.
+This set of data can then be used as a test case for our implementation.
+Based on an ancestor state all users start with, we define several possible branch states.\\
+Merging of the branch states will happen on multiple levels of detail.
+Each level will have its own difference and diff merge phase.
+The result of the diff merge phases is then used to patch the common ancestor state.\\
+Our common ancestor state A is described as the following:\\
 
 \begin{tabular}{ l l l l }
 \multicolumn{4}{ c }{\textbf{Ancestor state A of Projects}} \\
@@ -107,59 +110,159 @@ ID & Project Name & Members & Tasks \\
 \end{tabular} \\
 \\
 
-The respective differencing outputs of A-B and A-C are defined as the following.
-Note that all index positions are seen as relative to the origin state.
-So even if one diff contains multiple insert, move or remove operations they are given as if they were all applied simultaneously to the origin state.\\
-
-\begin{tabularx}{\textwidth}{ l X l X }
-\multicolumn{4}{ c }{\textbf{Expected diff A-B}} \\
-ID & Project Name & Members & Tasks \\
-\hline
-1 & insert `i' behind index 5 & remove `Allen' & move index 3 behind index 0 \newline insert 6 behind index 3 \\
-2 & remove from index 8 to 15 \newline insert `Planning' behind index 7 &  &  \\
-4 & & & insert 12 behind index 0 \\
-5 & \multicolumn{3}{ c }{--------- insert ---------}
-\end{tabularx} \\
-\\
-
-The new project with ID 5 is marked entirely as an insert operation without the need to difference the actual attribute values.\\
-Project ID 4 is not included in the diff as it has not been changed.
-
-\begin{tabularx}{\textwidth}{ l X l X }
-\multicolumn{4}{ c }{\textbf{Expected diff A-C}:} \\
-ID & Project Name & Members & Tasks \\
-\hline
-1 & insert `i' behind index 5 \newline remove from index 9 to 17 \newline insert `Strategy' behind index 8 &  & move index 3 behind index -1 \\
-2 & remove from index 8 to 15 \newline insert `Strategy' behind index 7 &  & insert 7 behind index 0 \\
-3 & \multicolumn{3}{ c }{--------- remove ---------} \\
-4 & \multicolumn{3}{ c }{--------- remove ---------}
-\end{tabularx} \\
-
-In this differencing output we do not treat the project name as an atom but go a level deeper and difference its characters.\\
-Depending on the application this might not be necessary.
-A simpler output which treats the project titles as atoms would look like this:\\
+We start the merging process at the highest level by computing the difference between the set of instances.
+At this stage we are only interested on insert and remove operations of instances and on which instances have been updated.
+We do not want to look at the differences between individual attribute values and therefore use the cryptographic hash of each instance.
+Note that all hashes in this section are fictious to be easy to compare.\\
 
 \begin{tabular}{ l l l l }
-\multicolumn{2}{ c }{\textbf{Simpler `Project Name' diff A-B}} \\
-ID & Project Name \\
+\multicolumn{4}{ c }{\textbf{Project Instance Set}} \\
+ID & State A Hash & State B Hash & State C Hash \\
 \hline
-1 & update to `Marketing Material' \\
-2 & update to `Product Planning' \\
+1 & 1A & 1AB & 1AC \\
+2 & 2A & 2AB & 2AC \\
+3 & 3A & 3A & - \\
+4 & 4A & 4AB & - \\
+5 & - & 5B & -
 \end{tabular} \\
 \\
 
 \begin{tabular}{ l l l l }
-\multicolumn{2}{ c }{\textbf{Simpler `Project Name' diff A-C}} \\
-ID & Project Name \\
+\multicolumn{4}{ c }{\textbf{Project Instance Set Difference}} \\
+ID & Diff A-B & Diff A-C & Diffs Merged \\
 \hline
-1 & update to `Marketing Strategy' \\
-2 & update to `Product Strategy' \\
+1 & update & update & conflict \\
+2 & update & update & conflict \\
+3 & - & remove & remove \\
+4 & update & remove & conflict \\
+5 & insert & - & insert
 \end{tabular} \\
 \\
 
-The choice of differencing granularity will affect what we will see as conflicts in the merging stage.
+Whenever the hash of an instance has only changed in one state, we carry the change over into the result.
+If the hash has changed in both states, we have a conflict.
+We will try to resolve conflicts by running a finer grained merge on the conflicting instance states.
+ID 1 and 2 will therefore go into a lower level of merging while the changes in ID 3 and 5 are already accepted.
+We cannot run the finer grained merge on ID 4 as it was removed in state C.
+This conflict is therefore already carried over into the result.\\
 
+Lets see if we can resolve conflicts 1 and 2 in the next merge.
+At this level we will look at the actual instance data to find out which attributes are actually affected by the updates.
+We will again use cryptographic hashes - this time to represent the attribute values:\\
 
+\begin{tabular}{ l l l l }
+\multicolumn{4}{ c }{\textbf{Attribute Value Hashs of ID 1}} \\
+Attribute & State A Hash & State B Hash & State C Hash \\
+\hline
+Project Name & 1pA & 1pAB & 1pAC \\
+Members & 1mA & 1mAB & 1mA \\
+Tasks & 1tA & 1tAB & 1tAC
+\end{tabular}\\
+\\
+
+\begin{tabular}{ l l l l }
+\multicolumn{4}{ c }{\textbf{Attribute Value Difference of ID 1}} \\
+Attribute & Diff A-B & Diff A-C & Diffs Merged \\
+\hline
+Project Name & update & update & conflict \\
+Members & update & - & update \\
+Tasks & update & update & conflict
+\end{tabular}\\
+\\
+
+At this level we can already carry over the update of the `Members' attribute in B to the result.\\
+The `Project Name' and `Tasks' attributes of B and C have still conflicting states.
+If we define string values as atoms we have reached the most detailed level of merging - the conflict will therefore be carried over into the result.
+If we instead see strings as another substructure we can attempt to resolve the conflict by using a string merging algorithm.\\
+We have defined the `Tasks' attribute as an ordered set of instance IDs.
+We can therefore try to resolve the conflict by applying a merge algorithm for ordered sets.\\
+
+The result we expect from merging the `Project Name' strings:\\
+
+\begin{tabular}{ l l l }
+\multicolumn{3}{ c }{\textbf{`Project Name' of ID 1}} \\
+State A & State B & State C\\
+\hline
+Marketng Material & Marketing Material & Marketing Strategy
+\end{tabular}\\
+\\
+
+Note that all index positions in the following diffs are seen as relative to the ancestor state.
+So even if one diff contains multiple insert or remove operations they are given as if they were all applied simultaneously to the ancestor state.\\
+
+\begin{tabularx}{\textwidth}{ l X X }
+\multicolumn{3}{ c }{\textbf{`Project Name' Difference for ID 1}} \\
+Diff A-B & Diff A-C & Diffs Merged \\
+\hline
+insert `i' behind index 5 & insert `i' behind index 5 \newline remove from index 9 to 17 & insert `i' behind index 5 \newline remove from index 9 to 17
+\end{tabularx}\\
+\\
+
+Applying this merge result to the ancestor state gives us an intuitive result: `Marketing Strategy'.\\
+
+The expected output from merging the `Tasks' values looks similar:\\
+
+\begin{tabular}{ l l l }
+\multicolumn{3}{ c }{\textbf{`Tasks' of ID 1}} \\
+State A & State B & State C \\
+\hline
+1, 2, 3, 4 & 1, 4, 2, 3, 6 & 4, 1, 2, 3
+\end{tabular}\\
+\\
+
+\begin{tabularx}{\textwidth}{ X X X }
+\multicolumn{3}{ c }{\textbf{`Tasks' Difference for ID 1}} \\
+Diff A-B & Diff A-C & Diffs Merged \\
+\hline
+move index 3 behind index 0 \newline insert 6 behind index 3
+& move index 3 behind index -1
+& insert 6 behind index 3 \newline
+conflict (`move index 3 behind index 0' and `move index 3 behind index -1')
+\end{tabularx}\\
+\\
+
+We have been able to carry over one operation into the result while we still have an update conflict.
+There is no way we can do an even finer grained merge to resolve this conflict.
+The application developer will have to implement a custom merge solution - possibly even asking the user which operation to choose.\\
+Depending on how the conflict is resolved, possible results are:
+
+\begin{itemize}
+\item 1, 4, 2, 3, 6
+\item 4, 1, 2, 3, 6
+\end{itemize}
+
+The merge of ID 2 works analogous - we will therefore skip the attribute merging step and jump right into the string merge:\\
+
+\begin{tabular}{ l l l }
+\multicolumn{3}{ c }{\textbf{`Project Name' of ID 2}} \\
+State A & State B & State C \\
+\hline
+Product Roadmap & Product Planning & Product Strategy
+\end{tabular}\\
+\\
+
+\begin{tabularx}{\textwidth}{ X X X }
+\multicolumn{3}{ c }{\textbf{`Project Name' Difference for ID 2}} \\
+Diff A-B & Diff A-C & Diffs Merged \\
+\hline
+remove from index 8 to 15 \newline insert `Planning' behind index 7
+& remove from index 8 to 15 \newline insert `Strategy' behind index 7
+& remove from index 8 to 15 \newline insert `Planning' behind index 7
+\newline insert `Strategy' behind index 7
+\end{tabularx}\\
+\\
+
+We have applied the same merge logic that helped us resolve the conflict in ID 1.
+But the result we get here is not what a user would expect.
+Applying the merged operations to the ancestor state results in: `Product StrategyPlanning'.\\
+This is a good example for the violation of intention preservation.
+Both in state B and C the user actually intended to \emph{replace} the word `Roadmap'.
+Concurrently replacing the same word should clearly cause a conflict.
+Our differencing algorithm has no notion of a `replace' operation.
+All it sees is a remove of `Roadmap' and an insert of some other word.\\
+This example shoes the limits of generic merging algorithms that preserve user intention.\\
+In practice it would propably be more suitable to define the `Project Name' as an atom.
+As names are short it is more likely that an update is actually intended as a replace operation of the entire string.
 
 \subsection{Differencing Algorithm}
 \label{sec:main.histo.merging.diff-algo}
@@ -169,17 +272,17 @@ It is not a focus of our thesis to develop the most efficient differencing algor
 Our goal in this section is to show the practical feasibility of the three-way merging component in our architecture.
 We favor a simple solution, re-using existing concepts so that we can broaden our focus on an other areas of our synchronization solution.\\
 The test case defined in the previous section can be decomposed and mapped to common data structures.\\
-An instance, in our example a project, actually represents a \emph{dictionary} data structure or a set of key-value entries.
-The dictionary keys are mapped to the attribute names and the dictionary values to the respective attribute value.\\
+The first merging level of instances represented as cryptographic hash can be mapped to a \emph{dictionary} with key-value entries.\\
+Same is true for instance-level merging: the dictionary keys are mapped to the attribute names and the dictionary values to the respective value hashs.\\
 Attribute values that represent collections of instance IDs can be mapped to \emph{sets}.
-Our `Members' attribute does not have a relevant order, it can be mapped to a normal set.
+Our `Members' attribute does not have a relevant order, it can be mapped to an ordinary set.
 The `Tasks' attribute has a significant order and therefore has to be mapped to an \emph{ordered set}.\\
 If we do not treat string values as atoms we have to represent them as an \emph{ordered list}.\\
 
 To summarize - for the following data structures we need an algorithm that finds the difference from an origin state A to a changed state B:
 
 \begin{itemize}
-\item \textbf{Dictionaries}: to model entity instances.
+\item \textbf{Dictionaries}: to model entity instances and instance attributes.
 \item \textbf{Sets and Ordered Sets}: to model instance relationships.
 \item \textbf{Ordered Lists / Strings}: to model string values of instance attributes.
 \end{itemize}
@@ -193,7 +296,7 @@ Taking the ordered list difference algorithm as given, it can easily be re-used 
 Ordered lists can only have differences in the form of \emph{insert} or \emph{remove} operations.
 Ordered sets extend this - the simultaneous remove and insert of a globally unique element is now considered as a move operation.\\
 
-To implement an ordered set algorithm we can therefore take the output of the ordere list algorithm and scan the result for the remove and insert of the same element.
+To implement an ordered set algorithm we can therefore take the output of the ordered list algorithm and scan the result for the remove and insert of the same element.
 This can be efficiently implemented through a hash:
 
 \begin{enumerate}
@@ -242,23 +345,6 @@ Building the hash is again estimated with time complexity $ \mathcal O(n * log(n
 Depending on the application, its instances are often already implemented with hash-like lookup performance - in this case we could skip step 1.
 The time complexity is in this case only linear.\\
 
-Differencing of our entire data is actually a hierachical process combining all of these algorithms.
-Our strategy is to start at the highest-level representing sub-structures using their cryptographic hash.
-Whenever we identify an update on the hash of a sub-structure we do a finer grained diff on the structure itself:
-
-\begin{enumerate}
-\item Represent all instances of an entity as a dictionary with instance IDs as keys and a cryptographic hash of their attribute values as dictionary values.
-\item Use the dictionary diff algorithm to identify inserted, removed and updated instances. Add the insert and remove operations to the result.
-\item Represent each updated instance as a dictionary with keys being attribute names and values being a cryptographic hash of attribute values.
-\item Use the dictionary diff algorithm to identify inserted, removed and updated attributes.
-\item Add the insert and remove operations to the result. Add all update operations with atoms as attribute values to the result.
-\item For each updated attribute with string values run the ordered list diff algorithm and add it to the result.
-\item For each updated attribute containing an (ordered) set of instance IDs (one-to-many relationship) run the (ordered) set diff algorithm and add it to the result.
-\end{enumerate}
-
-What we describe here is a new difference algorithm integrating a set of more specialized algorithms.
-This approach can not only be applied to difference entity-relationship models, it can actually be adapted for any kind of model with a hierarchical structure. 
-
 \subsection{Diff Merging Test Case}
 \label{sec:main.histo.merging.merge-test}
 Given the diffs A-B and A-C from section \ref{sec:main.histo.merging.diff-test} we define an expected outcome of a merge.\\
@@ -306,6 +392,23 @@ TODO:
 - collections are ordered sets
 
 - take ordered-list diff as granted
+
+\subsection{Hierarchical Merging}
+Merging of our entire data is actually a hierachical process combining all of the described algorithms.
+Our strategy is to start at the highest-level representing sub-structures using their cryptographic hash.
+Whenever we identify an update on the hash of a sub-structure we do a finer grained diff and merge on the structure itself:
+
+\begin{enumerate}
+\item Represent all instances of an entity as a dictionary with instance IDs as keys and a cryptographic hash of their attribute values as dictionary values.
+\item Use the dictionary diff algorithm to identify inserted, removed and updated instances. Add the insert and remove operations to the result.
+\item Represent each updated instance as a dictionary with keys being attribute names and values being a cryptographic hash of attribute values.
+\item Use the dictionary diff algorithm to identify inserted, removed and updated attributes.
+\item Add the insert and remove operations to the result. Add all update operations with atoms as attribute values to the result.
+\item For each updated attribute with string values run the ordered list diff algorithm and add it to the result.
+\item For each updated attribute containing an (ordered) set of instance IDs (one-to-many relationship) run the (ordered) set diff algorithm and add it to the result.
+\end{enumerate}
+
+This approach can not only be applied to difference entity-relationship models, it can actually be adapted for any kind of model with a hierarchical structure. 
 
 \section{Storing and Commiting Changes}
 \label{main.committing}
