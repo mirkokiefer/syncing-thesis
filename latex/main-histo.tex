@@ -403,21 +403,28 @@ The implementation therefore needs to treat the given indexes as relative positi
 The diff operations of sets and dictionaries can be executed as they are without taking side-effects into consideration.
 
 \subsection{Hierarchical Merging}
-Merging of our entire data is actually a hierachical process combining all of the described algorithms.
+As we have seen in our scenario, merging of our structured data is actually a hierachical process combining all of the described algorithms.
 Our strategy is to start at the highest-level representing sub-structures using their cryptographic hash.
 Whenever we identify an update on the hash of a sub-structure we do a finer grained diff and merge on the structure itself:
 
 \begin{enumerate}
 \item Represent all instances of an entity as a dictionary with instance IDs as keys and a cryptographic hash of their attribute values as dictionary values.
-\item Use the dictionary diff algorithm to identify inserted, removed and updated instances. Add the insert and remove operations to the result.
-\item Represent each updated instance as a dictionary with keys being attribute names and values being a cryptographic hash of attribute values.
+\item Use the dictionary diff algorithm to identify inserted, removed and updated instances on A-B and A-C.
+\item Merge the dictionary diffs to result \emph{M1}.
+\item Remove each instance with an update conflict from \emph{M1}.\\
+Represent it as a dictionary with keys being attribute names and values being a cryptographic hash of attribute values.
 \item Use the dictionary diff algorithm to identify inserted, removed and updated attributes.
-\item Add the insert and remove operations to the result. Add all update operations with atoms as attribute values to the result.
-\item For each updated attribute with string values run the ordered list diff algorithm and add it to the result.
-\item For each updated attribute containing an (ordered) set of instance IDs (one-to-many relationship) run the (ordered) set diff algorithm and add it to the result.
+\item Merge the per-instance diffs to result \emph{M2}.
+\item Remove each non-atomic attribute with an update conflict from \emph{M3}.\\
+Run the respective algorithm:\\
+Attributes with (ordered) sets of instance IDs: (ordered) set diff algorithm.\\
+Attributes with string values: ordered list diff algorithm.
+\item Merge the attribute diffs to result \emph{M3}.
+\item Resolve all remaining conflicts in \emph{M1}, \emph{M2} and \emph{M3} manually.
+\item Patch the respective substructures of state A using \emph{M1}, \emph{M2} and \emph{M3}.
 \end{enumerate}
 
-This approach can not only be applied to difference entity-relationship models, it can actually be adapted for any kind of model with a hierarchical structure. 
+This approach can not only be applied to difference entity-relationship models, it can actually be adapted for any type of data with a hierarchical structure. 
 
 \section{Storing and Commiting Changes}
 \label{main.committing}
