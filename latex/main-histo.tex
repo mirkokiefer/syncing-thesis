@@ -66,7 +66,7 @@ Let us summarize the tree steps of the complete merge process of two branches:
 \end{itemize}
 
 \subsection{Diff and Merge Scenario}
-\label{sec:main.histo.merging.diff-test}
+\label{sec:main.histo.merging.scenario}
 To show correctness of a merge algorithm we need to define sample model states with expected merge results.
 This set of data can then be used as a test case for our implementation.
 Based on an ancestor state all users start with, we define several possible branch states.\\
@@ -264,8 +264,8 @@ This example shoes the limits of generic merging algorithms that preserve user i
 In practice it would propably be more suitable to define the `Project Name' as an atom.
 As names are short it is more likely that an update is actually intended as a replace operation of the entire string.
 
-\subsection{Differencing Algorithm}
-\label{sec:main.histo.merging.diff-algo}
+\subsection{Differencing}
+\label{sec:main.histo.merging.diff}
 Differencing algorithms have been studied extensively.
 There exist efficient solutions for a range of data structures.
 It is not a focus of our thesis to develop the most efficient differencing algorithm matching our scenario.
@@ -292,10 +292,10 @@ Myers presented an efficient algorithm with $\mathcal O(n*d) $ time and space co
 $ n $ representing the sum of the lengths of two strings and $ d $ the size of the shortest edit script transforming A to B \cite{Myers:1986wi}.
 The shortest edit script is equivalent to the result of a differencing algorithm.
 As in practical applications differences are usually small the algorithm performs well.\\
-Taking the ordered list difference algorithm as given, it can easily be re-used to build an algorithm for ordered sets.
+
+Given the ordered list difference algorithm we can re-use it to build an algorithm for ordered sets.
 Ordered lists can only have differences in the form of \emph{insert} or \emph{remove} operations.
 Ordered sets extend this - the simultaneous remove and insert of a globally unique element is now considered as a move operation.\\
-
 To implement an ordered set algorithm we can therefore take the output of the ordered list algorithm and scan the result for the remove and insert of the same element.
 This can be efficiently implemented through a hash:
 
@@ -309,7 +309,7 @@ The time complexity of building a hash can be estimated with $ \mathcal O(n * lo
 The match searching has linear time complexity.
 We therefore only add $ \mathcal O(n * log(n)) $ complexity to Myers difference algorithm for a naive solution for ordered sets.\\
 
-For simple sets we can implement a naive solution through two hashs of the respective set entries combined with a scan through each set:
+For ordinary sets we can implement a simple solution through two hashs of the respective set entries combined with a scan through each set:
 
 \begin{enumerate}
 \item Add all entries of set A to a hash $ H_A $ and those of set B to a different hash $ H_B $.
@@ -345,33 +345,36 @@ Building the hash is again estimated with time complexity $ \mathcal O(n * log(n
 Depending on the application, its instances are often already implemented with hash-like lookup performance - in this case we could skip step 1.
 The time complexity is in this case only linear.\\
 
-\subsection{Diff Merging Test Case}
-\label{sec:main.histo.merging.merge-test}
-Given the diffs A-B and A-C from section \ref{sec:main.histo.merging.diff-test} we define an expected outcome of a merge.\\
-We apply the concept of three-way merging:
+\subsection{Diff Merging}
+\label{sec:main.histo.merging.merge}
 
-\begin{itemize}
-\item If only one diff operates on a structure we carry the change over to the result.
-\item If both diffs update the same structure in different ways we mark it as a conflict.
-\end{itemize}
+We will now look into strategies for merging the diff results of the algorithms described in the previous section.
+Our focus lies on the identification of potential conflicts based on three-way merging semantics.\\
 
-\begin{tabularx}{\textwidth}{ l X l X }
-\multicolumn{4}{ c }{\textbf{Expected merge of diffs A-B and A-C}} \\
-ID & Project Name & Members & Tasks \\
-\hline
-1 & insert `i' behind index 5 (B, C) \newline remove from index 9 to 17 (C) \newline insert `Strategy' behind index 8 (C)
-& remove `Allen'
-& move index 3 behind index 0 (B, \textbf{conflict 1}) \newline insert 6 behind index 3 (B) \newline move index 3 behind index -1 (C, \textbf{conflict 1})\\
-2 & remove from index 8 to 15 (B, C) \newline insert `Planning' behind index 7 (B) \newline insert `Strategy' behind index 7 (C) &  &  insert 7 behind index 0 (C) \\
-3 & \multicolumn{3}{ c }{--------- remove (C) ---------} \\
-4 & & & insert 12 behind index 0 (B, \textbf{conflict 2}) \\
-4 & \multicolumn{3}{ c }{--------- remove (C, \textbf{conflict 2}) ---------} \\
-5 & \multicolumn{3}{ c }{--------- insert (B) ---------}
-\end{tabularx} \\
-\\
+Ordered lists only support insert and remove operations.
+Concurrent insert or remove operations are never conflicting as they do not update existing structures.
+As we have seen in the example at the end of section \ref{sec:main.histo.merging.scenario} this is not necessarily in line with a user's intentions.
+When editing text users often intend to \emph{replace} content although their actions are represented through a remove and insert operation.
+This is why most concurrent version control systems have the notion of \emph{areas} in text.
+Concurrent insert or remove operations in overlapping areas are considered as update operations to the same content and therefore result in conflicts.\\
+The optimal definition of an area can vary depending on the application.
+It may be the entire edited paragraph, a number of lines, sentences, words or even characters.\\
+When modeled as an ordered list we can only vary the number of list elements defining the size of an area.\\
+Concurrent insert or remove operations which are not in overlapping areas are simply both carried over to the merge result.\\
 
-\subsection{Diff Merging Algorithm}
-\label{sec:main.histo.merging.merge-test}
+Ordinary sets have the same operations as ordered lists except that each element is unique and we now have no element order.
+Without a specified order we can not define \emph{areas}.
+Merging two diffs is therefore trivial as no conflicts can occur.
+We simply combine the set of operations of both diffs into one large diff.\\
+
+Ordered sets add move operations as we can uniquely identify each element.
+Move operations can lead to conflicts if the same element is concurrently moved to different locations.
+If move operations are not conflicting they are carried over into the merge result.
+Insert and remove operations are merged the same way as defined for ordered lists.\\
+
+Dictionaries have insert, remove and update operations.
+Concurrent insert and remove operations never lead to conflicts - they are carried over into the merge result.
+Update operations can lead to conflicts if the value of the same key is concurrently modified.
 
 \subsection{Patching}
 \label{sec:main.histo.patching}
@@ -424,20 +427,14 @@ TODO:
 
 - commit links to data and parent commit
 
-\section{Differencing Across Commits}
+\section{Commit Changes Stream}
 \label{main.diff-across-commits}
 
 TODO:
 
-- Most Recent Common Ancestor algorithm used for finding common commit of clients
+- write each commit to a changes stream similar to couchdb
 
-- walk commit graph until LCA
-
-- recursive application of LCA on every fork in graph
-
-- implementation as separate module
-
-- use per-commit diff to find full data diff across commits
+- peer nodes can listen in real-time
 
 \section{Synchronization Protocol}
 \label{sec:main.protocol}
