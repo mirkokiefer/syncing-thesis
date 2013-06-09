@@ -379,22 +379,28 @@ Update operations can lead to conflicts if the value of the same key is concurre
 \subsection{Patching}
 \label{sec:main.histo.patching}
 
-TODO:
+Patching is defined as an algorithm applying the identified differences between state A and B as operations to state A.
+A computed diff A-B patched to A will result in B.
+For our three-way merging algorithm, patching constitutes the last phase. 
+Two merged diffs are applied as a patch to the common ancestor state resulting in the actual merged state.\\
+We again need patching algorithms for each data structure we intend to support.
+The implementation needs to consider that simply executing the operations defined in the diff can lead to a wrong result.
+This is true if a change operation has side effects on other parts of the state.\\
+In our set of data structures this is only the case for ordered lists and ordered sets.
+Applying an insert operation at the specified index, renders the indexes of following operations wrong.
+A simple example:
 
-- explain diff, merge and patch
+\begin{itemize}
+\item State A: `Marketng Matrial'
+\item Diff:\\
+insert `i' behind index 5\\
+insert `e' behind index 11
+\end{itemize}
 
-- implement diff, merge and patch logic for primitive data structures
-  -> use them to recursively model complex data structures
-
-- ensure conflicts are made explicit
-
-- efficient child tree pointers like in git
-
-- instances are key-value sets
-
-- collections are ordered sets
-
-- take ordered-list diff as granted
+Applying the first diff operation to A results in: `Marketing Matrial'.\\
+If we now execute the second operation at the specified index 11 we get: `Marketing Maetrial'.\\
+The implementation therefore needs to treat the given indexes as relative positions in the ancestor state.\\
+The diff operations of sets and dictionaries can be executed as they are without taking side-effects into consideration.
 
 \subsection{Hierarchical Merging}
 Merging of our entire data is actually a hierachical process combining all of the described algorithms.
