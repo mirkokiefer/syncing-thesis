@@ -24,7 +24,7 @@ Based on the requirements and the evaluation of CouchDB we derive a new architec
   \textbf{Cross-Platform}: be available on every major platform through the use of Web Standards
 \end{itemize}
 
-\section{Merging of Models}
+\section{Three-Way Merging of Models}
 \label{sec:main.histo.merging}
 In this section we will focus on the core merging semantics which is part of the synchronization protocol developed in \ref{sec:main.protocol}.\\
 As described in section \ref{sec:background.definition} synchronization always starts with an update detection phase.
@@ -111,7 +111,7 @@ ID & Project Name & Members & Tasks \\
 \\
 
 We start the merging process at the highest level by computing the difference between the set of instances.
-At this stage we are only interested on insert and remove operations of instances and on which instances have been updated.
+At this stage we are only interested in insert and remove operations of instances and in which instances have been updated.
 We do not want to look at the differences between individual attribute values and therefore use the cryptographic hash of each instance.
 Note that all hashes in this section are fictious to be easy to compare.\\
 
