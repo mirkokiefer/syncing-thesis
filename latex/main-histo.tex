@@ -86,6 +86,7 @@ Let us summarize the full mapping between model elements and data structures:
 Figure \ref{fig:histo.hierarchy} shows the actual hierarchy we derived from the data model in our scenario.
 
 \section{Committing Objects}
+\label{sec:main.committing}
 We have seen how through the use of object embedding we can structure our data in a hierarchy.
 When persisting our data we do not actually physically embed entire objects down the hierarchy.
 If we did this we would end up with a single, big structure which would have to be re-written every time a small change was made.
@@ -127,7 +128,7 @@ With this model of hierarchical data at hand we can now go into the details of m
 \label{sec:main.histo.merging}
 In this section we will focus on the three-way merging step which is part of the synchronization protocol developed in \ref{sec:main.protocol}.\\
 As described in section \ref{sec:background.definition} synchronization always starts with an update detection phase.
-Before we can start to merge branches we need to know about what has changed.
+Before we can start to merge branches we need to know what has changed.
 One our our design goals is to relieve the application developer from manual change tracing.
 We therefore need to implement a differencing algorithm for the types of models described in section \ref{sec:main.requirements.data-models}.\\
 We have described three-way merging as a general concept in section \ref{sec:background.merging}.
@@ -537,7 +538,8 @@ Synchronization follows a two-step protocol, step one propagates all changed dat
 Propagation follows the following protocol:
 
 \begin{enumerate}
-\item Read all commit IDs since the last synced commit from Source and write them to Target.
+\item Read the Target's remote tracking head of Source.
+\item Read all commit IDs since the Target's remote tracking head from Source and write them to Target.
 \item Let the Target compute the common ancestor commit ID of Target's and Source's master heads.
 \item Read all changed data since the common ancestor commit from Source and write to Target.
 \item Set the Target's remote tracking head of Source to Source's master head.
@@ -546,25 +548,31 @@ Propagation follows the following protocol:
 Once these steps are executed, the Target node has the current state of Source available locally.\\
 The Target's head still refers to the same state as the Source data has not been merged.\\
 
-Listing \ref{propagation-protocol} summarizes the protocol as pseudo-code.
+Listing \ref{propagation-protocol} summarizes the protocol as pseudo-code.\\
 
 \begin{lstlisting}[caption=Propagation Protocol, label=propagation-protocol]
+
+sourceHead = source.head.master
+targetHead = target.head.master
+lastSyncedCommit = target.getRemoteTrackingHead(source.id)
 
 commitIDsSource = source.getCommitIDsSince(lastSyncedCommit)
 
 target.writeCommitIDs(commitIDsSource)
 
-commonAncestor = target.getCommonAncestor(target.head.master, source.head.master)
+commonAncestor = target.getCommonAncestor(targetHead, sourceHead)
 
 changedData = source.getChangedDataSince(commonAncestor)
 
 target.writeData(changedData)
 
+target.setRemoteTrackingHead(source.id, sourceHead)
+
 \end{lstlisting}
 
 The functions `getCommitIDsSince()' and `getChangedDataSince()' are implemented as described in section \ref{main.diff-across-commits}.\\
-The most recent common ancestor algorithm used in `getCommonAncestor()' is described in section \ref{background.mrca}.\\
-The internals used by `writeData()' and the underlying commit data model are explained in section \ref{main.committing}.
+The most recent common ancestor algorithm used in `getCommonAncestor()' is described in section \ref{sec:background.lca}.\\
+The internals used by `writeData()' and the underlying commit data model have been explained in section \ref{sec:main.committing}.
 
 \subsubsection{Merging}
 Even if the Source is disconnected at this stage, the Target has all the necessary information to process the merge offline:\\
@@ -597,7 +605,8 @@ To update the head you need to include the last read head in your request.
 So both the fast-forward operation or the commit of a merge result can be rejected if the Target has been updated in the meantime.
 If this happens the Synchronizer simply has to re-run the merge algorithm.\\
 
-The merging process can be described in pseudo-code as shown in figure \ref{merging-protocol}.
+The merging process can be described in pseudo-code as shown in figure \ref{merging-protocol}.\\
+Its core is the call to `three-way-merge()' - the details of our three-way merging concepts are described in section \ref{sec:main.histo.merging}.\\
 
 \begin{lstlisting}[caption=Merging Protocol, label=merging-protocol]
 
