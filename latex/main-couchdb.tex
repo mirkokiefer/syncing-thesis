@@ -9,13 +9,13 @@ Note that the CouchDB authors actually refer to synchronization as `replication'
 The original implementation of CouchDB exposes an HTTP interface for all interactions with the database.
 This makes it possible to write web applications directly targeting CouchDB as the server, eleminating any middleware in between.\\
 If an application developer is able to design his application within the constraints of CouchDB being the only backend, it is called a \emph{CouchApp}.\\
-CouchApps have the interesting property of being completely replicatable between CouchDB instances.
-So an entire working application can be deployed to a device just by replicating it from a remote CouchDB instance.\\
+CouchApps have the interesting property of being completely replicatable between CouchDB nodes.
+So an entire working application can be deployed to a device just by replicating it from a remote CouchDB node.\\
 Unfortunately only few applications get by with CouchDB being the only backend required.\\
 
 With \emph{PouchDB} there has recently emerged a CouchDB implementation inside the browser in pure JavaScript.
 It makes use of HTML5's IndexedDB as the storage layer and can therefore be included into a web application without requiring any plugins.\\
-PouchDB exposes a similar interface like CouchDB and can fully synchronize with an actual CouchDB instance on a server.\\
+PouchDB exposes a similar interface like CouchDB and can fully synchronize with an actual CouchDB node on a server.\\
 
 CouchDB's data model is relatively simple - it mainly supports the storage of JSON-documents.
 Each document has an ID under which it can be efficiently retrieved and updated.\\
@@ -35,24 +35,26 @@ CouchDB treats this as an update conflict and notifies the second client.
 The second client can then review the changes of the first client, possibly merge it with his changes and re-send it with the correct version ID.
 This concept is often referred to as \emph{Optimistic Locking}.\\
 
-In the case of concurrent edits on two instances of the same database the conflict handling is more complex.
-Concurrent writes can no longer be linearized through optimistic locking as the two database instances are possibly disconnected.\\
+In the case of concurrent edits on two nodes of the same database the conflict handling is more complex.
+Concurrent writes can no longer be linearized through optimistic locking as the two database nodes are possibly disconnected.\\
 CouchDB solves this by applying concepts of \emph{Multi-Version Concurrency Control}.
-Both instances can update the same documents thereby creating two conflicting versions.\\
+Both nodes can update the same documents thereby creating two conflicting versions.\\
 All versions of a document point to its ancestor resulting in a version tree.
-If the database instances synchronize each other both instances will end up with both conflicting versions of the document.\\
-CouchDB uses a deterministic algorithm to choose one of the instances as a winner.
+If the database nodes synchronize each other both nodes will end up with both conflicting versions of the document.\\
+CouchDB uses a deterministic algorithm to choose one of the nodes as a winner.
 As this choice is random to the user of an application it is often not the desired result.
 It is therefore possible to either pick a different conflicting version as the winner or merge both versions to a new revision.
 
 \subsection{Synchronization Protocol}
 CouchDB does not really have a synchronization protocol at all - it is actually a fairly simple algorithm that uses only the existing HTTP interfaces.
-A `CouchDB synchronizer' therefore does not even have to run inside CouchDB but can be an external program that only needs access to the public interfaces of two CouchDB instances.
+A `CouchDB synchronizer' therefore does not even have to run inside CouchDB but can be an external program that only needs access to the public interfaces of two CouchDB nodes.
 What makes CouchDB's synchronization work is at the core a \emph{changes stream} that is accessible through an HTTP interface as well.
 Every update of a document triggers an update of the changes stream thereby adding a new entry with an update sequence ID, the new version ID of the updated document and the document ID itself.
-At any point the changes stream includes all updates made to the database.\\
+The update sequence ID grows monotonously with every update.
+At any point the changes stream includes all updates made to the database.
+If the same document has been update multiple times, only the most recent update is included in the stream.\\
 
-The synchronization process from a CouchDB instance A to B follows the following steps:
+The synchronization process from a CouchDB node A to B follows the following steps:
 
 \begin{enumerate}
 \item Read the \emph{last source sequence ID} stored on B - it represents the last update it read on the previous synchronization.
@@ -63,10 +65,14 @@ The synchronization process from a CouchDB instance A to B follows the following
 \item Restart the process if there are remaining updates.
 \end{enumerate}
 
-All steps only use public interfaces exposed by both instances.
+All steps only use public interfaces exposed by both nodes.
 Continuous synchronization can be implemented trivially by infinitely repeating the steps.\\
 As explained before the process may result in conflicting document versions.
-It is the responsibility of the application developer to handle those conflicts after each synchronization.
+It is the responsibility of the application developer to handle those conflicts after each synchronization.\\
+It is important to note that the last source sequence ID is only valid for a particular CouchDB node.
+When synchronizing with a new node for the first time the process has to start at the first update sequence.
+The protocol is therefore only efficient when continuously synchronizing with the same nodes.
+If a node is not identified as a previously synchronized peer, the protocol causes redundant network operations growing linearly with the size of the changes stream.
 
 \subsection{Fulfillment of Requirements}
 As a schemaless database CouchDB at least supports the storage of any kind of data model.
@@ -76,7 +82,7 @@ There is no way to give CouchDB an increased level of awareness of an applicatio
 Application developers are forced to write a large amount of additional merging logic inside their application.\\
 \emph{Flexible data model} support is therefore given while it requires additional app-specific logic to cater for CouchDB's lack of structural awareness.\\
 The CouchDB model of multi-version concurrency control fulfills the requirement of \emph{optimistic synchronization}.
-Concurrently edited data on multiple CouchDB instances is \emph{eventually consistent} if synchronized with each other.\\
+Concurrently edited data on multiple CouchDB nodes is \emph{eventually consistent} if synchronized with each other.\\
 The optimistic locking mechanism combined with a document's version tree ensures \emph{causality preservation} and exposure of \emph{conflicts}.\\
 CouchDB's distributed synchronization protocol supports {flexible network topologies}.\\
 \emph{Cross-platform support} is given with implementations available for servers, mobile devices and even web browsers.\\
@@ -85,8 +91,5 @@ To build a more suitable solution for our requirements we can build on many of C
 Major room for improvement lies in stronger data model awareness thereby relieving the application developer of repetitive logic and improving \emph{unobtrusive integration} into an application.\\
 CouchDB only remembers the version history of a document in the form of version IDs.
 The actual documents are not retained not even those of common ancestors in the case of conflicts.
-CouchDB's version history can therefore only be used to identify conflicts but does not support \emph{three-way merging}.
-
-TODO:
-
-- Contrast synchronization with the way git works
+CouchDB's version history can therefore only be used to identify conflicts but does not support \emph{three-way merging}.\\
+Furthermore, we will look into more efficient ways to synchronize with unknown nodes limiting the amount of redundant network requests.
