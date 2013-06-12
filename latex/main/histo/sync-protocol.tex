@@ -36,13 +36,13 @@ sourceHead = source.head.master
 targetHead = target.head.master
 lastSyncedCommit = target.getRemoteTrackingHead(source.id)
 
-commitIDsSource = source.getCommitIDsSince(lastSyncedCommit)
+commitIDsSource = source.getCommitDifference(lastSyncedCommit, sourceHead)
 
 target.writeCommitIDs(commitIDsSource)
 
 commonAncestor = target.getCommonAncestor(targetHead, sourceHead)
 
-changedData = source.getChangedDataSince(commonAncestor)
+changedData = source.getDataDifference(commonAncestor, sourceHead)
 
 target.writeData(changedData)
 
@@ -50,7 +50,7 @@ target.setRemoteTrackingHead(source.id, sourceHead)
 
 \end{lstlisting}
 
-The functions `getCommitIDsSince()' and `getChangedDataSince()' are implemented as described in section \ref{main.diff-across-commits}.\\
+The functions `getCommitDifference()' and `getDataDifference()' are implemented as described in section \ref{main.diff-across-commits}.\\
 The most recent common ancestor algorithm used in `getCommonAncestor()' is described in section \ref{sec:background.lca}.\\
 The internals used by `writeData()' and the underlying commit data model have been explained in section \ref{sec:main.committing}.
 

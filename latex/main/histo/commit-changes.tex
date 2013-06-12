@@ -2,7 +2,7 @@
 \section{Cross-Branch Change Detection}
 \label{main.diff-across-commits}
 
-The change detection phase of our synchronization protocol is defined through the calls `getCommitIDsSince()' and `getChangedDataSince()'.
+The change detection phase of our synchronization protocol is defined through the calls `getCommitDifference()' and `getDataDifference()'.
 We will now look into the internals of the algorithms invoked through these calls.\\
 
 \subsection{Commit History Difference}
@@ -10,17 +10,61 @@ Identifying added commit IDs since a last known synchronized commit is only work
 Given two branches A and B we want to retrieve all commits A needs in order to be in sync with B.
 Our algorithm is based on the recursive invocation of a lowest common ancestor implementation:\\
 
+\begin{enumerate}
+\item Compute the lowest common ancestor of commit A and B.
+\item Add commit B to the result.
+\item Walk up the ancestor chain of commit B, adding all commits to the result unless:
+\item The common ancestor is reached - then return the result.
+\item If a commit has multiple ancestors - then invoke the algorithm again with each ancestor as commit B.\\
+Add the result of the recursive invocation to the final result.
+\end{enumerate}
+
+We can express this more concretely using pseudo-code:\\
+
 \begin{lstlisting}[caption=Detecting commit history difference, label=commit-difference]
 
-commitA = branchA.commit
-commitB = branchB.commit
+function getCommitDifference(commitA, commitB) {
+  result = []
+
+  commonAncestor = getCommonAncestor(commitA, commitB)
+
+  while (not commitB.hasMultipleAncestors()) {
+    singleAncestor = commitB.getAncestors()[0]
+
+    if (singleAncestor == commonAncestor) {
+      return result
+    }
+
+    result.push(singleAncestor)
+
+    commitB = singleAncestor
+  }
+
+  ancestors = commitB.getAncestors()
+
+  for (each ancestor in ancestors) {
+    forkResult = getCommitDifference(commitA, commitB)
+    result.append(forkResult)
+  }
+}
 
 \end{lstlisting}
+
+Figure \ref{fig:histo.new-commits} visualizes the commit difference for two branches B and C.
+The last synchronized commit is A.
+B has in the meantime made concurrent changes and it has synchronized with another branch which is at commit D.
+Branch D has not been synchronized with branch C.
+The commit difference between A and B is therefore the sum of two commit paths:\\
+
+\begin{itemize}
+\item The shortest commit path between B and the lowest common ancestor of A and B, which is B.
+\item The shortest commit path between D and the lowest common ancestor of D and A, which is E.
+\end{itemize}
 
 \begin{figure}[new-commits]
   \centering
   \includegraphics[width=0.6\textwidth]{img/new-commits}
-  \caption{Commit difference B-A - gray commits are missing on branch B.}
+  \caption{Commit difference between branches B and C and A being the last synchronized commit.}
   \label{fig:histo.new-commits}
 \end{figure}
 
