@@ -7,12 +7,16 @@ If we did this we would end up with a single, big structure which would have to 
 We therefore store even embedded objects as separate structures.
 At a logical level they are still embedded though - we achieve this through the use of cryptographic hashing.
 All of our objects are stored in a content-addressable store which is described in section \ref{sec:background.cas}.
-We can therefore retrieve each object based on a cryptographic hash of its content.
+Existing objects are never overwritten - a new version is written instead.
+We can retrieve each object based on a cryptographic hash of its content.
 When logically embedding an object we actually save it in the store and only reference its hash.\\
 Saving each object separately we can now re-use objects of previous states when new data is commited.
 As shown in figure \ref{fig:histo.commits} each data update is represented through a new commit object.
 Each commit object points to the root of the data hierarchy and therefore to a snapshot of the entire data.
 Commit objects link to their parent commits and are therefore connected in a directed, acyclic graph.\\
+Commit objects themselves are stored separately in a content-addressable store.
+They reference the root of the data hierarchy through the hash of the root object.
+Ancestor commits are simply referenced through their hash as well.\\
 Whenever an object in our graph changes, we only need to write the changed object and all its parents again.
 All unchanged objects can be referenced again through their state hash.\\
 
