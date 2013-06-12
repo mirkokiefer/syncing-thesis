@@ -1,5 +1,5 @@
 \section{Requirements}
-\label{sec:main.requirements}
+\label{sec:requirements}
 From the application scenarios we can derive a set of requirements for a synchronization solution.\\
 The listed requirements resemble the goals set for the Bayou architecture back in 1994 \cite{Demers:1994vj}. 
 Bayou had already proposed a distributed architecture with multiple devices acting as servers.
@@ -8,7 +8,7 @@ Today even smartphones have more storage and stronger CPUs than most servers in 
 Therefore pairwise synchronization should not only be possible between servers but also between mobile devices directly.
 
 \subsection{Flexible Data Model Support}
-\label{sec:main.requirements.data-models}
+\label{sec:requirements.data-models}
 A synchronization engine that is useful for a broad range of applications has to be able to deal with different data models. There is no magic algorithm that produces a perfect solution for an existing application.
 Synchronization can happen with increasing levels of sophistication depending on the level of structural awareness of an application's data.\\
 A ``dumb'' engine would have no awareness of an app's data model at all - it simply sees the entire application data as one binary chunk.\\
@@ -52,7 +52,7 @@ Our goal is to guarantee that after a finite number of synchronization events al
 This property is referred to as \emph{eventual consistency} and explained in section \ref{sec:background.transactions}.\\
 
 \subsection{Causality Preservation and Conflicts}
-\label{sec:main.requirements.causality}
+\label{sec:requirements.causality}
 If an object diverges into multiple branches it will have to be reconciled during the synchronization process.
 When we receive states from a remote device we need to reason about how we can apply them to our own edit history.\\
 The \emph{happens-before} relationship defined by Lamport in \cite{Lamport:1978tr} helps to solve this problem in an intuitive way.
@@ -81,7 +81,7 @@ This means each client has to keep previous versions of edited objects.
 The concept of three-way merging is explained in section \ref{sec:background.merging}.
 
 \subsection{Flexible Network Topologies}
-\label{sec:main.requirements.topologies}
+\label{sec:requirements.topologies}
 A traveling user who works with multiple mobile devices needs to be able to sychronize data without requiring Internet access.
 The synchronization engine should therefore be designed to handle peer-to-peer connections.\\
 Even in an office environment where users exchange large amounts of data a direct connection can be significantly faster than doing a round-trip through a server on the Internet.

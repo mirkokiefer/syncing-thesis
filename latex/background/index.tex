@@ -23,7 +23,7 @@ A collaborative application has multiple users working on different devices on a
 They are either connected directly or via servers who live on the local network or the Internet.
 Each device, be it a user's device or a server, we define as a \emph{node}.
 Nodes can be connected through various network topologies like peer-to-peer, client-server or a hierarchical architecture.
-In section \ref{sec:main.requirements.topologies} we will go into more detail about different network topologies.\\
+In section \ref{sec:requirements.topologies} we will go into more detail about different network topologies.\\
 The nodes of mobile users are likely to be partitioned from their network and therefore have to be able to work in \emph{offline} mode.
 Therefore application data has to be available locally so that users are not blocked from using their application.
 Even when connected to a network it can be beneficial to maintain data locally to increase the responseness of the application.\\
@@ -106,7 +106,7 @@ The \emph{CAP-Theorem} actually states in detail that it is impossible to have s
 Given these constraints we can only guarantee \emph{eventual consistency}.
 Data will be consistently propagated across all nodes given a long enough period of time over which no changes are made.
 Eventual consistency is increasingly adopted in multi-master databases like CouchDB \cite{anderson2010couchdb} and DynamoDB \cite{DeCandia:2007ui}.
-CouchDB which uses a combination of MVCC and eventual consistency will be reviewed in detail in section \ref{sec:main.couchdb}.\\
+CouchDB which uses a combination of MVCC and eventual consistency will be reviewed in detail in section \ref{sec:couchdb}.\\
 \emph{Atomicity} is defined as transactions either passing entirely or leaving the database unchanged if a part fails.
 When choosing eventual consistency it is clear that we can not guarantee that a transaction succeeds across all nodes.
 Atomicity can only be guaranteed on a per-node level with transaction results eventually being propagated.\\
@@ -132,7 +132,7 @@ Research has therefore investigated options for data synchronization that do not
 \emph{Commutative Replicated Data Types} (CRDTs) have emerged as a viable alternative for specific use cases.
 A recent study by Shapiro et al. presents a range of data types designed for synchronization without concurrency control \cite{Shapiro:2011wy}.\\
 CRDTs are designed in a way that all edit operations commute when applied in \emph{causal order}.
-Section \ref{sec:main.requirements.causality} goes into more detail about causal ordering of events.
+Section \ref{sec:requirements.causality} goes into more detail about causal ordering of events.
 Due to the restrictions on supported operations on data types, CRDTs are only applicable in a narrow set of scenarios.
 
 TODO:
@@ -233,7 +233,7 @@ The ZFS filesystem uses this concept internally to achieve fast snapshotting and
 Creating a snapshot of an object does not require any copying - the filesystem only has to keep the current version of the object as updates are made.\\
 Data verification is given for free as well - an object can simply be re-hashed on a read and compared to the hash its stored at.\\
 Git is another system making use of a CAS as it needs to keep all previous versions of each object \cite{swicegood2008pragmatic}.\\
-Our own synchronization framework described in chapter \ref{sec:main.histo} will use the concept of a CAS.
+Our own synchronization framework described in chapter \ref{sec:histo} will use the concept of a CAS.
 
 \section{HTML5 and Offline Applications}
 HTML5 specifies a number of client-side storage options. Most are a work in process and still have to be adopted by all browser vendors. IndexedDB is most likely going to be the standard for building offline-capable web applications. Combined with Cache Manifests, HTML5 provides all the tools necessary for building offline applications.

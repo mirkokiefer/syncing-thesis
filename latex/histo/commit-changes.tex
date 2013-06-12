@@ -1,6 +1,6 @@
 
 \section{Update Detection Between Branches}
-\label{main.diff-across-commits}
+\label{sec:histo.diff-across-commits}
 
 The change detection phase of our synchronization protocol is defined through the calls `getCommitDifference()' and `getDataDifference()'.
 We will now look into the internals of the algorithms invoked through these calls.\\
@@ -73,7 +73,7 @@ The commit difference between A and B is therefore the sum of two commit paths:\
 \subsection{Application Data Change Detection}
 
 Having extracted the list of commits that need to be propagated we can now trace what data has been changed through these.\\
-In section \ref{sec:main.committing} we explained how each object is stored separately under its cryptographic hash.
+In section \ref{sec:histo.committing} we explained how each object is stored separately under its cryptographic hash.
 Existing objects are never updated in-place - we therefore only have to identify which objects have been added to the store.\\
 
 We identify updated objects on a per-commit basis comparing each commit's state with its ancestors.
@@ -118,6 +118,6 @@ function getDataDifference(rootObjectHash, ancestorRootObjectHash) {
 In our scenario the children correspond to embedded instances as we defined them in section \ref{sec:histo.hierarchy}.
 While in our data model we differentiate between instances belonging to certain attributes this is not relevant for the data difference algorithm.
 We simply flatten the embedded child instances across all attributes to a single dictionary of children.\\
-The dictionary difference algorithm that is used in the `getDictionaryDifference()' call is explained in section \ref{sec:main.histo.merging.diff}.
+The dictionary difference algorithm that is used in the `getDictionaryDifference()' call is explained in section \ref{sec:histo.merging.diff}.
 In the context of the section it is used for merging but we can re-use the algorithm for our purpose here.\\
-Through the combination of the commit and data difference algorithms we now have the tools to implement the update detection and update propagation steps of our synchronization protocol as described in section \ref{sec:main.histo.protocol}.
+Through the combination of the commit and data difference algorithms we now have the tools to implement the update detection and update propagation steps of our synchronization protocol as described in section \ref{sec:histo.protocol}.

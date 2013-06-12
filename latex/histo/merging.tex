@@ -1,10 +1,10 @@
 
 \section{Reconciliation Through Three-Way Merging}
-\label{sec:main.histo.merging}
-In this section we will focus on three-way merging which is part of the reconciliation phase of our protocol developed in section \ref{sec:main.histo.protocol.detection-propagation}.\\
+\label{sec:histo.merging}
+In this section we will focus on three-way merging which is part of the reconciliation phase of our protocol developed in section \ref{sec:histo.protocol.detection-propagation}.\\
 All necessary data for a merge has already been propagated from the source to the target node.
 We have all information about the current state and the commit history of the source node available locally.
-The current state is marked through the source tracking branch as described in \ref{sec:main.histo.protocol.merging}.
+The current state is marked through the source tracking branch as described in section \ref{sec:histo.protocol.merging}.
 The entire merging process can therefore happen offline without the need of any communication with the source node.\\
 Our three-way merge algorithm is structured into three types of processes which are recursively executed on our data hierarchy:
 
@@ -27,7 +27,7 @@ In the next section we give concrete examples of what the expected output of eac
 Based on the examples we will then look into implementation details of the respective algorithms.
 
 \subsection{Merge Scenario}
-\label{sec:main.histo.merging.scenario}
+\label{sec:histo.merging.scenario}
 To show correctness of a merge algorithm we need to define sample model states with expected merge results.
 This set of data can then be used as a test case for our implementation.
 Based on an ancestor state all users start with, we define several possible branch states.\\
@@ -226,7 +226,7 @@ In practice it would propably be more suitable to define the `Project Name' as a
 As names are short it is more likely that an update is actually intended as a replace operation of the entire string.
 
 \subsection{Differencing}
-\label{sec:main.histo.merging.diff}
+\label{sec:histo.merging.diff}
 Differencing algorithms have been studied extensively.
 There exist efficient solutions for a range of data structures.
 It is not a focus of our thesis to develop the most efficient differencing algorithm matching our scenario.
@@ -307,14 +307,14 @@ Depending on the application, its instances are often already implemented with h
 The time complexity is in this case only linear.\\
 
 \subsection{Diff Merging}
-\label{sec:main.histo.merging.merge}
+\label{sec:histo.merging.merge}
 
 We will now look into strategies for merging the diff results of the algorithms described in the previous section.
 Our focus lies on the identification of potential conflicts based on three-way merging semantics.\\
 
 Ordered lists only support insert and remove operations.
 Concurrent insert or remove operations are never conflicting as they do not update existing structures.
-As we have seen in the example at the end of section \ref{sec:main.histo.merging.scenario} this is not necessarily in line with a user's intentions.
+As we have seen in the example at the end of section \ref{sec:histo.merging.scenario} this is not necessarily in line with a user's intentions.
 When editing text users often intend to \emph{replace} content although their actions are represented through a remove and insert operation.
 This is why most concurrent version control systems have the notion of \emph{areas} in text.
 Concurrent insert or remove operations in overlapping areas are considered as update operations to the same content and therefore result in conflicts.\\
@@ -338,7 +338,7 @@ Concurrent insert and remove operations never lead to conflicts - they are carri
 Update operations can lead to conflicts if the value of the same key is concurrently modified.
 
 \subsection{Patching}
-\label{sec:main.histo.patching}
+\label{sec:histo.merging.patching}
 
 Patching is defined as an algorithm applying the identified differences between state A and B as operations to state A.
 A computed diff A-B patched to A will result in B.
