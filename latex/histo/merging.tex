@@ -415,7 +415,7 @@ The diff operations of sets and dictionaries can be executed as they are without
 
 \subsection{Hierarchical Merging}
 As we have seen in our scenario, merging of our structured data is actually a hierachical process combining all of the described algorithms.
-Our strategy is to start at the highest-level representing sub-structures using their cryptographic hash.
+Our strategy is to merge the data in layers with sub-structures represented through their cryptographic hashs.
 Whenever we identify an update on the hash of a sub-structure we do a finer grained diff and merge on the structure itself:
 
 \begin{enumerate}
