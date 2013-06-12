@@ -1,22 +1,12 @@
 
-\section{Three-Way Merging of Objects}
+\section{Reconciliation Through Three-Way Merging}
 \label{sec:main.histo.merging}
-In this section we will focus on the three-way merging step which is part of the reconciliation step of our protocol developed in \ref{sec:main.histo.protocol}.\\
-As described in section \ref{sec:background.definition} synchronization always starts with an update detection phase.
-Before we can start to merge branches we need to know what has changed.
-One our our design goals is to relieve the application developer from manual change tracing.
-We therefore need to implement a differencing algorithm for the types of models described in section \ref{sec:main.requirements.data-models}.\\
-We have described three-way merging as a general concept in section \ref{sec:background.merging}.
-Our own algorithm will be structured into three types of algorithms.
-Starting with a differencing phase we identify the changes made in two branches of our state B and C since our common ancestor state A.
-Should an application decide to explicitly track changes it could actually leave this phase out and still benefit from the rest of our merging algorithm.\\
-If follows a diff merging phase where the two diff results A-B and A-C are combined into one diff.
-As its only input is the two diffs it does not require access to the actual states A, B or C.
-In this phase we can have conflicts if the two branches contain updates to the same parts of the state.\\
-The merged diff can then be applied to the origin state A in order to create the actual merged state.
-For this step we require a patch algorithm.
-
-Let us summarize the tree steps of the complete merge process of two branches:
+In this section we will focus on three-way merging which is part of the reconciliation phase of our protocol developed in section \ref{sec:main.histo.protocol.detection-propagation}.\\
+All necessary data for a merge has already been propagated from the source to the target node.
+We have all information about the current state and the commit history of the source node available locally.
+The current state is marked through the source tracking branch as described in \ref{sec:main.histo.protocol.merging}.
+The entire merging process can therefore happen offline without the need of any communication with the source node.\\
+Our three-way merge algorithm is structured into three types of processes which are recursively executed on our data hierarchy:
 
 \begin{itemize}
 \item \textbf{Differencing}: we diff branch B and C with their common ancestor A.
@@ -24,7 +14,19 @@ Let us summarize the tree steps of the complete merge process of two branches:
 \item \textbf{Patching}: we apply the merged diffs as a patch to A which results in the merged state D.
 \end{itemize}
 
-\subsection{Diff and Merge Scenario}
+Our current branch we refer to as B and the source tracking branch as C.
+The common ancestor of B and C is defined as A.\\
+Starting with a differencing phase we identify the changes made in the branches B and C since our common ancestor state A.\\
+If follows a diff merging phase where the two diff results A-B and A-C are combined into one diff.
+As its only input is the two diffs it does not require access to the actual states A, B or C.
+In this phase conflicts can appearch if the two branches contain updates to the same parts of the state.\\
+The merged diff can then be applied to the origin state A in order to create the actual merged state.
+For this step we require a patch algorithm.\\
+These three steps are actually applied to each hierarchy level or our state.
+In the next section we give concrete examples of what the expected output of each level should be.
+Based on the examples we will then look into implementation details of the respective algorithms.
+
+\subsection{Merge Scenario}
 \label{sec:main.histo.merging.scenario}
 To show correctness of a merge algorithm we need to define sample model states with expected merge results.
 This set of data can then be used as a test case for our implementation.
