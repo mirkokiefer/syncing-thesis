@@ -119,4 +119,5 @@ In our scenario the children correspond to embedded instances as we defined them
 While in our data model we differentiate between instances belonging to certain attributes this is not relevant for the data difference algorithm.
 We simply flatten the embedded child instances across all attributes to a single dictionary of children.\\
 The dictionary difference algorithm that is used in the `getDictionaryDifference()' call is explained in section \ref{sec:main.histo.merging.diff}.
-In the context of the section it is used for merging but we can re-use the algorithm for our purpose here.
+In the context of the section it is used for merging but we can re-use the algorithm for our purpose here.\\
+Through the combination of the commit and data difference algorithms we now have the tools to implement the update detection and update propagation steps of our synchronization protocol as described in section \ref{sec:main.histo.protocol}.

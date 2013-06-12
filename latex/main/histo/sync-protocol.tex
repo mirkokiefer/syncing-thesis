@@ -1,6 +1,6 @@
 
 \section{Synchronization Protocol}
-\label{sec:main.protocol}
+\label{sec:main.histo.protocol}
 Synchronization always happens from a \emph{Source} node to a \emph{Target} node.
 If it is run simultaneously with Source and Target exchanged, it keeps both nodes in sync with each other.\\
 The algorithm is designed to be able to run independently of the Source or Target.
@@ -14,8 +14,8 @@ A remote tracking head represents what the local node considers to be the curren
 
 Synchronization follows a two-step protocol, step one propagates all changed data from Source to Target, step two executes a local merge operation.
 
-\subsubsection{Propagation}
-Propagation follows the following protocol:
+\subsubsection{Update Detection and Propagation}
+The combination of update detection and propagation follows the following protocol:
 
 \begin{enumerate}
 \item Read the Target's remote tracking head of Source.
@@ -30,7 +30,7 @@ The Target's head still refers to the same state as the Source data has not been
 
 Listing \ref{propagation-protocol} summarizes the protocol as pseudo-code.\\
 
-\begin{lstlisting}[caption=Propagation Protocol, label=propagation-protocol]
+\begin{lstlisting}[caption=Detecting updates across nodes and propagating the changes., label=propagation-protocol]
 
 sourceHead = source.head.master
 targetHead = target.head.master
