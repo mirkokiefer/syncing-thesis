@@ -37,8 +37,6 @@ The result of the diff merge phases is then used to patch the common ancestor st
 The difference and merge algorithms that need to be applied will vary on each level depending on the data structures used.
 The sample data is defined so that we can demonstrate each possible data structure that we mapped to in section \ref{sec:histo.hierarchy} (dictionaries, ordered dictionaries, ordered sets and ordered lists).\\
 
-Our common ancestor state A is described as the following:\\
-
 The root of our state is defined through an organization instance.
 All other instances can be reached from it.
 As defined in section \ref{sec:histo.hierarchy}, we differentiate between linking and embedding of instances.
@@ -170,6 +168,7 @@ ID & State A & State B & State C & Result \\
 
 Whenever the hash of an instance has only changed in one state, we carry the change over into the result.
 If the hash has changed in both states, we have a conflict.
+This merging phase will be implemented through difference and merge algorithms for dictionaries.\\
 We will try to resolve conflicts by running a finer grained merge on the conflicting instance states.
 ID 4 and ID 5 will therefore go into a lower level of merging while the changes in ID 6 and 16 are already accepted.
 We cannot run a finer grained merge on ID 7 as it was removed in state C.
@@ -200,6 +199,7 @@ Tasks &
 
 At this level we can already carry over the update of the `Members' attribute in B to the result.\\
 The `Project Name' and `Tasks' attributes of B and C have been concurrently updated and are therefore in conflict.
+This difference and merge step can again be realized with an algorithm for dictionaries (keys being attributes, values being attribute values).\\
 If we define string values as atoms we have reached the most detailed level of merging for `Project Name' - the conflict will therefore be carried over into the result.
 If we instead see strings as another substructure we can attempt to resolve the conflict by using a string merging algorithm.\\
 We have mapped the embedded and ordered `Tasks' attribute to an ordered dictionary data structure.
@@ -364,7 +364,7 @@ The time complexity is in this case only linear.\\
 We will now look into strategies for merging the diff results of the algorithms described in the previous section.
 Our focus lies on the identification of potential conflicts based on three-way merging semantics.\\
 
-Ordered lists only support insert and remove operations.
+\emph{Ordered lists} only support insert and remove operations.
 Concurrent insert or remove operations are never conflicting as they do not update existing structures.
 As we have seen in the example at the end of section \ref{sec:histo.merging.scenario} this is not necessarily in line with a user's intentions.
 When editing text users often intend to \emph{replace} content although their actions are represented through a remove and insert operation.
@@ -375,17 +375,17 @@ It may be the entire edited paragraph, a number of lines, sentences, words or ev
 When modeled as an ordered list we can only vary the number of list elements defining the size of an area.\\
 Concurrent insert or remove operations which are not in overlapping areas are simply both carried over to the merge result.\\
 
-Ordinary sets have the same operations as ordered lists except that each element is unique and we now have no element order.
+\emph{Ordinary sets} have the same operations as ordered lists except that each element is unique and we now have no element order.
 Without a specified order we can not define \emph{areas}.
 Merging two diffs is therefore trivial as no conflicts can occur.
 We simply combine the set of operations of both diffs into one large diff.\\
 
-Ordered sets add move operations as we can uniquely identify each element.
+\emph{Ordered sets} add move operations as we can uniquely identify each element.
 Move operations can lead to conflicts if the same element is concurrently moved to different locations.
 If move operations are not conflicting they are carried over into the merge result.
 Insert and remove operations are merged the same way as defined for ordered lists.\\
 
-Dictionaries have insert, remove and update operations.
+\emph{Ordinary Dictionaries} have insert, remove and update operations.
 Concurrent insert and remove operations never lead to conflicts - they are carried over into the merge result.
 Update operations can lead to conflicts if the value of the same key is concurrently modified.
 
