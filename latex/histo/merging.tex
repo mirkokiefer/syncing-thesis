@@ -68,7 +68,7 @@ The projects embedded in the organization show the difference between linking (m
 
 \begin{tabularx}{\textwidth}{ l l l l X }
 \multicolumn{5}{ c }{\textbf{Ancestor state A of Projects}} \\
-ID & Hash & Project Name & Members (linked) & Tasks (embedded) \\
+ID & Hash & Project Name & Members (linked) & Tasks (embedded, ordered) \\
 \hline
 4 & P1A & Marketng Material & 1, 2, 3
 & 8: T8A \newline 9: T9A \newline 10: T9A \newline 11: T11A
@@ -97,7 +97,7 @@ ID & Hash & Members (embedded) & Projects (embedded) \\
 
 \begin{tabularx}{\textwidth}{ l l l l X }
 \multicolumn{5}{ c }{\textbf{State B of Projects}} \\
-ID & Hash & Project Name & Members (linked) & Tasks (embedded) \\
+ID & Hash & Project Name & Members (linked) & Tasks (embedded, ordered) \\
 \hline
 4 & P1AB & Marketing Material & 1, 2
 &
@@ -132,7 +132,7 @@ ID & Hash & Members (embedded) & Projects (embedded) \\
 
 \begin{tabularx}{\textwidth}{ l l l l X }
 \multicolumn{5}{ c }{\textbf{State C of Projects}} \\
-ID & Hash & Project Name & Members (linked) & Tasks (embedded) \\
+ID & Hash & Project Name & Members (linked) & Tasks (embedded, ordered) \\
 \hline
 4 & P1AC & Marketing Strategy & 1, 2, 3
 & 11: T11A \newline 8: T8A \newline 9: T9A \newline 10: T9A
@@ -140,88 +140,74 @@ ID & Hash & Project Name & Members (linked) & Tasks (embedded) \\
 5 & P5AC & Product Strategy & 1, 3 & 12: T12A \newline 19: T19C
 \end{tabularx} \\
 
-We start the merging process at the highest level by computing the difference between the set of instances.
-At this stage we are only interested in insert and remove operations of instances and in which instances have been updated.
-We do not want to look at the differences between individual attribute values and therefore use the cryptographic hash of each instance.
-Note that all hashes in this section are fictious to be easy to compare.\\
+We start the merging process with the root instance hashs:\\
 
-\begin{tabular}{ l l l l }
-\multicolumn{4}{ c }{\textbf{Project Instance Set}} \\
-ID & State A Hash & State B Hash & State C Hash \\
+\begin{tabular}{ l l l l l }
+\multicolumn{5}{ c }{\textbf{Organization difference}} \\
+ID & State A & State B & State C & Result \\
 \hline
-1 & 1A & 1AB & 1AC \\
-2 & 2A & 2AB & 2AC \\
-3 & 3A & 3A & - \\
-4 & 4A & 4AB & - \\
-5 & - & 5B & -
+0 & O0A & O0AB & O0AC & conflict (concurrent update)
 \end{tabular} \\
-\\
 
-\begin{tabular}{ l l l l }
-\multicolumn{4}{ c }{\textbf{Project Instance Set Difference}} \\
-ID & Diff A-B & Diff A-C & Diffs Merged \\
+Both B and C have obviously modified the content of our organization in different ways resulting in a conflict.\\
+We will try to resolve this conflict by differencing the data on a more detailed level.
+The value of the `members' attribute has not been modified - we therefore look at the difference of the `projects' attribute: \\
+
+\begin{tabular}{ l l l l l }
+\multicolumn{5}{ c }{\textbf{`Projects' attribute difference of organization ID 0}} \\
+ID & State A & State B & State C & Result \\
 \hline
-1 & update & update & conflict \\
-2 & update & update & conflict \\
-3 & - & remove & remove \\
-4 & update & remove & conflict \\
-5 & insert & - & insert
+4 & P4A & P4AB & P4AC & conflict (concurrent update) \\
+5 & P5A & P5AB & P5AC & conflict (concurrent update) \\
+6 & P6A & P6A & - & remove \\
+7 & P7A & P7AB & - & conflict (concurrent update and remove) \\
+16 & - & P16B & - & insert
 \end{tabular} \\
 \\
 
 Whenever the hash of an instance has only changed in one state, we carry the change over into the result.
 If the hash has changed in both states, we have a conflict.
 We will try to resolve conflicts by running a finer grained merge on the conflicting instance states.
-ID 1 and 2 will therefore go into a lower level of merging while the changes in ID 3 and 5 are already accepted.
-We cannot run the finer grained merge on ID 4 as it was removed in state C.
-This conflict is therefore already carried over into the result.\\
+ID 4 and ID 5 will therefore go into a lower level of merging while the changes in ID 6 and 16 are already accepted.
+We cannot run a finer grained merge on ID 7 as it was removed in state C.
+This conflict can therefore not be resolved and directly carried into the result.\\
 
-Lets see if we can resolve conflicts 1 and 2 in the next merge.
-At this level we will look at the actual instance data to find out which attributes are actually affected by the updates.
-We will again use cryptographic hashes - this time to represent the attribute values:\\
+Lets see if we can resolve conflicts 4 and 5 in the next merge.
+At this level we will again look at individual attributes to find out which are actually affected by the updates.\\
 
-\begin{tabular}{ l l l l }
-\multicolumn{4}{ c }{\textbf{Attribute Value Hashs of ID 1}} \\
-Attribute & State A Hash & State B Hash & State C Hash \\
+\begin{tabularx}{\textwidth}{ l X X X l }
+\multicolumn{5}{ c }{\textbf{Attribute difference of task ID 4}} \\
+Attribute & State A Hash & State B Hash & State C Hash & Result \\
 \hline
-Project Name & 1pA & 1pAB & 1pAC \\
-Members & 1mA & 1mAB & 1mA \\
-Tasks & 1tA & 1tAB & 1tAC
-\end{tabular}\\
+Project Name & Markting Material & Marketing Material & Marketing Strategy & conflict \\
+Members & 1, 2, 3 & 1, 2 & 1, 2, 3 & update
 \\
-
-\begin{tabular}{ l l l l }
-\multicolumn{4}{ c }{\textbf{Attribute Value Difference of ID 1}} \\
-Attribute & Diff A-B & Diff A-C & Diffs Merged \\
-\hline
-Project Name & update & update & conflict \\
-Members & update & - & update \\
-Tasks & update & update & conflict
-\end{tabular}\\
+Tasks &
+8: T8A \newline 9: T9A \newline 10: T9A \newline 11: T11A
+&
+8: T8A \newline
+11: T11A \newline
+9: T9A \newline
+10: T9A \newline
+17: T17B
+& 11: T11A \newline 8: T8A \newline 9: T9A \newline 10: T9A
+& conflict
+\end{tabularx}\\
 \\
 
 At this level we can already carry over the update of the `Members' attribute in B to the result.\\
-The `Project Name' and `Tasks' attributes of B and C have still conflicting states.
-If we define string values as atoms we have reached the most detailed level of merging - the conflict will therefore be carried over into the result.
+The `Project Name' and `Tasks' attributes of B and C have been concurrently updated and are therefore in conflict.
+If we define string values as atoms we have reached the most detailed level of merging for `Project Name' - the conflict will therefore be carried over into the result.
 If we instead see strings as another substructure we can attempt to resolve the conflict by using a string merging algorithm.\\
-We have defined the `Tasks' attribute as an ordered set of instance IDs.
-We can therefore try to resolve the conflict by applying a merge algorithm for ordered sets.\\
+We have mapped the embedded and ordered `Tasks' attribute to an ordered dictionary data structure.
+We can therefore try to resolve the conflict by applying a merge algorithm for ordered dictionaries.\\
 
-The result we expect from merging the `Project Name' strings:\\
-
-\begin{tabular}{ l l l }
-\multicolumn{3}{ c }{\textbf{`Project Name' of ID 1}} \\
-State A & State B & State C\\
-\hline
-Marketng Material & Marketing Material & Marketing Strategy
-\end{tabular}\\
-\\
-
+We will now describe the result we expect from merging the `Project Name' strings.
 Note that all index positions in the following diffs are seen as relative to the ancestor state.
 So even if one diff contains multiple insert or remove operations they are given as if they were all applied simultaneously to the ancestor state.\\
 
 \begin{tabularx}{\textwidth}{ l X X }
-\multicolumn{3}{ c }{\textbf{`Project Name' Difference for ID 1}} \\
+\multicolumn{3}{ c }{\textbf{`Project Name' difference for project ID 4}} \\
 Diff A-B & Diff A-C & Diffs Merged \\
 \hline
 insert `i' behind index 5 & insert `i' behind index 5 \newline remove from index 9 to 17 & insert `i' behind index 5 \newline remove from index 9 to 17
@@ -230,18 +216,17 @@ insert `i' behind index 5 & insert `i' behind index 5 \newline remove from index
 
 Applying this merge result to the ancestor state gives us an intuitive result: `Marketing Strategy'.\\
 
-The expected output from merging the `Tasks' values looks similar:\\
+To merge the ordered dictionary structure representing the `Tasks' attribute we will apply two separate merge steps:
 
-\begin{tabular}{ l l l }
-\multicolumn{3}{ c }{\textbf{`Tasks' of ID 1}} \\
-State A & State B & State C \\
-\hline
-1, 2, 3, 4 & 1, 4, 2, 3, 6 & 4, 1, 2, 3
-\end{tabular}\\
-\\
+\begin{itemize}
+\item Order merge: We can merge the order by using the keys of the ordered dictionary as an ordered set and applying an ordered set merge algorithm.
+\item Value merge: The values are merged by applying an ordinary dictionary merge algorithm. 
+\end{itemize}
+
+The expected output of the order merge for the `Tasks' attribute:\\
 
 \begin{tabularx}{\textwidth}{ X X X }
-\multicolumn{3}{ c }{\textbf{`Tasks' Difference for ID 1}} \\
+\multicolumn{3}{ c }{\textbf{`Tasks' order difference for project ID 4}} \\
 Diff A-B & Diff A-C & Diffs Merged \\
 \hline
 move index 3 behind index 0 \newline insert 6 behind index 3
@@ -257,22 +242,17 @@ The application developer will have to implement a custom merge solution - possi
 Depending on how the conflict is resolved, possible results are:
 
 \begin{itemize}
-\item 1, 4, 2, 3, 6
-\item 4, 1, 2, 3, 6
+\item 8, 11, 9, 10, 17
+\item 11, 8, 9, 10, 17
 \end{itemize}
 
-The merge of ID 2 works analogous - we will therefore skip the attribute merging step and jump right into the string merge:\\
+The value merge works analog to the merge we did for the `Projects' attribute in the organization instance.
+We will skip this phase as none of the tasks have been updated.\\
 
-\begin{tabular}{ l l l }
-\multicolumn{3}{ c }{\textbf{`Project Name' of ID 2}} \\
-State A & State B & State C \\
-\hline
-Product Roadmap & Product Planning & Product Strategy
-\end{tabular}\\
-\\
+The merge of ID 5 works analogous - we will therefore skip the attribute merging step and jump right into the string merge:\\
 
 \begin{tabularx}{\textwidth}{ X X X }
-\multicolumn{3}{ c }{\textbf{`Project Name' Difference for ID 2}} \\
+\multicolumn{3}{ c }{\textbf{`Project Name' difference of project ID 5}} \\
 Diff A-B & Diff A-C & Diffs Merged \\
 \hline
 remove from index 8 to 15 \newline insert `Planning' behind index 7
@@ -282,7 +262,7 @@ remove from index 8 to 15 \newline insert `Planning' behind index 7
 \end{tabularx}\\
 \\
 
-We have applied the same merge logic that helped us resolve the conflict in ID 1.
+We have applied the same merge logic that helped us resolve the name conflict in project ID 4.
 But the result we get here is not what a user would expect.
 Applying the merged operations to the ancestor state results in: `Product StrategyPlanning'.\\
 This is a good example for the violation of intention preservation.
