@@ -1,0 +1,43 @@
+
+\chapter{Architecture of Histo}
+\label{sec:main.histo}
+
+Based on the requirements and the evaluation of CouchDB we derive a new architecture for a practical synchronization solution.
+
+\begin{itemize}
+\item
+  \textbf{No Timestamps}: history-based 3-way merging
+\item
+  \textbf{No Change Tracing}: explicit change tracing is not necessary - support
+  diff computation on the fly
+\item
+  \textbf{Data Agnostic}: leave diff and merge of the actual data to
+  plugins
+\item
+  \textbf{Distributed}: synchronization does not require a central server
+\item
+  \textbf{Functional Design}: only implement the functional parts of synchronization - leave everything else to the application (transport, persistence)
+\item
+  \textbf{Sensitive Defaults}: have defaults that `just work' but
+  still support custom logic (e.g. for conflict resolution)
+\item
+  \textbf{Cross-Platform}: be available on every major platform through the use of Web Standards
+\end{itemize}
+
+\include{hierarchical-mapping}
+
+\include{committing}
+
+\include{sync-protocol}
+
+\include{commit-changes}
+
+\include{merging}
+
+\include{conflicts}
+
+\include{topologies}
+
+\include{optimizations}
+
+\include{app-integration}
