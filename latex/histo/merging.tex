@@ -34,6 +34,9 @@ Based on an ancestor state all users start with, we define several possible bran
 Merging of the branch states will happen at multiple levels of detail corresponding to our data hierarchy.
 Each level will have its own difference and diff merge phase.
 The result of the diff merge phases is then used to patch the common ancestor state.\\
+The difference and merge algorithms that need to be applied will vary on each level depending on the data structures used.
+The sample data is defined so that we can demonstrate each possible data structure that we mapped to in section \ref{sec:histo.hierarchy} (dictionaries, ordered dictionaries, ordered sets and ordered lists).\\
+
 Our common ancestor state A is described as the following:\\
 
 The root of our state is defined through an organization instance.
