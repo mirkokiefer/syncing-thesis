@@ -381,7 +381,11 @@ Insert and remove operations are merged the same way as defined for ordered list
 
 \emph{Ordinary Dictionaries} have insert, remove and update operations.
 Concurrent insert and remove operations never lead to conflicts - they are carried over into the merge result.
-Update operations can lead to conflicts if the value of the same key is concurrently modified.
+Update operations can lead to conflicts if the value of the same key is concurrently modified.\\
+
+\emph{Ordered Dictionary} diff merging is realized through the combination of merge algorithms for ordered sets and ordinary dictionaries.
+As with the respective difference algorithm we use the ordered set merge algorithm only for merging the entry positions.
+Insert, update and remove operations are merged using the ordinary dictionary merge algorithm.
 
 \subsection{Patching}
 \label{sec:histo.merging.patching}
