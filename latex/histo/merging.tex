@@ -197,7 +197,8 @@ Tasks &
 \end{tabularx}\\
 \\
 
-At this level we can already carry over the update of the `Members' attribute in B to the result.\\
+At this level we can already carry over the update of the `Members' attribute in B to the result.
+Note that if we had a conflict here, we would have run an ordered set difference and merge algorithm as it is shown later as part of the ordered dictionary algorithms.\\
 The `Project Name' and `Tasks' attributes of B and C have been concurrently updated and are therefore in conflict.
 This difference and merge step can again be realized with an algorithm for dictionaries (keys being attributes, values being attribute values).\\
 If we define string values as atoms we have reached the most detailed level of merging for `Project Name' - the conflict will therefore be carried over into the result.
@@ -283,30 +284,15 @@ Differencing algorithms have been studied extensively.
 There exist efficient solutions for a range of data structures.
 It is not a focus of our thesis to develop the most efficient differencing algorithm matching our scenario.
 Our goal in this section is to show the practical feasibility of the three-way merging component in our architecture.
-We favor a simple solution, re-using existing concepts so that we can broaden our focus on an other areas of our synchronization solution.\\
-The test case defined in the previous section can be decomposed and mapped to common data structures.\\
-The first merging level of instances represented as cryptographic hash can be mapped to a \emph{dictionary} with key-value entries.\\
-Same is true for instance-level merging: the dictionary keys are mapped to the attribute names and the dictionary values to the respective value hashs.\\
-Attribute values that represent collections of instance IDs can be mapped to \emph{sets}.
-Our `Members' attribute does not have a relevant order, it can be mapped to an ordinary set.
-The `Tasks' attribute has a significant order and therefore has to be mapped to an \emph{ordered set}.\\
-If we do not treat string values as atoms we have to represent them as an \emph{ordered list}.\\
+We favor a simple solution, re-using existing concepts so that we can expand our focus to other areas of our synchronization protocol.\\
 
-To summarize - for the following data structures we need an algorithm that finds the difference from an origin state A to a changed state B:
-
-\begin{itemize}
-\item \textbf{Dictionaries}: to model entity instances and instance attributes.
-\item \textbf{Sets and Ordered Sets}: to model instance relationships.
-\item \textbf{Ordered Lists / Strings}: to model string values of instance attributes.
-\end{itemize}
-
-Ordered list or string data structures have been the main focus in previous research on difference algorithms.
+\emph{Ordered list} or string data structures have been the main focus in previous research on difference algorithms.
 Myers presented an efficient algorithm with $\mathcal O(n*d) $ time and space complexity to difference two strings A and B with
 $ n $ representing the sum of the lengths of two strings and $ d $ the size of the shortest edit script transforming A to B \cite{Myers:1986wi}.
 The shortest edit script is equivalent to the result of a differencing algorithm.
 As in practical applications differences are usually small the algorithm performs well.\\
 
-Given the ordered list difference algorithm we can re-use it to build an algorithm for ordered sets.
+Given the ordered list difference algorithm we can re-use it to build an algorithm for \emph{ordered sets}.
 Ordered lists can only have differences in the form of \emph{insert} or \emph{remove} operations.
 Ordered sets extend this - the simultaneous remove and insert of a globally unique element is now considered as a move operation.\\
 To implement an ordered set algorithm we can therefore take the output of the ordered list algorithm and scan the result for the remove and insert of the same element.
@@ -322,7 +308,7 @@ The time complexity of building a hash can be estimated with $ \mathcal O(n * lo
 The match searching has linear time complexity.
 We therefore only add $ \mathcal O(n * log(n)) $ complexity to Myers difference algorithm for a naive solution for ordered sets.\\
 
-For ordinary sets we can implement a simple solution through two hashs of the respective set entries combined with a scan through each set:
+For \emph{ordinary sets} we can implement a simple solution through two hashs of the respective set entries combined with a scan through each set:
 
 \begin{enumerate}
 \item Add all entries of set A to a hash $ H_A $ and those of set B to a different hash $ H_B $.
@@ -336,7 +322,7 @@ For ordinary sets we can implement a simple solution through two hashs of the re
 The time complexity for building each hash is again $ \mathcal O(n * log(n)) $.
 Searching for matches has linear complexity which results in a time complexity $ \mathcal O(n * log(n)) $ for the entire algorithm.\\
 
-A dictionary data structure has \emph{insert}, \emph{remove} and \emph{update} operations.
+An \emph{ordinary dictionary} data structure has \emph{insert}, \emph{remove} and \emph{update} operations.
 If the instance described through the dictionary has a fixed set of attributes it would actually only need to support an update operation.
 In modern web applications it is not uncommon that there is no fixed data schema.
 It is often the case that new attributes are added to instances at runtime.
@@ -357,6 +343,14 @@ A simple and efficient solution is to again use two hashes for fast lookup combi
 Building the hash is again estimated with time complexity $ \mathcal O(n * log(n)) $, scanning both dictionaries has linear time complexity. The combined time complexity is therefore again $ \mathcal O(n * log(n)) $.\\
 Depending on the application, its instances are often already implemented with hash-like lookup performance - in this case we could skip step 1.
 The time complexity is in this case only linear.\\
+
+As already briefly described, \emph{Ordered dictionary} differencing can be implemented as a combination of difference algorithms for dictionaries and for ordered sets.\\
+In addition to ordinary dictionaries, ordered dictionaries have a \emph{move} operation which supports changing of an entry's position.\\
+The changes caused by \emph{insert}, \emph{update} and \emph{remove} operations can be identified by running an ordinary dictionary difference algorithm.\\
+To track the movement of entries we represent all keys in the ordered dictionary as an ordered set.
+We can then re-use our ordered set difference algorithm to identify move operations.
+The output of the ordered-set algorithm will include \emph{insert} and \emph{remove} operations as well.
+As those have already been identified they are simply ignored and not added to the result.\\
 
 \subsection{Diff Merging}
 \label{sec:histo.merging.merge}
