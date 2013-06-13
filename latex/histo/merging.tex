@@ -397,7 +397,7 @@ Two merged diffs are applied as a patch to the common ancestor state resulting i
 We again need patching algorithms for each data structure we intend to support.
 The implementation needs to consider that simply executing the operations defined in the diff can lead to a wrong result.
 This is true if a change operation has side effects on other parts of the state.\\
-In our set of data structures this is only the case for ordered lists and ordered sets.
+In our set of data structures this is the case for ordered lists, ordered sets and ordered dictionaries.
 Applying an insert operation at the specified index, renders the indexes of following operations wrong.
 A simple example:
 
