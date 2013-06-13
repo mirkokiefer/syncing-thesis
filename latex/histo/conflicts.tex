@@ -29,5 +29,15 @@ In this case the application effectively `resolves' the conflict by randomly cho
 Considering the example of conflicting but minor changes to a task title.
 A user would most likely be annoyed everytime he is asked to manually resolve a title conflict.\\
 A popular compromise is to randomly pick one version as the winner while still keeping the conflicting changes.
-Dropbox, Evernote...
+The user will not be interrupted in his workflow as conflicts occur while he still has the option to review and merge them.\\
+Dropbox follows this model by simply duplicating the file whenever a conflict occurs.
+The file under the original name contains the randomly picked `winner' of the conflict.
+An additional file with a timestamp appended to the file name contains the changes of the `losing' node in the conflict.
+An analog approach is chosen by Evernote which duplicates notes on a conflict.\\
+As we described in section \ref{sec:couchdb}, CouchDB applies a similar model by deterministicially choosing one of the conflicting documents as the winner.
+The deterministic winner picking is important to ensure that concurrent merge operations on different nodes pick the same document as a winner.\\
+We believe that it adds value to our synchronization solution if we implement a winner picking model equivalent to CouchDB's.
+It relieves the application developer from worrying about conflict resolution in early stages of the development cycle.
+As long as the alternate outcomes of a conflict are still available we leave all application-specific merge options open.
+This model therefore makes sure we are in line with our requirements for conflict handling, defined in section \ref{sec:requirements.causality}, while still being convinient for user's of our framework.
 
