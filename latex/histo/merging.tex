@@ -43,7 +43,7 @@ As defined in section \ref{sec:histo.hierarchy}, we differentiate between linkin
 Linking is done by only referencing an instance's ID, embedding is done by referencing its actual state hash along with the ID.\\
 
 \begin{tabularx}{0.8\textwidth}{ l l X X }
-\multicolumn{4}{ c }{\textbf{Ancestor state A of Organization}} \\
+\multicolumn{4}{ c }{\textbf{Ancestor state A of organizations}} \\
 ID & Hash & Members (embedded) & Projects (embedded) \\
 \hline
 0
@@ -56,7 +56,7 @@ ID & Hash & Members (embedded) & Projects (embedded) \\
 For completeness we include the state of embedded user instances - they will not be modified in this example:\\
 
 \begin{tabularx}{0.3\textwidth}{ l l l }
-\multicolumn{3}{ c }{\textbf{Ancestor state A of Users}} \\
+\multicolumn{3}{ c }{\textbf{Ancestor state A of users}} \\
 ID & Hash & Name \\
 \hline
 1 & U1A & Rita \\
@@ -68,7 +68,7 @@ ID & Hash & Name \\
 The projects embedded in the organization show the difference between linking (members) and embedding (projects):\\
 
 \begin{tabularx}{\textwidth}{ l l l l X }
-\multicolumn{5}{ c }{\textbf{Ancestor state A of Projects}} \\
+\multicolumn{5}{ c }{\textbf{Ancestor state A of projects}} \\
 ID & Hash & Project Name & Members (linked) & Tasks (embedded, ordered) \\
 \hline
 4 & P1A & Marketng Material & 1, 2, 3
@@ -86,7 +86,7 @@ We will leave out the details on the state of other entities (tasks and comments
 The state has been modified resulting in a new state in branch B:\\
 
 \begin{tabularx}{0.8\textwidth}{ l l X X }
-\multicolumn{4}{ c }{\textbf{State B of Organization}} \\
+\multicolumn{4}{ c }{\textbf{State B of organizations}} \\
 ID & Hash & Members (embedded) & Projects (embedded) \\
 \hline
 0
@@ -97,7 +97,7 @@ ID & Hash & Members (embedded) & Projects (embedded) \\
 \\
 
 \begin{tabularx}{\textwidth}{ l l l l X }
-\multicolumn{5}{ c }{\textbf{State B of Projects}} \\
+\multicolumn{5}{ c }{\textbf{State B of projects}} \\
 ID & Hash & Project Name & Members (linked) & Tasks (embedded, ordered) \\
 \hline
 4 & P1AB & Marketing Material & 1, 2
@@ -121,7 +121,7 @@ ID & Hash & Project Name & Members (linked) & Tasks (embedded, ordered) \\
 Through concurrent updates branch C emerged - its state is defined as the following:\\
 
 \begin{tabularx}{0.8\textwidth}{ l l X X }
-\multicolumn{4}{ c }{\textbf{Ancestor state C of Organization}} \\
+\multicolumn{4}{ c }{\textbf{Ancestor state C of organizations}} \\
 ID & Hash & Members (embedded) & Projects (embedded) \\
 \hline
 0
@@ -132,7 +132,7 @@ ID & Hash & Members (embedded) & Projects (embedded) \\
 \\
 
 \begin{tabularx}{\textwidth}{ l l l l X }
-\multicolumn{5}{ c }{\textbf{State C of Projects}} \\
+\multicolumn{5}{ c }{\textbf{State C of projects}} \\
 ID & Hash & Project Name & Members (linked) & Tasks (embedded, ordered) \\
 \hline
 4 & P1AC & Marketing Strategy & 1, 2, 3
@@ -345,7 +345,7 @@ Depending on the application, its instances are often already implemented with h
 The time complexity is in this case only linear.\\
 
 As already briefly described, \emph{Ordered dictionary} differencing can be implemented as a combination of difference algorithms for dictionaries and for ordered sets.\\
-In addition to ordinary dictionaries, ordered dictionaries have a \emph{move} operation which supports changing of an entry's position.\\
+In addition to ordinary dictionaries, ordered dictionaries have a \emph{move} operation which supports updating an entry's position.\\
 The changes caused by \emph{insert}, \emph{update} and \emph{remove} operations can be identified by running an ordinary dictionary difference algorithm.\\
 To track the movement of entries we represent all keys in the ordered dictionary as an ordered set.
 We can then re-use our ordered set difference algorithm to identify move operations.
