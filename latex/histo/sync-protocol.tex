@@ -79,8 +79,9 @@ Even if the Source is disconnected at this stage, the Target has all the necessa
   We commit the result as the new master head.
 \end{enumerate}
 
-This protocol is able to minimize the amount of data sent between synced
-stores even in a distributed, peer-to-peer setting.\\
+This protocol is able to minimize the amount of data sent between synchronized
+nodes even in a distributed, peer-to-peer setting.
+Section \ref{sec:histo.topologies} will look at the protocol's support of various network topologies.\\
 
 Updating the Target's head uses optimistic locking.
 To update the head you need to include the last read head in your request.
