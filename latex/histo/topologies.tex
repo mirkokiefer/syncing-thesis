@@ -2,14 +2,23 @@
 \section{Synchronization Topologies}
 \label{sec:histo.topologies}
 
-TODO:
+In this section we will look at different network topologies to evaluate how they are supported by our synchronization protocol.
+We will further explore options for optimization of our protocol with regards to each topology.\\
 
-- document different supported topologies
+\subsection{Master - Client}
+clients sync only with one node - only remember one remote tracking branch
+can safely delete data of previous commits
+server can't pull - therefore clients need to push and update server branch
+maximal optimization (less data on clients, most efficient syncs)
 
-- client-server
+\subsection{Client - Client}
+need to remember remote tracking branch for each client
+--> if not it still works but less efficient
+can only forget data after least-recently synced client
 
-- client-client
+\subsection{Multi Master - Client}
+can easily replace servers even if they are not 100 percent in sync
+max optimization on clients
 
-- client-server + server-server
-
-- hierarchical (office server + cloud server)
+\subsection{Hierarchical}
+office server + cloud server)
