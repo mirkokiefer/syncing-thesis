@@ -9,15 +9,18 @@ We will further explore options for optimization of our protocol with regards to
 In a Master-Client or Client-Server setup we have a single server which handles all data propagation.
 The clients can only synchronize their data with the server and directly with each other.
 With regards to our synchronization protocol, this means each client has to remember only one remote tracking head.\\
-We can therefore optimize our protocol by adding a data pruning step.
+We can optimize our protocol by adding a data pruning step.
 As explained in section \ref{sec:histo.protocol}, each commit corresponds to a synchronization point between two nodes.
-In our 
-All data 
-
-clients sync only with one node - only remember one remote tracking branch
-can safely delete data of previous commits
-server can't pull - therefore clients need to push and update server branch
-maximal optimization (less data on clients, most efficient syncs)
+As we only synchronize with the server, the ancestor commit of a client's head is always equal to the client's remote tracking head of the server.
+We can therefore prune all data on the client that is neither part of our branch head nor the remote tracking head.
+Pruning is defined as deleting all objects in our store whose hashes are not referenced in the data hierarchy of the commits we want to keep.
+We effectively only keep our current data and the data we received last from the server.
+In terms of memory usage of the client's store, this topology is therefore the most efficient one.\\
+Same is true for the computation of commit and data differences as described in section \ref{sec:histo.diff-across-commits}.
+Running the protocol with the client as the source and the server as the target, the lowest common ancestor of the source's head and the source's remote tracking head is always the remote tracking head itself.
+We therefore only need to compute the commit difference between the current head and the ancestor commit which is the remote tracking head.\\
+These optimizations do not apply for running the protocol with the server as the source and the client as the target.
+The server could have synchronized with other client nodes in the meantime which means that its head is more than one commit ahead of the client.
 
 \subsection{Client - Client}
 need to remember remote tracking branch for each client
