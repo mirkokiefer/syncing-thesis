@@ -136,3 +136,11 @@ if (commonAncestor == sourceTrackingHead) {
 }
 
 \end{lstlisting}
+
+The protocol described here only propagates the changes from the source to the target node.
+To actually synchronize both nodes to the same state, the protocol has to be run in the reverse direction as well.
+Running the protocol in both directions is not an atomic operation.
+It is therefore possible that both nodes do not end up with the exact same state as updates to the data can be made on both nodes at any time.
+The nodes are only consistent if both nodes do not change any data while the synchronization takes place.
+This is inline with our requirement of optimistic synchronization and eventual consistency, defined in section \ref{sec:requirements.optimistic}.
+

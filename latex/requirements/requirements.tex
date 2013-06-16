@@ -42,6 +42,7 @@ If we can support synchronizing data with this type of schema it will make integ
 We therefore require that the synchronization engine needs to have a structural awareness of at least the listed modeling components.
 
 \subsection{Optimistic Synchronization}
+\label{sec:requirements.optimistic}
 As we have seen in the application scenario it is necessary that objects are editable on multiple devices even if they are not connected to a network.
 Edits should be allowed concurrently to not block users from doing their work.
 This implies that there can not be a central locking mechanism that controls when users can synchronize their data for offline usage.
