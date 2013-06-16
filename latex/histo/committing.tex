@@ -18,7 +18,8 @@ Commit objects themselves are stored separately in a content-addressable store.
 They reference the root of the data hierarchy through the hash of the root object.
 Ancestor commits are simply referenced through their hash as well.\\
 Whenever an object in our graph changes, we only need to write the changed object and all its parents again.
-All unchanged objects can be referenced again through their state hash.\\
+All unchanged objects can be referenced again through their state hash.
+If we run a commit and no data has actually changed, we therefore do not write any new object versions to the store.\\
 
 Let us go through the steps of an exemplary update which could have lead to the scenario shown in figure \ref{fig:histo.commits}:
 

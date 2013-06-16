@@ -6,6 +6,12 @@ In this section we will look at different network topologies to evaluate how the
 We will further explore options for optimization of our protocol with regards to each topology.\\
 
 \subsection{Master - Client}
+In a Master-Client or Client-Server setup we have a single server which handles all data propagation.
+The clients can only synchronize their data with the server and directly with each other.
+With regards to our synchronization protocol, this means each client has to remember only one remote tracking head.\\
+We can therefore optimize our protocol by adding a data pruning step.
+All data 
+
 clients sync only with one node - only remember one remote tracking branch
 can safely delete data of previous commits
 server can't pull - therefore clients need to push and update server branch

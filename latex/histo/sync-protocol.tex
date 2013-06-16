@@ -4,13 +4,18 @@
 Synchronization always happens from a \emph{Source} node to a \emph{Target} node.
 If it is run simultaneously with Source and Target exchanged, it keeps both nodes in sync with each other.\\
 The algorithm is designed to be able to run independently of the Source or Target.
-It could be implemented as a separate application possibly even running on a different device - as long as it has access to both the Source and Target node.\\
+It could be implemented as a separate application, possibly even running on a different device - as long as it has access to both the Source and Target node.\\
 The Synchronizer could be run in regular intervals or explicitly triggered by changes in the Source node.\\
 
-The latest commit on a node we refer to as the \emph{head}.
+The latest commit on a node we refer to as its \emph{head}.
 A node has a \emph{master head} which refers to the version of the data considered to be `true' by the node.\\
 For each remote node it synchronizes with, the node keeps a \emph{remote tracking head}.\\
-A remote tracking head represents what the local node considers to be the current state of a remote node.
+A remote tracking head represents what the local node considers to be the current state of a remote node.\\
+Before each synchronization, both nodes should commit their latest changes as described in section \ref{sec:histo.committing}.
+Commits snapshot the state of our data as we start synchronizing.
+Between synchronizations they do not have to be run on every change of data.
+The commit history therefore marks the history of synchronizations between nodes.
+Every commit corresponds to the state of one or more synchronizations.
 
 Synchronization follows a two-step protocol, step one propagates all changed data from Source to Target, step two executes a local merge operation.
 
