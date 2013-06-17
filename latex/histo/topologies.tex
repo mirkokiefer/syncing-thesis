@@ -6,6 +6,7 @@ In this section we will look at different network topologies to evaluate how the
 We will further explore options for optimization of our protocol with regards to each topology.\\
 
 \subsection{Master - Client}
+\label{sec:histo.topologies.master-client}
 In a Master-Client or Client-Server setup we have a single server which handles all data propagation.
 The clients can only synchronize their data with the server and directly with each other.
 With regards to our synchronization protocol, this means each client has to remember only one remote tracking head.\\
@@ -23,13 +24,27 @@ These optimizations do not apply for running the protocol with the server as the
 The server could have synchronized with other client nodes in the meantime which means that its head is more than one commit ahead of the client.
 
 \subsection{Client - Client}
-need to remember remote tracking branch for each client
---> if not it still works but less efficient
-can only forget data after least-recently synced client
+A client-client or peer-to-peer topology is the opposite extreme of a client-server setup.
+Every client can directly synchronize with any other client.
+On a network with $ n $ nodes, each node potentially synchronizes with $ n - 1 $ other nodes and therefore has to remember $ n - 1 $ remote tracking heads.\\
+We can still apply some optimizations in the form of data pruning.
+Let $ A $ be the remote tracking head with the largest distance to a node's head.
+All data that is not part of any commit between a node's own head and the lowest common ancestor with $ A $ can be deleted.
+It means we only keep the data history until the state of the most outdated node in the network.\\
+To maximize the efficiency of this pruning technique, we have to ensure that each node on the system has the best possible information on other node's heads.
+We can therefore extend our synchronization protocol to not only set the source's head as the remote tracking head on the target node but to also update all other remote tracking head's using the source's information.
+For each remote tracking head $ A $ of the source node, we compute the lowest common ancestor $ C $ of the corresponding tracking head $ B $ on the target node.
+If $ C $ is equal to $ A $, we know that our information on the node's head is more up to date.
+If $ C $ is equal to $ B $, the source node had more current information and we update the target's remote tracking head to $ A $.
 
 \subsection{Multi Master - Client}
-can easily replace servers even if they are not 100 percent in sync
-max optimization on clients
+In a multi master-client setup we have a set of servers who synchronize with each other and a set of clients who can synchronize with any server.
+The servers synchronize in a peer-to-peer topology with each other, while the clients can communicate with each other.\\
+The advantage of this setup over a pure client-server setting is that we can distribute the synchronization load across multiple servers.
+Each server is only responsible for a subset of clients.
+The data is kept-up-to date across all servers by synchronizing them with each other in regular intervals.\\
+The server's can only make use of the peer-to-peer optimizations described in the previous section.
+The client's can make full use of the client-server optimizations we described in section \ref{sec:histo.topologies.master-client}.
 
 \subsection{Hierarchical}
 office server + cloud server)
