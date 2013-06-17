@@ -57,21 +57,21 @@ This property is referred to as \emph{eventual consistency} and explained in sec
 If an object diverges into multiple branches it will have to be reconciled during the synchronization process.
 When we receive states from a remote device we need to reason about how we can apply them to our own edit history.\\
 The \emph{happens-before} relationship defined by Lamport in \cite{Lamport:1978tr} helps to solve this problem in an intuitive way.
-A state \emph{a} that \emph{happened before} state \emph{b} refers to the fact that the edits that led to \emph{b} could have been affected by \emph{a}. The order of states defined through the happens-before relationship is called the \emph{causal order}.
-The causal order of states is not necessarily related to the actual time of the edits that led to \emph{a} and \emph{b} as we can see in the following example:\\
+A state $ A $ that \emph{happened before} state $B$ refers to the fact that the edits that led to $B$ could have been affected by $A$. The order of states defined through the happens-before relationship is called the \emph{causal order}.
+The causal order of states is not necessarily related to the actual time of the edits that led to $A$ and $B$ as we can see in the following example:\\
 
 Lets assume Rita and Allen work on the same object with their respective devices.
-The object has the initial state \emph{a}.
+The object has the initial state $A$.
 
 \begin{itemize}
-\item 9:00 AM: Rita makes an edit to the object which leads to state \emph{b}.
-\item 9:30 AM: Allen synchronizes with Rita and edits which leads to state \emph{c}.
-\item 10:00 AM: Rita is offline and can not synchronize. She edits the object at state \emph{b} leading to state \emph{d}. 
+\item 9:00 AM: Rita makes an edit to the object which leads to state $B$.
+\item 9:30 AM: Allen synchronizes with Rita and edits which leads to state $C$.
+\item 10:00 AM: Rita is offline and can not synchronize. She edits the object at state $B$ leading to state $D$. 
 \end{itemize}
 
-As Allen has seen state \emph{b} when making his edit, state \emph{b} \emph{happened before} state \emph{c}.\\
-Rita has not seen state \emph{c} when making her edit.
-Although the time of her edit is after Allen's edit there is no \emph{happened-before} relationship between state \emph{c} and \emph{d}.\\
+As Allen has seen state $B$ when making his edit, state $B$ \emph{happened before} state $C$.\\
+Rita has not seen state $C$ when making her edit.
+Although the time of her edit is after Allen's edit there is no \emph{happened-before} relationship between state $C$ and $D$.\\
 On the next synchronization between Allen and Rita the system needs to identify this lack of causality as a \emph{conflict}.\\
 While this example is simple, the identification of conflicts among a large group of collaborators can be non-trivial.\\
 Depending on the level of understanding the synchronization engine has on the data there are strategies to resolve conflicts automatically.
