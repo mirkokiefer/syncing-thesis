@@ -24,11 +24,11 @@ We can express this more concretely using pseudo-code:\\
 \begin{lstlisting}[caption=Detecting commit history difference, label=commit-difference]
 
 function getCommitDifference(commitA, commitB) {
-  result = []
+  result = [commitB]
 
   commonAncestor = getCommonAncestor(commitA, commitB)
 
-  while (not commitB.hasMultipleAncestors()) {
+  while (commitB.hasOnlySingleAncestor()) {
     singleAncestor = commitB.getAncestors()[0]
 
     if (singleAncestor == commonAncestor) {
@@ -38,6 +38,10 @@ function getCommitDifference(commitA, commitB) {
     result.push(singleAncestor)
 
     commitB = singleAncestor
+  }
+
+  if (commitB.hasNoAncestors()) {
+    return result
   }
 
   ancestors = commitB.getAncestors()
@@ -69,6 +73,10 @@ The commit difference between A and B is therefore the sum of two commit paths:\
   \caption{Commit difference between branches B and C and A being the last synchronized commit.}
   \label{fig:histo.new-commits}
 \end{figure}
+
+We want to ensure that if `commitA' is not part of the history, the entire history of `commitB' is returned.
+`getCommonAncestor()' therefore has to return the root of the history if no common ancestor is found.
+This is the reason for the exit condition on line 19 where commitB has reached the root of the history.
 
 \subsection{Application Data Change Detection}
 
