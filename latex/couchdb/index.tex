@@ -47,6 +47,7 @@ As this choice is random to the user of an application it is often not the desir
 It is therefore possible to either pick a different conflicting version as the winner or merge both versions to a new revision.
 
 \subsection{Synchronization Protocol}
+\label{sec:couchdb.protocol}
 CouchDB does not really have a synchronization protocol at all - it is actually a fairly simple algorithm that uses only the existing HTTP interfaces.
 A `CouchDB synchronizer' therefore does not even have to run inside CouchDB but can be an external program that only needs access to the public interfaces of two CouchDB nodes.
 What makes CouchDB's synchronization work is at the core a \emph{changes stream} that is accessible through an HTTP interface as well.

@@ -1,11 +1,12 @@
 
 \section{Synchronization Protocol}
 \label{sec:histo.protocol}
-Synchronization always happens from a \emph{Source} node to a \emph{Target} node.
-If it is run simultaneously with Source and Target exchanged, it keeps both nodes in sync with each other.\\
-The algorithm is designed to be able to run independently of the Source or Target.
-It could be implemented as a separate application, possibly even running on a different device - as long as it has access to both the Source and Target node.\\
-The Synchronizer could be run in regular intervals or explicitly triggered by changes in the Source node.\\
+Synchronization always happens from a \emph{source} node to a \emph{target} node.
+If it is run simultaneously with source and target exchanged, it keeps both nodes in sync with each other.\\
+The algorithm is designed to be able to run independently of the source or target.
+It could be implemented as a separate application, possibly even running on a different device - as long as it has access to both the source and target node.\\
+The synchronizer could be run in regular intervals or explicitly triggered by changes in the source node.
+Our solution therefore shares high-level characteristics with CouchDB's solution described in section \ref{sec:couchdb.protocol}.\\
 
 The latest commit on a node we refer to as its \emph{head}.
 A node has a \emph{master head} which refers to the version of the data considered to be `true' by the node.\\
@@ -17,22 +18,22 @@ Between synchronizations they do not have to be run on every change of data.
 The commit history therefore marks the history of synchronizations between nodes.
 Every commit corresponds to the state of one or more synchronizations.
 
-Synchronization follows a two-step protocol, step one propagates all changed data from Source to Target, step two executes a local merge operation.
+Synchronization follows a two-step protocol, step one propagates all changed data from source to target, step two executes a local merge operation.
 
 \subsection{Update Detection and Propagation}
 \label{sec:histo.protocol.detection-propagation}
 The combination of update detection and propagation follows the following protocol:
 
 \begin{enumerate}
-\item Read the Target's remote tracking head of Source.
-\item Read all commit IDs since the Target's remote tracking head from Source and write them to Target.
-\item Let the Target compute the common ancestor commit ID of Target's and Source's master heads.
-\item Read all changed data since the common ancestor commit from Source and write to Target.
-\item Set the Target's remote tracking head of Source to Source's master head.
+\item Read the target's remote tracking head of source.
+\item Read all commit IDs since the target's remote tracking head from source and write them to target.
+\item Let the target compute the common ancestor commit ID of target's and source's master heads.
+\item Read all changed data since the common ancestor commit from source and write to target.
+\item Set the target's remote tracking head of source to source's master head.
 \end{enumerate}
 
-Once these steps are executed, the Target node has the current state of Source available locally.\\
-The Target's head still refers to the same state as the Source data has not been merged.\\
+Once these steps are executed, the target node has the current state of source available locally.\\
+The target's head still refers to the same state as the source data has not been merged.\\
 
 Listing \ref{propagation-protocol} summarizes the protocol as pseudo-code.\\
 
@@ -42,9 +43,9 @@ sourceHead = source.head.master
 targetHead = target.head.master
 lastSyncedCommit = target.getRemoteTrackingHead(source.id)
 
-commitIDsSource = source.getCommitDifference(lastSyncedCommit, sourceHead)
+commitIDssource = source.getCommitDifference(lastSyncedCommit, sourceHead)
 
-target.writeCommitIDs(commitIDsSource)
+target.writeCommitIDs(commitIDssource)
 
 commonAncestor = target.getCommonAncestor(targetHead, sourceHead)
 
@@ -58,29 +59,32 @@ target.setRemoteTrackingHead(source.id, sourceHead)
 
 The functions `getCommitDifference()' and `getDataDifference()' are implemented as described in section \ref{sec:histo.diff-across-commits}.\\
 The most recent common ancestor algorithm used in `getCommonAncestor()' is described in section \ref{sec:background.lca}.\\
-The internals used by `writeData()' and the underlying commit data model have been explained in section \ref{sec:histo.committing}.
+The internals used by `writeData()' and the underlying commit data model have been explained in section \ref{sec:histo.committing}.\\
+Note that keeping the remote tracking head is optional.
+The protocol still succeeds if the remote head is unknown or rembered wrong.
+Section \ref{sec:histo.topologies.multi-master} will illustrate this for a multi-master topology. 
 
 \subsection{Merging}
 \label{sec:histo.protocol.merging}
-Even if the Source is disconnected at this stage, the Target has all the necessary information to process the merge offline:\\
+Even if the source is disconnected at this stage, the target has all the necessary information to process the merge offline:\\
 
 \begin{itemize}
-\item The Target's master head we refer to as the \emph{master head}.\\
-\item The Target's remote tracking branch for the Source we refer to as the \emph{Source tracking head}.
+\item The target's master head we refer to as the \emph{master head}.\\
+\item The target's remote tracking branch for the source we refer to as the \emph{source tracking head}.
 \end{itemize}
 
 \begin{enumerate}
-\item Compute the common ancestor of the master head and the Source tracking head. (The common ancestor could also be re-used from the propagation step.)
-\item If the common ancestor equals the Source tracking head:\\
-  The Source has not changed since the last synchronization. The master head is ahead of the Source tracking head.\\
+\item Compute the common ancestor of the master head and the source tracking head. (The common ancestor could also be re-used from the propagation step.)
+\item If the common ancestor equals the source tracking head:\\
+  The source has not changed since the last synchronization. The master head is ahead of the source tracking head.\\
   The algorithm can stop here.
 \item If the common ancestor equals the master head:\\
-  The Target has not changed since the last synchronization.\\
-  The Source's head is ahead of Target.\\
-  We can fast-forward the master head to the Source tracking head.
-\item If the common ancestor is neither the Source tracking head nor the master head:\\
-  Both Source and Target must have changed data since the last synchronization.\\
-  We run a three-way merge of the common ancestor, Source tracking head and master head.\\
+  The target has not changed since the last synchronization.\\
+  The source's head is ahead of target.\\
+  We can fast-forward the master head to the source tracking head.
+\item If the common ancestor is neither the source tracking head nor the master head:\\
+  Both source and target must have changed data since the last synchronization.\\
+  We run a three-way merge of the common ancestor, source tracking head and master head.\\
   We commit the result as the new master head.
 \end{enumerate}
 
@@ -88,9 +92,9 @@ This protocol is able to minimize the amount of data sent between synchronized
 nodes even in a distributed, peer-to-peer setting.
 Section \ref{sec:histo.topologies} will look at the protocol's support of various network topologies.\\
 
-Updating the Target's head uses optimistic locking.
+Updating the target's head uses optimistic locking.
 To update the head you need to include the last read head in your request.
-So both the fast-forward operation or the commit of a merge result can be rejected if the Target has been updated in the meantime.
+So both the fast-forward operation or the commit of a merge result can be rejected if the target has been updated in the meantime.
 If this happens the Synchronizer simply has to re-run the merge algorithm.\\
 
 The merging process can be described in pseudo-code as shown in figure \ref{fig:histo.merging-protocol}.\\

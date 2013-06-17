@@ -39,6 +39,7 @@ If $ C $ is equal to $ A $, we know that our information on the node's head is m
 If $ C $ is equal to $ B $, the source node has more current information and we update the target's remote tracking head to $ A $.
 
 \subsection{Multi Master - Client}
+\label{sec:histo.topologies.multi-master}
 In a multi master-client setup we have a set of servers who synchronize with each other and a set of clients who can synchronize with any server.
 The servers synchronize in a peer-to-peer topology with each other, while the clients can communicate with each other.\\
 The advantage of this setup over a pure client-server setting is that we can distribute the synchronization load across multiple servers.

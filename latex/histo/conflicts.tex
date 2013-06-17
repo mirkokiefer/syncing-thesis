@@ -6,7 +6,7 @@ Section \ref{sec:histo.merging} has shown that in our scenario we have two types
 
 \begin{itemize}
 \item \emph{Value conflicts} happen if a structure's actual value is concurrently updated.
-\item \emph{Position conflicts} result of the concurrent movement of the same structure within other structures.
+\item \emph{Position conflicts} result from the concurrent movement of the same structure within other structures.
 \end{itemize}
 
 An example for a value conflict is the concurrent update of the same key in a dictionary.
@@ -21,7 +21,7 @@ The resolution of conflicts is highly application dependent.
 In section \ref{sec:histo.merging} we have presented a hierarchical strategy for conflict resolution applied to instance models.
 We were able to resolve conflicts identified in a high-level merge by applying a finer grained merge algorithm to the structures affected by the conflicts.\\
 The remaining conflicts have to be resolved by the application developer.
-The developer is essentially expanding our merge hierarchy by adding another level of merging to resolve the conflicts.\\
+The developer is thereby essentially expanding our merge hierarchy by adding another level of merging to resolve the conflicts.\\
 This `application merge layer' does not necessarily have to work programatically - in many cases it cannot be.
 A common solution is to develop a user interface which allows the user to manually resolve the conflict.\\
 In some applications the data is not that critical and conflicts are therefore simply being ignored.
