@@ -40,14 +40,14 @@ function getCommitDifference(commitA, commitB) {
     commitB = singleAncestor
   }
 
-  if (commitB.hasNoAncestors()) {
+  ancestors = commitB.getAncestors()
+
+  if (ancestors.length == 0) {
     return result
   }
 
-  ancestors = commitB.getAncestors()
-
   for (each ancestor in ancestors) {
-    forkResult = getCommitDifference(commitA, commitB)
+    forkResult = getCommitDifference(commitA, ancestor)
     result.append(forkResult)
   }
 
