@@ -41,7 +41,7 @@ If $ C $ is equal to $ B $, the source node has more current information and we 
 \subsection{Multi Master - Client}
 \label{sec:histo.topologies.multi-master}
 In a multi master-client setup we have a set of servers who synchronize with each other and a set of clients who can synchronize with any server.
-The servers synchronize in a peer-to-peer topology with each other, while the clients can communicate with each other.\\
+The servers synchronize in a peer-to-peer topology with each other, while the clients cannot communicate with each other.\\
 The advantage of this setup over a pure client-server setting is that we can distribute the synchronization load across multiple servers.
 Each server is only responsible for a subset of clients.
 The data is kept-up-to date across all servers by synchronizing them with each other in regular intervals.\\
