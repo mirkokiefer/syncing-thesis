@@ -1,11 +1,13 @@
 
-\section{Application Scenario: A Collaborative Task Manager}
+\chapter{Application Scenario - A Collaborative Task Manager}
+\label{sec:scenario}
+
 Our goal is to develop a collaborative Task Manager that can still be used if disconnected from the network.
 We choose this scenario because we think it represents a common type of architecture and data model for mobile applications.
 
 Let us first work out some user stories and then try to define a suitable data model for such an application.
 
-\subsection{User Story 1: Creating Projects}
+\section{User Story 1: Creating Projects}
 \begin{itemize}
 \item All \emph{Users} are part of an organization.
 \item A \emph{User} can create \emph{Projects} in order to coordinate \emph{Tasks}.
@@ -20,9 +22,9 @@ Project Name & Members \\
 Marketing Material & Rita, Tom, Allen \\
 Product Roadmap & Rita, Allen \\
 Sales Review & Rita, Lisa
-\end{tabular}
+\end{tabular}\\
 
-\subsection{User Story 2: Creating and Editing Tasks}
+\section{User Story 2: Creating and Editing Tasks}
 \begin{itemize}
 \item \emph{Project Members} can add \emph{Tasks} to a \emph{Project} in order to manage responsibilities.
 \item A \emph{Task} can have a due date and a responsible \emph{Member} assigned.
@@ -38,9 +40,9 @@ Task & Due Date & Assignee & Done \\
 \hline
 Create event poster & 2013-08-12 & Rita & No\\
 Write blog entry on event & 2013-07-20 & Tom & Yes
-\end{tabular}
+\end{tabular}\\
 
-\subsection{User Story 3: Commenting on Tasks}
+\section{User Story 3: Commenting on Tasks}
 \begin{itemize}
 \item \emph{Members} can add \emph{Comments} to \emph{Tasks}.
 \end{itemize}
@@ -53,13 +55,9 @@ Member & Date & Comment \\
 \hline
 Rita & 2013-07-20 & Allen, I need you to create some graphics. \\
 Allen & 2014-07-20 & Ok, lets go through it tomorrow morning!
-\end{tabular}
+\end{tabular}\\
 
-\subsection{User Story 3: User Workflows}
-
-TODO:
-
-- add workflow graphic
+\section{User Story 4: User Workflows}
 
 \begin{itemize}
 \item In order to be productive a user needs to access all \emph{Tasks} from any device.
@@ -67,9 +65,9 @@ TODO:
 \item The data should be kept as current as possible even if a user's device does not have reliable Internet access.
 \end{itemize}
 
-An example workflow that should be supported:\\
+Figure \ref{fig:scenario.workflow} demonstrates a workflow that should be supported:\\
 
-\begin{itemize}
+\begin{enumerate}
 \item Rita works at the desktop computer in her office with high-speed Internet access. She creates project A and invites Allen.
 \item Allen works from home on his notebook with high-speed Internet access. He reviews project A and creates task A1.
 \item Rita is already on her way home but has mobile Internet access on her smartphone. She receives the added task A1 and edits its title.
@@ -77,9 +75,16 @@ An example workflow that should be supported:\\
 \item Allen who is still at home can not receive Rita's comment as she is still on the train. In the meanwhile he creates a task A2 in project A.
 \item Rite gets home where she has Internet access with her notebook. She receives Allen's created task A2.
 \item Allen, who is still at his notebook, receives Rita's comment as soon as she connects to Internet at home.
-\end{itemize}
+\end{enumerate}
 
-\subsection{Data Schema}
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=1.0\textwidth]{img/workflow}
+\caption{An exemplaric workflow that should be supported by our application}
+\label{fig:scenario.workflow}
+\end{figure}
+
+\section{Data Schema}
 Based on the user stories we can derive a plausible data schema for the application. We can map it to an entity-relationship schema as shown in figure \ref{fig:tasks-data-schema}.\\
 The only complication is the requirement of \emph{Tasks} per \emph{Project} being ordered. We model this as a linked list by having a ``Next Task'' relationship.
 
