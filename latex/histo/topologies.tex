@@ -3,7 +3,8 @@
 \label{sec:histo.topologies}
 
 In this section we will look at different network topologies to evaluate how they are supported by our synchronization protocol.
-We will further explore options for optimization of our protocol with regards to each topology.\\
+We will further explore options for optimization of our protocol with regards to each topology.
+The focus will be on optimizing difference computation and minimizing the length of commit history that has to be stored on collaborating nodes.
 
 \subsection{Master - Client}
 \label{sec:histo.topologies.master-client}
@@ -21,7 +22,9 @@ Same is true for the computation of commit and data differences as described in 
 Running the protocol with the client as the source and the server as the target, the lowest common ancestor of the source's head and the source's remote tracking head is always the remote tracking head itself.
 We therefore only need to compute the commit difference between the current head and the ancestor commit which is the remote tracking head.\\
 These optimizations do not apply for running the protocol with the server as the source and the client as the target.
-The server could have synchronized with other client nodes in the meantime which means that its head is more than one commit ahead of the client.
+The server could have synchronized with other client nodes in the meantime which means that its head is more than one commit ahead of the client.\\
+We can still apply a data pruning optimization to the server by letting the server forget the commit history that goes beyond the least recently synchronized client.
+The more frequently the clients synchronize the more space efficient the protocol becomes.
 
 \subsection{Client - Client}
 \label{sec:histo.topologies.p2p}
@@ -37,6 +40,7 @@ We can therefore extend our synchronization protocol to not only set the source'
 For each remote tracking head $ A $ of the source node, we compute the lowest common ancestor $ C $ of the corresponding tracking head $ B $ on the target node.
 If $ C $ is equal to $ A $, we know that our information on the node's head is more up to date.
 If $ C $ is equal to $ B $, the source node has more current information and we update the target's remote tracking head to $ A $.
+This ensures that the information on remote node heads will eventually propagate across all collaborating nodes.
 
 \subsection{Multi Master - Client}
 \label{sec:histo.topologies.multi-master}
