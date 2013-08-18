@@ -24,7 +24,15 @@ We therefore only need to compute the commit difference between the current head
 These optimizations do not apply for running the protocol with the server as the source and the client as the target.
 The server could have synchronized with other client nodes in the meantime which means that its head is more than one commit ahead of the client.\\
 We can still apply a data pruning optimization to the server by letting the server forget the commit history that goes beyond the least recently synchronized client.
-The more frequently the clients synchronize the more space efficient the protocol becomes.
+The more frequently the clients synchronize the more space efficient the protocol becomes.\\
+Figure \ref{fig:histo.topologies.client-server} illustrates a possible state in a client-server setup.
+
+\begin{figure}[hierarchy]
+  \centering
+  \includegraphics[width=0.9\textwidth]{img/client-server}
+  \caption{Client-Server topology with history data pruned at least recently synchronized node.}
+  \label{fig:histo.topologies.client-server}
+\end{figure}
 
 \subsection{Client - Client}
 \label{sec:histo.topologies.p2p}
@@ -40,7 +48,26 @@ We can therefore extend our synchronization protocol to not only set the source'
 For each remote tracking head $ A $ of the source node, we compute the lowest common ancestor $ C $ of the corresponding tracking head $ B $ on the target node.
 If $ C $ is equal to $ A $, we know that our information on the node's head is more up to date.
 If $ C $ is equal to $ B $, the source node has more current information and we update the target's remote tracking head to $ A $.
-This ensures that the information on remote node heads will eventually propagate across all collaborating nodes.
+This ensures that the information on remote node heads will eventually propagate across all collaborating nodes.\\
+In Figure \ref{fig:histo.topologies.client-client} we have an examplaric merge of three clients.
+\emph{Client A's} head is intially at $ E $ as it has not recently synchronized data from \emph{client B} or \emph{client C}.
+\emph{Client B} has already synchronized changes from both \emph{client A} and \emph{client C}.
+\emph{Client C} has synchronized changes from \emph{client B} and therefore does not have to pull changes from \emph{client A} anymore.
+Note that as the synchronization has to be repeated for both directions, the fact that \emph{client B} has synchronized data from \emph{client A} does not imply that the reverse is true.
+Due to network partitions it is possible that \emph{client A} did not hav enough time to synchronize changes from \emph{client B}.\\
+We can see that the respective clients track the head of remote nodes.
+\emph{Client A's} knowledge about the heads of \emph{client B} and \emph{client C} is obviously outdated.
+The client therefore only prunes history after \emph{commit B} as he would otherwise lose the common ancestor with \emph{client C}.\\
+\emph{Client B} and \emph{client C} already know that their common ancestor with \emph{client A} is at \emph{commit C} and can therefore prune \emph{commit B}.\\
+In a next step \emph{client A} synchronizes data from \emph{client B} and can fast-forward his head to \emph{commit H}.
+He also learns that \emph{client C's} head is already at \emph{commit H} and can therefore prune the entire history after \emph{commit H}.
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=1.0\textwidth]{img/client-client}
+  \caption{Client-Client topology showing a merge of three clients.}
+  \label{fig:histo.topologies.client-client}
+\end{figure}
 
 \subsection{Multi Master - Client}
 \label{sec:histo.topologies.multi-master}
