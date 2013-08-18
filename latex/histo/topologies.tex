@@ -90,11 +90,12 @@ Review sections \ref{sec:histo.protocol.detection-propagation} and \ref{sec:hist
 
 \subsection{Hierarchical}
 In a hierarchical topology we consider the reality of clients being connected to different networks.
+Figure \ref{fig:histo.topologies.hierarchical} shows an example for a simple hierarchical setup.
 Being in an office environment, the clients are all connected to a local network usually via Wi-Fi.
 The local network in turn connects the clients to the internet but also allows them to directly connect to other nodes on the local network.
 We could therefore run an `office server' in the local network, allowing the clients to synchronize with low-latency in a client-server topology.\\
 Users working from home or travelling still want to be able to synchronize with their colleagues.
-We add a `cloud server' to our topology which runs in a internet server center.
+We add a `cloud server' to our topology which runs in an internet server farm.
 The cloud server continuously synchronizes with the office server as described for the multi-master setup.
 Mobile nodes can now synchronize with the cloud server allowing them to propagate updates from and to the nodes in the office network.\\
 Due to the continuous connection between the office and the cloud server we can let the clients see both servers as the same and apply the same optimizations as for the client-server setup.
@@ -102,3 +103,9 @@ As in the previous topology there is a race condition when synchronizing with th
 If we choose to let the clients track both servers as different remotes, we can only apply the optimization described for the peer-to-peer setup in section \ref{sec:histo.topologies.p2p}.
 This is still a very efficient solution as the two server nodes are unlikely to differ much in their branch heads.
 
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=0.8\textwidth]{img/hierarchical}
+  \caption{Hierarchial synchronization topology.}
+  \label{fig:histo.topologies.hierarchical}
+\end{figure}
