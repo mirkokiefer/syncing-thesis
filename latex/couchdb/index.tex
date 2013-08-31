@@ -5,7 +5,8 @@ CouchDB is a document-oriented database known for its data synchronization featu
 It currently is a popular tool for master-less synchronization directly between devices.\\
 With multiple implementations being available for server, smartphone or in-browser deployment it seems like an excellent fit for our requirements.
 In this section we will therefore investigate the inner workings of CouchDB's architecture and synchronization protocol.\\
-There is no official documentation of CouchDB's internals - the sources used for our analysis is the CouchDB Guide written by core developers \cite{anderson2010couchdb}, the CouchDB Wiki \cite{couchdb_wiki} and the source code \cite{couchdb_source} for details of the replication protocol.
+
+There is no official documentation of CouchDB's internals - the sources used for our analysis is the CouchDB Guide \cite{anderson2010couchdb} written by core developers, the CouchDB Wiki \cite{couchdb_wiki} and the source code \cite{couchdb_source} for details of the replication protocol.
 Note that the CouchDB authors actually refer to synchronization as `replication'.
 
 The original implementation of CouchDB exposes an HTTP interface for all interactions with the database.

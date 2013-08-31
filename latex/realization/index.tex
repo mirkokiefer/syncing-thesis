@@ -66,5 +66,13 @@ We used the three-way merging algorithms for low-level data structures to implem
 This approach could be leveraged to build three-way merging support for other high-level data structures.
 Interesting would be the application to specialized data structures like those of a spreadsheet application or a collaborative text-editor.\\
 The goal is to have a broad range of synchronizable data structures that can be used as the foundation of collaborative applications.\\
+
 To make Histo more accessible to developers, integration with client-side MVC frameworks could be built.
-Popular web frameworks like Backbone.js \cite{backbone}, Ember.js \cite{ember} or AngularJS \cite{angular} include support for pluggable model stores.
+Popular web frameworks like Backbone.js \cite{backbone}, Ember.js \cite{ember} or AngularJS \cite{angular} include support for pluggable model stores.\\
+
+Another interesting direction would be to explore ways to support the maintenance of distributed applications.
+With any application that is installed on a device for offline use, the maintenance complexity for software updates rises dramatically.
+Developers are faced with the problem of consistenly transforming user data to new software releases.
+Especially for applications that allow the user to synchronize data peer-to-peer, there need to be mechanisms to handle synchronization between nodes with different software versions.
+Would it be possible to support rolling out software releases using something like Histo itself?
+Application nodes could then directly synchronize the latest software versions from each other.
