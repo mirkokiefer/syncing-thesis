@@ -47,7 +47,7 @@ CouchDB uses a deterministic algorithm to choose one of the nodes as a winner.
 As this choice is random to the user of an application it is often not the desired result.
 It is therefore possible to either pick a different conflicting version as the winner or merge both versions to a new revision.
 
-\subsection{Synchronization Protocol}
+\section{Synchronization Protocol}
 \label{sec:couchdb.protocol}
 CouchDB does not really have a synchronization protocol at all - it is actually a fairly simple algorithm that uses only the existing HTTP interfaces.
 A `CouchDB synchronizer' therefore does not even have to run inside CouchDB but can be an external program that only needs access to the public interfaces of two CouchDB nodes.
@@ -77,7 +77,7 @@ When synchronizing with a new node for the first time the process has to start a
 The protocol is therefore only efficient when continuously synchronizing with the same nodes.
 If a node is not identified as a previously synchronized peer, the protocol causes redundant network operations growing linearly with the size of the changes stream.
 
-\subsection{Fulfillment of Requirements}
+\section{Fulfillment of Requirements}
 As a schemaless database CouchDB at least supports the storage of any kind of data model.
 Its awareness of the type of data is at the same time very low.\\
 When synchronizing databases CouchDB treats every JSON-document as an \emph{atom}.
