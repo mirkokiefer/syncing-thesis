@@ -24,6 +24,7 @@ We will continue to discuss the technologies used and our approach to ensure cor
 Finally we will give suggestions on how Histo can be made more accessible and taken to new directions.
 
 \section{Technology}
+\label{sec:realization.technology}
 The use of Web Standards is the most common option to implement application logic that can run unmodified on a large number of platforms.
 Desktop computers, notebooks, smartphones and tablets all come with implementations of web standards.
 JavaScript has become the only high-level programming language that can run on any modern consumer device.
@@ -38,10 +39,46 @@ The same interface used by LevelDOWN is available as level.js \cite{leveljs}, wh
 This means we have the same database API available both in browsers and on the server using Node.js.\\
 We therefore decided to base the implementation of Histo on JavaScript, using the LevelDOWN interface for the storage layer.
 
+\section{Fullfillment of Requirements}
+In Section \ref{sec:requirements} we have listed the requirements of a synchronization solution.
+We will now go through each of them and outline the relevant design decisions we made to fulfill them.
+
+\subsection*{Flexible Data Model Support}
+Histo currently uses a hierachical data model as described in Section \ref{sec:histo.hierarchy}.
+We have shown how to map a typical entity-relationship model to the hierarchical model.
+Many other types of data models could be mapped to a hierarchy and benefit from the efficient differencing properties of trees.
+Histo's architecture is not limited to a hierarchical model - the commit history differencing and synchronization protocol is actually agnostic of the underlying data structures.
+It is therefore possible to implement support for entirely different types of data.
+
+\subsection*{Optimistic Synchronization}
+This property is ensured as our synchronization protocol operates without any locking logic.
+We will go into more detail on the resulting robustness of our protocol in the next section.
+
+\subsection*{Causality Preservation and Conflicts}
+In Section \ref{sec:histo.committing} we describe how we track the change history of an application's data.
+This enabled us to implement three-way merging as described in Section \ref{sec:histo.merging}.
+Causality is therefore preserved in our synchronization protocol.
+Section \ref{sec:histo.conflicts} describes our approach for handling conflicts in a deterministic manner while leaving it up to the application developer to implement custom conflict resolution algorithms.
+
+\subsection*{Flexible Network Topologies}
+The support for a broad range of network topologies is described in Section \ref{sec:histo.topologies}.
+We even went further and identified possible protocol optimizations for each topology.
+
+\subsection*{Integration with Existing Application Logic}
+Histo encapsulates all low-level aspects of data synchronization.
+We have defined interfaces in our application which allow the plug-in of custom data stores and appropriate messaging solutions.
+In the final section we will give examples for ways to improve integration with application logic.
+
+\subsection*{Cross-Platform}
+We described our choices for cross-platform technologies in Section \ref{sec:realization.technology}.
+
 \section{Correctness and Robustness}
+Another non-functional requirement is obviously the correctness of our implementation.
 We implement the Histo modules in a test-driven manner.
 This ensures that all implementations are continuously checked for correctness as we progress.
-The test suites of all modules are attached to the thesis and can be found online \cite{histo-source}.\\
+The limits of showing correctness of software are known - we try to cover the most common cases in our tests.
+The test suites of all modules are attached to the thesis and can be found online \cite{histo-source}.
+\\
 
 Part of the test-suite is verification of robustness to network partitions.
 We show that network partitions through any of the phases of our synchronization protocol will leave the database in a consistent state.\\
