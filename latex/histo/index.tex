@@ -2,27 +2,17 @@
 \chapter{Architecture of Histo}
 \label{sec:histo}
 
-Based on the requirements and the evaluation of CouchDB we derive a new architecture for a practical synchronization solution.
-
-\begin{itemize}
-\item
-  \textbf{No Timestamps}: history-based 3-way merging
-\item
-  \textbf{No Change Tracing}: explicit change tracing is not necessary - support
-  diff computation on the fly
-\item
-  \textbf{Data Agnostic}: leave diff and merge of the actual data to
-  plugins
-\item
-  \textbf{Distributed}: synchronization does not require a central server
-\item
-  \textbf{Functional Design}: only implement the functional parts of synchronization - leave everything else to the application (transport, persistence)
-\item
-  \textbf{Sensitive Defaults}: have defaults that `just work' but
-  still support custom logic (e.g. for conflict resolution)
-\item
-  \textbf{Cross-Platform}: be available on every major platform through the use of Web Standards
-\end{itemize}
+Based on the requirements and the evaluation of CouchDB we derive a new architecture for a practical synchronization solution we call Histo.
+We develop Histo driven by our application scenario and demonstrate the components using exemplaric data of our use case.\\
+As a first step we describe the mapping of an application's data model to a hierarchy, which brings the data in a format that can be efficiently differenced.\\
+We will then show in Section \ref{sec:histo.committing} how the change history of our hierachical data model can be persisted while minimizing the amount of redundant data.\\
+This forms the basis of our synchronization protocol in Section \ref{sec:histo.protocol}, which describes the data propagation and merging from a high-level perspective.\\
+Section \ref{sec:histo.diff-across-commits} dives deeper into the internals of the data propagation phase.\\
+The most involved part of our protocol is the three-way merging phase which happens locally on each node.
+Section \ref{sec:histo.merging} goes into great detail on how we implement this phase by applying differencing and merging algorithms.\\
+The section on merging will reveal potential conflicts that can arise - strategies to handle these will be discussed in Section \ref{sec:histo.conflicts}.\\
+One of our requirements is the support of flexible network topologies.
+In Section \ref{sec:histo.topologies} we evaluate the support for a range of topologies and outline possible optimizations of the protocol for each of these.
 
 \include{hierarchical-mapping}
 
