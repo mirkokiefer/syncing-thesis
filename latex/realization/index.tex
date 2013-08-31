@@ -1,9 +1,9 @@
 
 \chapter{Realization}
 \label{sec:realization}
+A first prototype of Histo's architecture has actually been implemented and will continue to be developed.
 
-\section{Architecture}
-The components of Histo described in Chapter \ref{sec:histo} all describe self-contained functionality and we therefore implement each of them as a separate module.
+The components of Histo described in Chapter \ref{sec:histo} all describe self-contained functionality and we therefore implemented each of them as a separate module.
 
 At the highest level is the Histo module which only implements the history tracking functionality described in Section \ref{sec:histo.committing}.
 All other features are still exposed in the Histo module but delegated to specialized modules:
@@ -17,6 +17,11 @@ All other features are still exposed in the Histo module but delegated to specia
 \end{itemize}
 
 Through this modular approach we enable the support of alternative data structures and other history-based synchronization protocols.
+
+The implementations of all modules are attached to the thesis and can be found online where they continue to be improved \cite{histo-source}.\\
+
+We will continue to discuss the technologies used and our approach to ensure correctness of the implementation.
+Finally we will give suggestions on how Histo can be made more accessible and taken to new directions.
 
 \section{Technology}
 The use of Web Standards is the most common option to implement application logic that can run unmodified on a large number of platforms.
@@ -36,7 +41,7 @@ We therefore decided to base the implementation of Histo on JavaScript, using th
 \section{Correctness and Robustness}
 We implement the Histo modules in a test-driven manner.
 This ensures that all implementations are continuously checked for correctness as we progress.
-The implementations and test suites of all modules are attached to the thesis and can be found online where they continue to be improved \cite{histo-source}.\\
+The test suites of all modules are attached to the thesis and can be found online \cite{histo-source}.\\
 
 Part of the test-suite is verification of robustness to network partitions.
 We show that network partitions through any of the phases of our synchronization protocol will leave the database in a consistent state.\\
