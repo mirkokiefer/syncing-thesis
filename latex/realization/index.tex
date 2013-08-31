@@ -2,24 +2,61 @@
 \chapter{Realization}
 \label{sec:realization}
 
+\section{Architecture}
+The components of Histo described in Chapter \ref{sec:histo} all describe self-contained functionality and we therefore implement each of them as a separate module.
+
+At the highest level is the Histo module which only implements the history tracking functionality described in Section \ref{sec:histo.committing}.
+All other features are still exposed in the Histo module but delegated to specialized modules:
+
+\begin{itemize}
+\item \emph{histo-sync}: Implements the synchronization protocol of Section \ref{sec:histo.protocol}
+\item \emph{lca}: Implements a lowest-common ancestor algorithm described in \ref{sec:background.lca}
+\item \emph{graph-diff}: Implements the commit history difference algorithm of Section \ref{sec:histo.graph-diff}
+\item \emph{content-addressable}: Implements a content-addressable store interface described in Section \ref{sec:background.cas}
+\item \emph{diff-patch-merge}: Implements the three-way-merge algorithms described in Section \ref{sec:histo.merging}
+\end{itemize}
+
+Through this modular approach we enable the support of alternative data structures and other history-based synchronization protocols.
 
 \section{Technology}
-We describe implementation details like the technologies used, code structure and the testing framework to evaluate the system.
+The use of Web Standards is the most common option to implement application logic that can run unmodified on a large number of platforms.
+Desktop computers, notebooks, smartphones and tablets all come with implementations of web standards.
+JavaScript has become the only high-level programming language that can run on any modern consumer device.
+In recent years JavaScript is even increasingly used on server platforms to implement application backends.
+Node.js has become the most popular server-side execution environment for JavaScript.\\
 
-TODO:
-
-- everything web-based --> only way to be cross-platform
-
-- client-side persistence with HTML5
-
-- note on alternatives (Lua, native)
-
-\section{Architecture}
-
-- diff-patch-merge, LCA, CAS, synclib --> histo
+As described in Section \ref{sec:background.html5}, modern browsers come with support for client-side databases in the form of IndexedDB.
+The IndexedDB implementation of the Chrome Browser is based on LevelDB, which is a key-value store developed by Google \cite{leveldb}.
+LevelDB is inspired by Google's BigTable \cite{chang2008bigtable} and was open sourced in 2011.
+The Node.js community made LevelDB usable from JavaScript in the form of the LevelDOWN module \cite{leveldown}.
+The same interface used by LevelDOWN is available as level.js \cite{leveljs}, which wraps IndexedDB in the browser.
+This means we have the same database API available both in browsers and on the server using Node.js.\\
+We therefore decided to base the implementation of Histo on JavaScript, using the LevelDOWN interface for the storage layer.
 
 \section{Correctness and Robustness}
+We implement the Histo modules in a test-driven manner.
+This ensures that all implementations are continuously checked for correctness as we progress.
+The implementations and test suites of all modules are attached to the thesis and can be found online where they continue to be improved \cite{histo-source}.\\
+
+Part of the test-suite is verification of robustness to network partitions.
+We show that network partitions through any of the phases of our synchronization protocol will leave the database in a consistent state.\\
+This is partly due to our design choice of using a content-addressable store which never overrides existing data.
+The entire synchronization process happens asynchronously and therefore does not block the database for writing by the local user.
+Only once the data has been merged successfully, the node's head is updated.
+Even the head update is asynchronous through the use of optimistic locking as described in Section \ref{sec:histo.protocol.merging}.
+If the synchronization has to be cancelled at any stage, the node's head is simply not updated.
+We therefore avoid the implementation of complex recovery logic.\\
+Due to the separation of data propagation and local merging, the protocol can still efficiently operate during frequent network partitions.
+Only the comparatively fast local merging phase has to be redone when an error occurs during synchronization.
+The slow data propagation phase can continue where it stopped.
 
 \section{Conclusion}
 
+- drastically simplifies dev of collaborative apps --> give example
+
 \section{Recommendations}
+- support of more data structures
+
+- integration with MVC frameworks
+
+- native re-implementation in Lua for mobile support
