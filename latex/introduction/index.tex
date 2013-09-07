@@ -31,25 +31,19 @@ They often want to work with the same data on different devices.
 Apps need to support workflows like adding some items to a Todo-Manager on a notebook and subsequently reviewing them on a smartphone.
 This implies that even simple applications that are meant for single-users have to aquire collaborative features.
 A single-user with multiple devices is from a technical perspective effectively collaborating with itself.\\
-Today's applications only achieve this through  data synchronization between the devices and a central server.
+Today's applications only achieve this through data synchronization between the devices and a central server.
 If the user is mobile and does not have a reliable Internet connection he is stuck with outdated data on his smartphone.
 This problem can only be resolved by supporting the direct synchronization between devices.
 The clients can now basically act as servers themselves and manage propagation of data to other clients.\\
 The actual server does not have to disappear in this model.
 But like the clients it is just another node on the network.
 The difference is that the server node is continuously connected to the Internet and can therefore play a useful role as a fallback.\\
-Note that this only describes the most extreme scenario - in most real-world applications we will see a hybrid-architecture where clients can synchronize most data directly but the server still manages security or enforces other constraints.\\
+Note that this only describes the extreme scenario - in most real-world applications we will see a hybrid-architecture where clients can synchronize most data directly but the server still manages security or enforces other constraints.\\
+
 Building such a distributed data synchronization engine including all relevant aspects is very complex and beyond the reach of a small team of app developers.
-It is also way beyond the scope of this thesis.
-As described in the next section we will focus on a set of problem statements and use cases.
-
-TODO:
-
-- add Things app story on how hard it is
-
-- add graphics
-
-- start by explaining unique approach (git for app data)
+As an example the software company \emph{Cultured Code} which develops one of the most popular task management apps has spent more than two years developing a generic solution without success \cite{things}.
+It is therefore way beyond the scope of this thesis to develop a generic end-to-end solution.
+As described in the next section we will focus on a specific set of objectives and use cases.
 
 \section{Objectives and Approach}
 
