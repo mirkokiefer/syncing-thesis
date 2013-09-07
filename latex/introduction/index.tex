@@ -54,41 +54,36 @@ TODO:
 \section{Objectives and Approach}
 
 This thesis aims to develop patterns and tools to make the development of offline capable, collaborative apps more productive.\\
+Unique to our approach is that we focus on peer-to-peer data synchronization between mobile devices with a focus on realization with open web standards.\\
+Our goal is to bring the features of distributed version control to application data.\\
 
-The guiding questions are:
+Our guiding objectives are:
+
 \begin{itemize}
-\item \emph{Offline Availability}: How can we enable the operation of a collaborative app with frequent network partition?
-\item \emph{Synchronization Protocol}: How can we efficiently synchronize changed data directly between unreliably connected devices?
-\item \emph{Application Integration}: How can we abstract the synchronization logic to be as unintrusive as possible to an application?\\
+\item \emph{Offline Availability}: Enable the operation of a collaborative app with frequent network partition.
+\item \emph{Synchronization Protocol}: Develop a protocol for efficient synchronization of changed data directly between devices.
+\item \emph{Application Integration}: Abstract the synchronization logic to be as unintrusive as possible to an application.
 \end{itemize}
 
 A collaborative app that has to function with unreliable network connection implies that we can not rely on the traditional thin client model.
-We have to think about ways to make both data and logic available offline.\\
-
+We have to think about ways to make both data and logic available offline.
+The focus of this thesis is on managing offline availability and synchronization of data between collaborating devices.\\
 Being able to synchronize data directly between devices forces us to develop a distributed architecture.\\
-
 Efficient synchronization means that we aim to minimize the amount of redundant data sent between devices.
-We have to figure out ways to identify changes in the data.\\
-
-Combined with the requirement to be unintrusive we exclude solutions that require the application to explicitly track changes in the code.
+We have to implement methods to identify changes in application data.\\
+Combined with the requirement to be unintrusive we exclude solutions that require the application to explicitly track changes in its code.
 The identification of data changes should be decoupled from the main application logic.
 This ensures that an upgrade of traditional applications requires minimal effort.\\
 
-We will refine this set of requirements by breaking down common use cases and evaluating existing solutions that support offline-capable applications.\\
+We will refine this set of requirements by breaking down common use cases and the evaluation of CouchDB, which is an existing solutions that supports offline-capable applications.\\
 
-Important questions which are out of scope of this thesis are:
+Otherwise important questions which are out of scope of this thesis are:
 
 \begin{itemize}
 \item \emph{Security}: How can we manage access rights and encryption in a distributed architecture?
 \item \emph{Device Discovery}: How can we discover devices in a network to collaborate with?
 \item \emph{Data Transmission}: How is the data propagated among devices on a technical level?
 \end{itemize}
-
-TODO:
-
-- phrase problem statements - not only questions
-
-- what is unique to our approach? (focus on practical realization with open web standards and modern tools, offline as default, we bring distributed version control to app data)
 
 \section{Structure of the thesis}
 The next chapter starts by describing related work and the necessary background that enables us to develop the synchronization solution.\\
