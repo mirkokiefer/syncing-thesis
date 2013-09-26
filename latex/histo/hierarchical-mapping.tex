@@ -2,7 +2,7 @@
 \section{Hierarchical Data Model Mapping}
 \label{sec:histo.hierarchy}
 Our data described in the scenario is structured through entity instances, their attribute values and relationships to other instances.
-Most modern web application frameworks realize one-to-one relationships by simply having an attribute storing the related instance's ID.
+Most modern web application frameworks realize one-to-one relationships, by simply having an attribute storing the related instance's ID.
 One-to-many relationships are realized through an attribute having a collection of 
 instance IDs as its value.\\
 Instance collections often have a relevant order that needs to be preserved.
@@ -13,7 +13,7 @@ An embedded instance can still be linked from other instances but it cannot be e
 Linking to an instance means to simply hold another instance's ID as an attribute value, embedding means to hold both their ID and actual state.\\
 
 The merge and commit processes, described in the next sections, depend on a hierarchical representation of our application state.
-To have a hierarchy we need to define a single root structure from where all substructures of our state can be reached.\\
+To have a hierarchy we need to define a single root structure, from where all substructures of our state can be reached.\\
 Our hierarchical structure can be as simple as this:
 
 \begin{itemize}

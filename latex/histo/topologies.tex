@@ -8,7 +8,7 @@ The focus will be on optimizing difference computation and minimizing the length
 
 \subsection{Master - Client}
 \label{sec:histo.topologies.master-client}
-In a Master-Client or Client-Server setup we have a single server which handles all data propagation.
+In a Master-Client or Client-Server setup we have a single server that handles all data propagation.
 The clients can only synchronize their data with the server and directly with each other.
 With regards to our synchronization protocol, this means each client has to remember only one remote tracking head.\\
 We can optimize our protocol by adding a data pruning step.
@@ -18,11 +18,11 @@ We can therefore prune all data on the client that is neither part of our branch
 Pruning is defined as deleting all objects in our store whose hashes are not referenced in the data hierarchy of the commits we want to keep.
 We effectively only keep our current data and the data we received last from the server.
 In terms of memory usage of the client's store, this topology is therefore the most efficient one.\\
-Same is true for the computation of commit and data differences as described in section \ref{sec:histo.diff-across-commits}.
+The same is true for the computation of commit and data differences as described in Section \ref{sec:histo.diff-across-commits}.
 Running the protocol with the client as the source and the server as the target, the lowest common ancestor of the source's head and the source's remote tracking head is always the remote tracking head itself.
-We therefore only need to compute the commit difference between the current head and the ancestor commit which is the remote tracking head.\\
+We therefore only need to compute the commit difference between the current head and the ancestor commit, which is the remote tracking head.\\
 These optimizations do not apply for running the protocol with the server as the source and the client as the target.
-The server could have synchronized with other client nodes in the meantime which means that its head is more than one commit ahead of the client.\\
+The server could have synchronized with other client nodes in the meantime, which means that its head is more than one commit ahead of the client.\\
 We can still apply a data pruning optimization to the server by letting the server forget the commit history that goes beyond the least recently synchronized client.
 The more frequently the clients synchronize the more space efficient the protocol becomes.\\
 Figure \ref{fig:histo.topologies.client-server} illustrates a possible state in a client-server setup.
@@ -71,13 +71,13 @@ He also learns that \emph{client C's} head is already at \emph{commit H} and can
 
 \subsection{Multi Master - Client}
 \label{sec:histo.topologies.multi-master}
-In a multi master-client setup we have a set of servers who synchronize with each other and a set of clients who can synchronize with any server.
+In a multi master-client setup we have a set of servers that synchronize with each other and a set of clients who can synchronize with any server.
 The servers synchronize in a peer-to-peer topology with each other, while the clients cannot communicate with each other.\\
 The advantage of this setup over a pure client-server setting is that we can distribute the synchronization load across multiple servers.
 Each server is only responsible for a subset of clients.
 The data is kept-up-to date across all servers by synchronizing them with each other in regular intervals.\\
 The server's can only make use of the peer-to-peer optimizations described in the previous section.
-The client's can make full use of the client-server optimizations we described in section \ref{sec:histo.topologies.master-client} as long as they always connect to the same server.\\
+The client's can make full use of the client-server optimizations we described in Section \ref{sec:histo.topologies.master-client} as long as they always connect to the same server.\\
 If a client first synchronizes with server $ A $ and then $ A $ gets replaced with server $ B $, we have a race condition if the client does not realize the server has changed.
 $ B $ might not have the latest changes the client sent to $ A $ if $ A $ and $ B $ have not synchronized in the meantime.
 The client still thinks that its remote tracking head of the server is correct.\\
@@ -85,22 +85,22 @@ This is a very unlikely event as the servers are usually connected with much low
 Our synchronization protocol is robust enough so that synchronization will still succeed.
 Propagation from the server to the client will only be less efficient.
 The commit difference of the server will contain all commits in its history if the client's remote tracking head is not actually stored on the server.
-While this means that some redundant meta-data is sent between the nodes, the computation of the actual data difference is still efficient.
-Review sections \ref{sec:histo.protocol.detection-propagation} and \ref{sec:histo.diff-across-commits} for the details on data propagation.
+While this means that some redundant metadata is sent between the nodes, the computation of the actual data difference is still efficient.
+Sections \ref{sec:histo.protocol.detection-propagation} and \ref{sec:histo.diff-across-commits} describe the data propagation protocol in detail.
 
 \subsection{Hierarchical}
-In a hierarchical topology we consider the reality of clients being connected to different networks.
+In a hierarchical topology we consider the situation of clients being connected to different networks.
 Figure \ref{fig:histo.topologies.hierarchical} shows an example for a simple hierarchical setup.
 Being in an office environment, the clients are all connected to a local network usually via Wi-Fi.
 The local network in turn connects the clients to the internet but also allows them to directly connect to other nodes on the local network.
 We could therefore run an `office server' in the local network, allowing the clients to synchronize with low-latency in a client-server topology.\\
 Users working from home or travelling still want to be able to synchronize with their colleagues.
-We add a `cloud server' to our topology which runs in an internet server farm.
+We add a `cloud server' to our topology, which runs in an internet server farm.
 The cloud server continuously synchronizes with the office server as described for the multi-master setup.
 Mobile nodes can now synchronize with the cloud server allowing them to propagate updates from and to the nodes in the office network.\\
 Due to the continuous connection between the office and the cloud server we can let the clients see both servers as the same and apply the same optimizations as for the client-server setup.
-As in the previous topology there is a race condition when synchronizing with the different servers which can in rare cases result in a slightly inefficient data propagation.\\
-If we choose to let the clients track both servers as different remotes, we can only apply the optimization described for the peer-to-peer setup in section \ref{sec:histo.topologies.p2p}.
+As in the previous topology there is a race condition when synchronizing with the different servers, which can in rare cases result in a slightly inefficient data propagation.\\
+If we choose to let the clients track both servers as different remotes, we can only apply the optimization described for the peer-to-peer setup in Section \ref{sec:histo.topologies.p2p}.
 This is still a very efficient solution as the two server nodes are unlikely to differ much in their branch heads.
 
 \begin{figure}[!ht]

@@ -6,13 +6,13 @@ If it is run simultaneously with source and target exchanged, it keeps both node
 The algorithm is designed to be able to run independently of the source or target.
 It could be implemented as a separate application, possibly even running on a different device - as long as it has access to both the source and target node.\\
 The synchronizer could be run in regular intervals or explicitly triggered by changes in the source node.
-Our solution therefore shares high-level characteristics with CouchDB's solution described in section \ref{sec:couchdb.protocol}.\\
+Our solution therefore shares high-level characteristics with CouchDB's solution described in Section \ref{sec:couchdb.protocol}.\\
 
 The latest commit on a node we refer to as its \emph{head}.
-A node has a \emph{master head} which refers to the version of the data considered to be `true' by the node.\\
+A node has a \emph{master head}, which refers to the version of the data considered to be `true' by the node.\\
 For each remote node it synchronizes with, the node keeps a \emph{remote tracking head}.\\
 A remote tracking head represents what the local node considers to be the current state of a remote node.\\
-Before each synchronization, both nodes should commit their latest changes as described in section \ref{sec:histo.committing}.
+Before each synchronization, both nodes should commit their latest changes as described in Section \ref{sec:histo.committing}.
 Commits snapshot the state of our data as we start synchronizing.
 Between synchronizations they do not have to be run on every change of data.
 The commit history therefore marks the history of synchronizations between nodes.
@@ -57,21 +57,25 @@ target.setRemoteTrackingHead(source.id, sourceHead)
 
 \end{lstlisting}
 
-The functions `getCommitDifference()' and `getDataDifference()' are implemented as described in section \ref{sec:histo.diff-across-commits}.\\
-The most recent common ancestor algorithm used in `getCommonAncestor()' is described in section \ref{sec:background.lca}.\\
-The internals used by `writeData()' and the underlying commit data model have been explained in section \ref{sec:histo.committing}.\\
+The functions `getCommitDifference()' and `getDataDifference()' are implemented as described in Section \ref{sec:histo.diff-across-commits}.\\
+The most recent common ancestor algorithm used in `getCommonAncestor()' is described in Section \ref{sec:background.lca}.\\
+The internals used by `writeData()' and the underlying commit data model have been explained in Section \ref{sec:histo.committing}.\\
 Note that keeping the remote tracking head is optional.
 The protocol still succeeds if the remote head is unknown or rembered wrong.
 Section \ref{sec:histo.topologies.multi-master} will illustrate this for a multi-master topology. 
 
+\subsubsection*{Robustness}
+The data propagation protocol can fail at any point without leaving either node in an inconsistent state.
+The phase does not override any data on the nodes besides the remote tracking head on the target.
+If the protocol fails before updating the remote tracking head, it simply has to be repeated.
+
 \subsection{Merging}
 \label{sec:histo.protocol.merging}
-Even if the source is disconnected at this stage, the target has all the necessary information to process the merge offline:\\
+Even if the source is disconnected at the merging stage, the target has all the necessary information to process the merge offline.\\
 
-\begin{itemize}
-\item The target's master head we refer to as the \emph{master head}.\\
-\item The target's remote tracking branch for the source we refer to as the \emph{source tracking head}.
-\end{itemize}
+The target's master head we refer to as the \emph{master head}.
+The target's remote tracking branch for the source we refer to as the \emph{source tracking head}.
+From a high-level the algorithm can be described as the following:\\
 
 \begin{enumerate}
 \item Compute the common ancestor of the master head and the source tracking head. (The common ancestor could also be re-used from the propagation step.)
@@ -97,8 +101,8 @@ To update the head you need to include the last read head in your request.
 So both the fast-forward operation or the commit of a merge result can be rejected if the target has been updated in the meantime.
 If this happens the Synchronizer simply has to re-run the merge algorithm.\\
 
-The merging process can be described in pseudo-code as shown in figure \ref{fig:histo.merging-protocol}.\\
-Its core is the call to `three-way-merge()' - the details of our three-way merging concepts are described in section \ref{sec:histo.merging}.\\
+In Figure \ref{fig:histo.merging-protocol}, the merging process is described using pseudo-code.\\
+Its core is the call to `three-way-merge()' - the details of our three-way merging concepts are described in Section \ref{sec:histo.merging}.\\
 
 \begin{lstlisting}[caption=Merging Protocol, label=fig:histo.merging-protocol]
 
@@ -143,8 +147,18 @@ if (commonAncestor == sourceTrackingHead) {
 
 The protocol described here only propagates the changes from the source to the target node.
 To actually synchronize both nodes to the same state, the protocol has to be run in the reverse direction as well.
+
+\subsubsection*{Robustness}
 Running the protocol in both directions is not an atomic operation.
 It is therefore possible that both nodes do not end up with the exact same state as updates to the data can be made on both nodes at any time.
 The nodes are only consistent if both nodes do not change any data while the synchronization takes place.
-This is inline with our requirement of optimistic synchronization and eventual consistency, defined in section \ref{sec:requirements.optimistic}.
-
+This is actually part of our requirements of supporting optimistic synchronization and to only guarantee eventual consistency, which are defined in Section \ref{sec:requirements.optimistic}.\\
+The merging protocol is unlikely to fail as it runs entirely on the local node without requiring error-prone network communication.
+In case of the fast-forward merge, only the local head is updated to the source tracking head.
+This operation can fail if the local head was updated in the meantime.
+The merge protocol then simply has to be repeated.\\
+A failure in the three-way-merge call (line 25) does not corrupt any data, as the local head remains unchanged.
+Only after a successful merge, a new commit object is created and the local head is updated.
+Again, there can be a failure if the local head has been updated while the merge operation is running.
+In this case the merge protocol is repeated as well to include the latest changes in the merge.
+Note that in any case of failure, only the merge protcol has to be repeated but not the comparatively long-running data propagation protocol.

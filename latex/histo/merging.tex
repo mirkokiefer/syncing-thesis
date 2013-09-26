@@ -1,17 +1,17 @@
 
 \section{Reconciliation Through Three-Way Merging}
 \label{sec:histo.merging}
-In this section we will focus on three-way merging which is part of the reconciliation phase of our protocol developed in section \ref{sec:histo.protocol.detection-propagation}.\\
+In this section we will focus on three-way merging, which is part of the reconciliation phase of our protocol developed in Section \ref{sec:histo.protocol.detection-propagation}.\\
 All necessary data for a merge has already been propagated from the source to the target node.
 We have all information about the current state and the commit history of the source node available locally.
-The current state is marked through the source tracking branch as described in section \ref{sec:histo.protocol.merging}.
+The current state is marked through the source tracking branch as described in Section \ref{sec:histo.protocol.merging}.
 The entire merging process can therefore happen offline without the need of any communication with the source node.\\
-Our three-way merge algorithm is structured into three types of processes which are recursively executed on our data hierarchy:
+Our three-way merge algorithm is structured into three types of processes, which are recursively executed on our data hierarchy:
 
 \begin{itemize}
 \item \textbf{Differencing}: we diff branch B and C with their common ancestor A.
 \item \textbf{Merging}: we merge the two diffs A-B and A-C to a new diff result.
-\item \textbf{Patching}: we apply the merged diffs as a patch to A which results in the merged state D.
+\item \textbf{Patching}: we apply the merged diffs as a patch to A, which results in the merged state D.
 \end{itemize}
 
 Our current branch we refer to as B and the source tracking branch as C.
@@ -28,18 +28,18 @@ Based on the examples we will then look into implementation details of the respe
 
 \subsection{Merge Scenario}
 \label{sec:histo.merging.scenario}
-To show correctness of a merge algorithm we need to define sample model states with expected merge results.
+To show correctness and completeness of a merge algorithm we need to define sample model states with expected merge results.
 This set of data can then be used as a test case for our implementation.
 Based on an ancestor state all users start with, we define several possible branch states.\\
 Merging of the branch states will happen at multiple levels of detail corresponding to our data hierarchy.
 Each level will have its own difference and diff merge phase.
 The result of the diff merge phases is then used to patch the common ancestor state.\\
 The difference and merge algorithms that need to be applied will vary on each level depending on the data structures used.
-The sample data is defined so that we can demonstrate each possible data structure that we mapped to in section \ref{sec:histo.hierarchy} (dictionaries, ordered dictionaries, ordered sets and ordered lists).\\
+The sample data is defined so that we can demonstrate each possible data structure that we mapped to in Section \ref{sec:histo.hierarchy} (dictionaries, ordered dictionaries, ordered sets and ordered lists).\\
 
 The root of our state is defined through an organization instance.
 All other instances can be reached from it.
-As defined in section \ref{sec:histo.hierarchy}, we differentiate between linking and embedding of instances.
+As defined in Section \ref{sec:histo.hierarchy}, we differentiate between linking and embedding of instances.
 Linking is done by only referencing an instance's ID, embedding is done by referencing its actual state hash along with the ID.\\
 
 \begin{tabularx}{0.8\textwidth}{ l l X X }
@@ -277,6 +277,7 @@ All it sees is a remove of `Roadmap' and an insert of some other word.\\
 This example shoes the limits of generic merging algorithms that preserve user intention.\\
 In practice it would propably be more suitable to define the `Project Name' as an atom.
 As names are short it is more likely that an update is actually intended as a replace operation of the entire string.
+Section \ref{sec:histo.conflicts} will describe some possible conflict resolution strategies in more detail.
 
 \subsection{Differencing}
 \label{sec:histo.merging.diff}
@@ -320,7 +321,7 @@ For \emph{ordinary sets} we can implement a simple solution through two hashs of
 
 \emph{Insert} and \emph{remove} are the only operations in a set.\\
 The time complexity for building each hash is again $ \mathcal O(n * log(n)) $.
-Searching for matches has linear complexity which results in a time complexity $ \mathcal O(n * log(n)) $ for the entire algorithm.\\
+Searching for matches has linear complexity, which results in a time complexity $ \mathcal O(n * log(n)) $ for the entire algorithm.\\
 
 An \emph{ordinary dictionary} data structure has \emph{insert}, \emph{remove} and \emph{update} operations.
 If the instance described through the dictionary has a fixed set of attributes it would actually only need to support an update operation.
@@ -345,7 +346,7 @@ Depending on the application, its instances are often already implemented with h
 The time complexity is in this case only linear.\\
 
 As already briefly described, \emph{Ordered dictionary} differencing can be implemented as a combination of difference algorithms for dictionaries and for ordered sets.\\
-In addition to ordinary dictionaries, ordered dictionaries have a \emph{move} operation which supports updating an entry's position.\\
+In addition to ordinary dictionaries, ordered dictionaries have a \emph{move} operation, which supports updating an entry's position.\\
 The changes caused by \emph{insert}, \emph{update} and \emph{remove} operations can be identified by running an ordinary dictionary difference algorithm.\\
 To track the movement of entries we represent all keys in the ordered dictionary as an ordered set.
 We can then re-use our ordered set difference algorithm to identify move operations.
@@ -360,14 +361,14 @@ Our focus lies on the identification of potential conflicts based on three-way m
 
 \emph{Ordered lists} only support insert and remove operations.
 Concurrent insert or remove operations are never conflicting as they do not update existing structures.
-As we have seen in the example at the end of section \ref{sec:histo.merging.scenario} this is not necessarily in line with a user's intentions.
+As we have seen in the example at the end of Section \ref{sec:histo.merging.scenario} this is not necessarily in line with a user's intentions.
 When editing text users often intend to \emph{replace} content although their actions are represented through a remove and insert operation.
 This is why most concurrent version control systems have the notion of \emph{areas} in text.
 Concurrent insert or remove operations in overlapping areas are considered as update operations to the same content and therefore result in conflicts.\\
 The optimal definition of an area can vary depending on the application.
 It may be the entire edited paragraph, a number of lines, sentences, words or even characters.\\
 When modeled as an ordered list we can only vary the number of list elements defining the size of an area.\\
-Concurrent insert or remove operations which are not in overlapping areas are simply both carried over to the merge result.\\
+Concurrent insert or remove operations, which are not in overlapping areas are simply both carried over to the merge result.\\
 
 \emph{Ordinary sets} have the same operations as ordered lists except that each element is unique and we now have no element order.
 Without a specified order we can not define \emph{areas}.
@@ -398,7 +399,7 @@ We again need patching algorithms for each data structure we intend to support.
 The implementation needs to consider that simply executing the operations defined in the diff can lead to a wrong result.
 This is true if a change operation has side effects on other parts of the state.\\
 In our set of data structures this is the case for ordered lists, ordered sets and ordered dictionaries.
-Applying an insert operation at the specified index, renders the indexes of following operations wrong.
+Applying an insert operation at the specified index causes side-effects as it renders the indexes of following operations wrong.
 A simple example:
 
 \begin{itemize}
@@ -411,11 +412,11 @@ insert `e' behind index 11
 Applying the first diff operation to A results in: `Marketing Matrial'.\\
 If we now execute the second operation at the specified index 11 we get: `Marketing Maetrial'.\\
 The implementation therefore needs to treat the given indexes as relative positions in the ancestor state.\\
-The diff operations of sets and dictionaries can be executed as they are without taking side-effects into consideration.
+Each diff operations of sets and dictionaries can be executed as they are without taking side-effects into consideration.
 
 \subsection{Hierarchical Merging}
 As we have seen in our scenario, merging of our structured data is a hierachical process combining all of the described algorithms.
-Our strategy is to merge the data in layers with sub-structures represented through their cryptographic hashs as described in section \ref{sec:histo.hierarchy}.
+Our strategy is to merge the data in layers with sub-structures represented through their cryptographic hashs as described in Section \ref{sec:histo.hierarchy}.
 Whenever we identify an update on the hash of a sub-structure we do a finer grained diff and merge on the structure itself:
 
 \begin{enumerate}
@@ -433,4 +434,4 @@ If the conflict still remains, keep it in the result.
 \item Patch the respective structures in A with the merged diff results from each level resulting in the actual merged state D.
 \end{enumerate}
 
-This approach can not only be applied to difference entity-relationship models, it can actually be adapted for any type of data which can be mapped to a hierarchical structure.
+This approach cannot only be applied to difference entity-relationship schemas, it can actually be adapted for any type of data that can be mapped to a hierarchical structure.
