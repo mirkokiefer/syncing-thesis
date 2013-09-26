@@ -16,16 +16,16 @@ A synchronization engine that is useful for a broad range of applications has to
 Synchronization can happen with increasing levels of sophistication depending on the level of structural awareness of an application's data.\\
 A ``dumb'' engine would have no awareness of an app's data model at all - it simply sees the entire application data as one binary chunk.\\
 A more clever solution would maybe have an understanding of entities like Projects, Tasks or Comments and would see the entity instances as binary data.\\
-It could get even finer grained and break up each entity instance into attributes which it recognizes as different pieces of data.\\
+It could get even finer grained and break up each entity instance into attributes, which it recognizes as different pieces of data.\\
 We see that \emph{synchronization granularity} is one key aspect when defining requirements.
 The smallest pieces of information a synchronization engine cannot break up further we call \emph{atoms}.
 Atoms are usually aggregated into larger structures we call \emph{objects}.
-A Task instance could be treated as an object which is composed of the title and due date attributes as atoms.\\
+A Task instance could be treated as an object, which is composed of the title and due date attributes as atoms.\\
 In order to be useful a synchronization engine does not need perfect understanding of the data to be synchronized.
 Popular applications like Dropbox can provide useful synchronization of files without having any semantic understanding of their content.
 For Dropbox each file is an atom - if a user adds a paragraph to a Word document, Dropbox only recognizes a change of the entire file.
 This means if two users concurrently modify the same document at different places, Dropbox has no way to merge the changes correctly and will trigger a conflict.\\
-Version control systems like git are usually more sophisticated - section \ref{sec:background.merging} explains git's hierarchical merge strategy in more detail.
+Version control systems like git are usually more sophisticated - Section \ref{sec:background.merging} explains git's hierarchical merge strategy in more detail.
 By treating each line in a file as an atom git can often successfully merge concurrent changes.
 Git still does not have any syntactic or even semantic awareness of the code that is written in the files it synchronizes.
 So if there are concurrent edits, git cannot guarantee that merges are syntactically or semantically correct.
@@ -50,10 +50,10 @@ As we have seen in the application scenario it is necessary that objects are edi
 Edits should be allowed concurrently to not block users from doing their work.
 This implies that there can not be a central locking mechanism that controls when users can synchronize their data for offline usage.
 We therefore trade strong consistency for availability of the data.\\
-Synchronization happens in an optimistic manner which means that we assume that temporarily inconsistent data will rarely lead to problems.
+Synchronization happens in an optimistic manner, which means that we assume that temporarily inconsistent data will rarely lead to problems.
 Most mobile applications do not require strong consistency - the offline availability of data is usually a more important factor when judging the user experience.\\
 Our goal is to guarantee that after a finite number of synchronization events all objects will eventually converge to the same state across all devices.
-This property is referred to as \emph{eventual consistency} and explained in section \ref{sec:background.transactions}.\\
+This property is referred to as \emph{eventual consistency} and explained in Section \ref{sec:background.transactions}.\\
 
 \section{Causality Preservation and Conflicts}
 \label{sec:requirements.causality}
@@ -67,8 +67,8 @@ Lets assume Rita and Allen work on the same object with their respective devices
 The object has the initial state $A$.
 
 \begin{itemize}
-\item 9:00 AM: Rita makes an edit to the object which leads to state $B$.
-\item 9:30 AM: Allen synchronizes with Rita and edits which leads to state $C$.
+\item 9:00 AM: Rita makes an edit to the object, which leads to state $B$.
+\item 9:30 AM: Allen synchronizes with Rita and edits, which leads to state $C$.
 \item 10:00 AM: Rita is offline and can not synchronize. She edits the object at state $B$ leading to state $D$. 
 \end{itemize}
 
@@ -82,7 +82,7 @@ The engine should be designed in a way that conflict resolution strategies can b
 If no automatic resolution is possible the application should be able to present the conflict to the user and let him manually resolve it.\\
 Merging of updates and conflict resolution should be based on three-way merging.
 This means each client has to keep previous versions of edited objects.
-The concept of three-way merging is explained in section \ref{sec:background.merging}.
+The concept of three-way merging is explained in Section \ref{sec:background.merging}.
 
 \section{Flexible Network Topologies}
 \label{sec:requirements.topologies}
@@ -92,7 +92,7 @@ Even in an office environment where users exchange large amounts of data a direc
 For this setting a hybrid architecture with local servers in the company network could be an interesting alternative.
 The local servers could provide fast synchronization among users inside the office while a remote server on the Internet provides synchronization with users working from home.\\
 The local and remote servers are synchronizing in a peer-to-peer topology while the users interact with them in a client-server setup.
-This gives us a hierarchical architecture which is both able to exploit the different levels of network speed and guarantee a higher state of robustness through the centralized servers.
+This gives us a hierarchical architecture, which is both able to exploit the different levels of network speed and guarantee a higher state of robustness through the centralized servers.
 A hierachical architecture can counter the higher risks of failure on clients like notebooks or smartphones.
 The more durable and always connected server nodes should be able to recover data loss on client nodes.\\
 The protocol used for synchronization should be generic enough to adapt to these different network setups.
