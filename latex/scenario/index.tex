@@ -1,7 +1,7 @@
 
 \chapter{Application Scenario - A Collaborative Task Manager}
 \label{sec:scenario}
-Our goal is to develop a collaborative Task Manager that can still be used if disconnected from the network.
+Our goal is to develop a collaborative Task Manager that can still be used if disconnected from the network and satisfies the requirements described in the following.
 We choose this scenario because we think it represents a common type of architecture and data model for mobile applications.
 The application described here will form the base of our requirements analysis in the next chapter.
 
@@ -65,6 +65,13 @@ Allen & 2014-07-20 & Ok, lets go through it tomorrow morning!
 \item The data should be kept as current as possible even if a user's device does not have reliable Internet access.
 \end{itemize}
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{img/workflow}
+\caption{An exemplaric workflow that should be supported by our application}
+\label{fig:scenario.workflow}
+\end{figure}
+
 Figure \ref{fig:scenario.workflow} demonstrates a workflow that should be supported:\\
 
 \begin{enumerate}
@@ -77,18 +84,13 @@ Figure \ref{fig:scenario.workflow} demonstrates a workflow that should be suppor
 \item Allen, who is still at his notebook, receives Rita's comment as soon as she connects to Internet at home.
 \end{enumerate}
 
-\begin{figure}[!ht]
-\centering
-\includegraphics[width=1.0\textwidth]{img/workflow}
-\caption{An exemplaric workflow that should be supported by our application}
-\label{fig:scenario.workflow}
-\end{figure}
-
 \section{Data Schema}
-Based on the user stories we can derive a plausible data schema for the application. We can map it to an entity-relationship schema as shown in figure \ref{fig:tasks-data-schema}.\\
-The only complication is the requirement of \emph{Tasks} per \emph{Project} being ordered. We model this as a linked list by having a ``Next Task'' relationship.
+Based on the user stories we derive a data schema for the application.
+We map it to an entity-relationship schema as shown in figure \ref{fig:tasks-data-schema}.\\
+The only complication is the requirement of \emph{Tasks} per \emph{Project} being ordered.
+We model this as a linked list by having a ``Next Task'' relationship.
 
-\begin{figure}[tasks-data-schema]
+\begin{figure}
 \centering
 \includegraphics[width=0.8\textwidth]{img/tasks-schema}
 \caption{A collaborative Task Manager's data schema}
