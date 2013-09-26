@@ -34,7 +34,7 @@ The user will not be interrupted in his workflow as conflicts occur while he sti
 Dropbox \cite{dropbox} follows this model by simply duplicating the file whenever a conflict occurs.
 The file under the original name contains the picked `winner' of the conflict.
 An additional file with a timestamp appended to the file name contains the changes of the `losing' node in the conflict.
-An analog approach is chosen by Evernote \ref{evernote}, which duplicates notes on a conflict.\\
+An analog approach is chosen by Evernote \cite{evernote}, which duplicates notes on a conflict.\\
 As we described in Section \ref{sec:couchdb}, CouchDB applies a similar model by deterministicially choosing one of the conflicting documents as the winner.
 The deterministic winner picking is important to ensure that concurrent merge operations on different nodes pick the same document as a winner.\\
 We believe that it adds value to our synchronization solution if we implement a winner picking model equivalent to CouchDB's.
