@@ -21,6 +21,13 @@ Whenever an object in our graph changes, we only need to write the changed objec
 All unchanged objects can be referenced again through their state hash.
 If we run a commit and no data has actually changed, we therefore do not write any new object versions to the store.\\
 
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.6\textwidth]{img/commits}
+  \caption{Re-using objects across commits.}
+  \label{fig:histo.commits}
+\end{figure}
+
 Let us go through the steps of an exemplary update which could have lead to the scenario shown in figure \ref{fig:histo.commits}:
 
 \begin{enumerate}
@@ -33,12 +40,5 @@ All other projects and entries of the `members' attribute can reference to the p
 \item The new commit object links to the new hash of organization ID0 as the root object.
 \item The new commit object links to the previous commit object.
 \end{enumerate}
-
-\begin{figure}[commits]
-  \centering
-  \includegraphics[width=0.6\textwidth]{img/commits}
-  \caption{Re-using objects across commits.}
-  \label{fig:histo.commits}
-\end{figure}
 
 With this model of hierarchical data at hand we can now go into the details of merging two branches of our state.

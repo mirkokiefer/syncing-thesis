@@ -27,7 +27,7 @@ We can still apply a data pruning optimization to the server by letting the serv
 The more frequently the clients synchronize the more space efficient the protocol becomes.\\
 Figure \ref{fig:histo.topologies.client-server} illustrates a possible state in a client-server setup.
 
-\begin{figure}[hierarchy]
+\begin{figure}[H]
   \centering
   \includegraphics[width=0.9\textwidth]{img/client-server}
   \caption{Client-Server topology with history data pruned at least recently synchronized node.}
@@ -49,6 +49,14 @@ For each remote tracking head $ A $ of the source node, we compute the lowest co
 If $ C $ is equal to $ A $, we know that our information on the node's head is more up to date.
 If $ C $ is equal to $ B $, the source node has more current information and we update the target's remote tracking head to $ A $.
 This ensures that the information on remote node heads will eventually propagate across all collaborating nodes.\\
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1.0\textwidth]{img/client-client}
+  \caption{Client-Client topology showing a merge of three clients.}
+  \label{fig:histo.topologies.client-client}
+\end{figure}
+
 In Figure \ref{fig:histo.topologies.client-client} we have an examplaric merge of three clients.
 \emph{Client A's} head is intially at $ E $ as it has not recently synchronized data from \emph{client B} or \emph{client C}.
 \emph{Client B} has already synchronized changes from both \emph{client A} and \emph{client C}.
@@ -61,13 +69,6 @@ The client therefore only prunes history after \emph{commit B} as he would other
 \emph{Client B} and \emph{client C} already know that their common ancestor with \emph{client A} is at \emph{commit C} and can therefore prune \emph{commit B}.\\
 In a next step \emph{client A} synchronizes data from \emph{client B} and can fast-forward his head to \emph{commit H}.
 He also learns that \emph{client C's} head is already at \emph{commit H} and can therefore prune the entire history after \emph{commit H}.
-
-\begin{figure}[!ht]
-  \centering
-  \includegraphics[width=1.0\textwidth]{img/client-client}
-  \caption{Client-Client topology showing a merge of three clients.}
-  \label{fig:histo.topologies.client-client}
-\end{figure}
 
 \subsection{Multi Master - Client}
 \label{sec:histo.topologies.multi-master}
@@ -94,6 +95,14 @@ Figure \ref{fig:histo.topologies.hierarchical} shows an example for a simple hie
 Being in an office environment, the clients are all connected to a local network usually via Wi-Fi.
 The local network in turn connects the clients to the internet but also allows them to directly connect to other nodes on the local network.
 We could therefore run an `office server' in the local network, allowing the clients to synchronize with low-latency in a client-server topology.\\
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{img/hierarchical}
+  \caption{Hierarchial synchronization topology.}
+  \label{fig:histo.topologies.hierarchical}
+\end{figure}
+
 Users working from home or travelling still want to be able to synchronize with their colleagues.
 We add a `cloud server' to our topology, which runs in an internet server farm.
 The cloud server continuously synchronizes with the office server as described for the multi-master setup.
@@ -102,10 +111,3 @@ Due to the continuous connection between the office and the cloud server we can 
 As in the previous topology there is a race condition when synchronizing with the different servers, which can in rare cases result in a slightly inefficient data propagation.\\
 If we choose to let the clients track both servers as different remotes, we can only apply the optimization described for the peer-to-peer setup in Section \ref{sec:histo.topologies.p2p}.
 This is still a very efficient solution as the two server nodes are unlikely to differ much in their branch heads.
-
-\begin{figure}[!ht]
-  \centering
-  \includegraphics[width=0.8\textwidth]{img/hierarchical}
-  \caption{Hierarchial synchronization topology.}
-  \label{fig:histo.topologies.hierarchical}
-\end{figure}

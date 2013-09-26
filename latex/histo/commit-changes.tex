@@ -57,6 +57,13 @@ function getCommitDifference(commitA, commitB) {
 
 \end{lstlisting}
 
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.6\textwidth]{img/new-commits}
+  \caption{Commit difference between branches B and C and A being the last synchronized commit.}
+  \label{fig:histo.new-commits}
+\end{figure}
+
 Figure \ref{fig:histo.new-commits} visualizes the commit difference for two branches B and C.
 The last synchronized commit is A.
 B has in the meantime made concurrent changes and it has synchronized with another branch D.
@@ -67,13 +74,6 @@ The commit difference between A and B is therefore the sum of two commit paths:\
 \item The shortest commit path between B and the lowest common ancestor of A and B, which is B.
 \item The shortest commit path between D and the lowest common ancestor of D and A, which is E.
 \end{itemize}
-
-\begin{figure}[new-commits]
-  \centering
-  \includegraphics[width=0.6\textwidth]{img/new-commits}
-  \caption{Commit difference between branches B and C and A being the last synchronized commit.}
-  \label{fig:histo.new-commits}
-\end{figure}
 
 We want to ensure that if `commitA' is not part of the history, the entire history of `commitB' is returned.
 `getCommonAncestor()' therefore has to return the root of the history if no common ancestor is found.
