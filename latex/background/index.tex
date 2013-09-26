@@ -3,13 +3,14 @@
 \label{sec:background}
 
 We will start this chapter by explaining the core aspects of data synchronization.
-After setting it in context with traditional properties of distributed databases we will present some of the popular approaches to synchronization.\\
-Some technical background on the practicality of local data storage based on HTML5 will follow.\\
+After setting it in context with traditional properties of distributed databases we will present popular approaches to synchronization.\\
+Technical details on the practicality of local data storage based on HTML5 will follow.\\
 This will give us a solid background to develop and reason about our own data synchronization framework.
 
 \section{Defining Data Synchronization}
 \label{sec:background.definition}
-Let us introduce some basic terminology and try to systematically define what data synchronization is about.
+We introduce some basic terms and systematically define data synchronization.
+The terminology follows that of the concurrent programming environment Erlang \cite{erlang} and the distributed version control system Git \cite{git}.
 
 \emph{Atoms} are what we define as the lowest level of data that cannot be devided into smaller parts.
 Every application may have a custom definition of atoms.
@@ -23,7 +24,7 @@ A collaborative application has multiple users working on different devices on a
 They are either connected directly or via servers who live on the local network or the Internet.
 Each device, be it a user's device or a server, we define as a \emph{node}.
 Nodes can be connected through various network topologies like peer-to-peer, client-server or a hierarchical architecture.
-In section \ref{sec:requirements.topologies} we will go into more detail about different network topologies.\\
+In Section \ref{sec:requirements.topologies} we will go into more detail about different network topologies.\\
 The nodes of mobile users are likely to be partitioned from their network and therefore have to be able to work in \emph{offline} mode.
 Therefore application data has to be available locally so that users are not blocked from using their application.
 Even when connected to a network it can be beneficial to maintain data locally to increase the responseness of the application.\\
@@ -38,9 +39,9 @@ The process of synchronization can be divided into three phases.
 Local edits first have to be identified before they can be sent to other nodes.
 We refer to this step as the \emph{update detection} phase.
 Some applications may explicitly track each edit as its made and store the history of edit operations.
-This \emph{edit-based} approach is necessary for \emph{stream-based synchronization} which we explain in section \ref{sec:background.stream-based}.\\
+This \emph{edit-based} approach is necessary for \emph{stream-based synchronization} which we explain in Section \ref{sec:background.stream-based}.\\
 If edits are not tracked directly we have to run a differencing algorithm to detect updates.
-This requires us to keep previous states of the data and is detailed further in section \ref{sec:background.history-based} on \emph{history-based synchronization}.\\
+This requires us to keep previous states of the data and is detailed further in Section \ref{sec:background.history-based} on \emph{history-based synchronization}.\\
 Once updates are detected we continue with the \emph{update propagation} phase.
 A stream of edit operations or the differencing output is sent to the collaborating nodes.
 The details will be explained in the respective sections on the stream or history based approaches.\\
@@ -106,7 +107,7 @@ The \emph{CAP-Theorem} actually states in detail that it is impossible to have s
 Given these constraints we can only guarantee \emph{eventual consistency}.
 Data will be consistently propagated across all nodes given a long enough period of time over which no changes are made.
 Eventual consistency is increasingly adopted in multi-master databases like CouchDB \cite{anderson2010couchdb} and DynamoDB \cite{DeCandia:2007ui}.
-CouchDB which uses a combination of MVCC and eventual consistency will be reviewed in detail in section \ref{sec:couchdb}.\\
+CouchDB which uses a combination of MVCC and eventual consistency will be reviewed in detail in Section \ref{sec:couchdb}.\\
 \emph{Atomicity} is defined as transactions either passing entirely or leaving the database unchanged if a part fails.
 When choosing eventual consistency it is clear that we can not guarantee that a transaction succeeds across all nodes.
 Atomicity can only be guaranteed on a per-node level with transaction results eventually being propagated.\\
@@ -195,7 +196,7 @@ As XML supports the expression of a broad range of data types this is probably o
 \section{Lowest Common Ancestor}
 \label{sec:background.lca}
 
-As described in section \ref{sec:background.definition} the changing states of an object being updated are linked in its state \emph{history}.
+As described in Section \ref{sec:background.definition} the changing states of an object being updated are linked in its state \emph{history}.
 Each object state links back to its ancestor thereby forming a directed acyclic graph.\\
 The lowest common ancestor (LCA) of two states A and B in the history graph is defined as the common ancestor C with the lowest distance to A and B.
 The distance between two states is defined as the number of edges between them.

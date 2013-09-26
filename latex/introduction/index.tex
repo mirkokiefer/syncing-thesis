@@ -4,11 +4,11 @@
 
 \section{Motivation}
 Developing mobile applications that work offline and can synchronize peer-to-peer is currently an extremely ambitious task.
-The problem has been solved for distributed version control of source code with software like git.
+The problem has been solved for distributed version control of source code with software like git \cite{git}.
 We aim to bring similar concepts to mobile app development.\\
 
 Applications that allow users to collaborate on data on a central server are in widespread use.
-Popular examples are document authoring tools like Google Docs, project collaboration apps like Basecamp or Trello or even large scale collaboration projects like Wikipedia.\\
+Popular examples are document authoring tools like Google Docs \cite{google_docs}, project collaboration apps like Basecamp \cite{basecamp} or Trello \cite{trello} or even large scale collaboration projects like Wikipedia \cite{wikipedia}.\\
 
 The traditional architecture of collaborative applications follows a client-server model where the server hosts the entire application logic and persistence.
 Users access the application through a thin client, most commonly a web browser.
@@ -34,7 +34,7 @@ Most users today carry a notebook, a smartphone and maybe even a tablet computer
 They often want to work with the same data on different devices.
 Apps need to support workflows like adding some items to a Todo-Manager on a notebook and subsequently reviewing them on a smartphone.
 This implies that even simple applications that are meant for single-users have to aquire collaborative features.
-A single-user with multiple devices is from a technical perspective effectively collaborating with itself.\\
+A single-user with multiple devices is from a technical perspective effectively collaborating with himself.\\
 Today's applications only achieve this through data synchronization between the devices and a central server.
 If the user is mobile and does not have a reliable Internet connection he is stuck with outdated data on his smartphone.
 This problem can only be resolved by supporting the direct synchronization between devices.
@@ -45,7 +45,7 @@ The difference is that the server node is continuously connected to the Internet
 Note that this only describes the extreme scenario - in most real-world applications we will see a hybrid-architecture where clients can synchronize most data directly but the server still manages security or enforces other constraints.\\
 
 Building such a distributed data synchronization engine including all relevant aspects is very complex and beyond the reach of a small team of app developers.
-As an example the software company ``Cultured Code'' which develops one of the most popular task management apps has spent more than two years developing a generic solution without success \cite{things}.
+As an example the software company ``Cultured Code'', which develops one of the most popular task management apps, has spent more than two years developing a generic solution without success \cite{things}.
 It is therefore way beyond the scope of this thesis to develop a generic end-to-end solution.
 As described in the next section we will focus on a specific set of objectives and use cases.
 
@@ -63,7 +63,7 @@ Our guiding objectives are:
 \item \emph{Application Integration}: Abstract the synchronization logic to be as unintrusive as possible to an application.
 \end{itemize}
 
-A collaborative app that has to function with unreliable network connection implies that we can not rely on the traditional thin client model.
+A collaborative app that has to function with an unreliable network connection implies that we cannot rely on the traditional thin client model.
 We have to think about ways to make both data and logic available offline.
 The focus of this thesis is on managing offline availability and synchronization of data between collaborating devices.\\
 Being able to synchronize data directly between devices forces us to develop a distributed architecture.\\
@@ -87,7 +87,7 @@ Otherwise important questions which are out of scope of this thesis are:
 The next chapter starts by describing related work and the necessary background that enables us to develop the synchronization solution.\\
 Developing generic software that is not derived from concrete examples is doomed to fail.
 Chapter \ref{sec:scenario} therefore defines a concrete application scenario.\\
-The scenario is used to derive the necessary requirements in Chapter \ref{sec:requirements} which will be used to evaluate our solution.\\
+The scenario is used to derive the necessary requirements in Chapter \ref{sec:requirements}, which will be used to evaluate our solution.\\
 With CouchDB we evaluate a potential existing solution to our scenario in Chapter \ref{sec:couchdb}.\\
 Chapter \ref{sec:histo} finally introduces Histo, our own solution for distributed data synchronization.\\
 A discussion of our technological choices, fullfillment of requirements and a conclusion follows in the final chapter.

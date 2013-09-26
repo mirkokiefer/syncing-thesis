@@ -1,21 +1,21 @@
 
 % This file contains an abstract of your thesis, with approximaltely 300-500 words
 
-Inspired by distributed version control for source code we develop Histo, a framework for peer-to-peer data synchronization in mobile applications.\\
+Inspired by distributed version control for source code we develop Histo, which is a framework for peer-to-peer data synchronization in mobile applications.\\
 Our objectives when developing Histo are driven by exemplaric workflows in a collaborative task manager.\\
 We see \emph{offline support} as a key requirement of modern mobile applications.
 Histo is designed to keep all data locally on the client device to ensure a user is not blocked from using an application.\\
 Every application has a different data model, we develop methods to support \emph{flexible data models}.
 We show that by mapping an application's data to a hierarchical model, we can efficiently synchronize data.\\
 Locking mechanisms are shown to be non-feasible when working with loosely connected devices.
-The \emph{synchronization protocol} which is at the heart of Histo, is therefore designed to work without any locking logic.
-We instead rely on a concept of \emph{optimistic synchronization} which guarantees \emph{eventual consistency} of an application's data.\\
+The \emph{synchronization protocol}, which is at the heart of Histo, is therefore designed to work without any locking logic.
+We instead rely on a concept of \emph{optimistic synchronization}, which guarantees \emph{eventual consistency} of an application's data.\\
 Handling concurrent edits and resulting conflicts correctly is another core element of Histo.
 Histo merges concurrent edits and identifies conflicts using \emph{three-way-merging}.
 We find that the only way to implement three-way-merging in a distributed setting is by tracking the edit history on each device.\\
 Histo's synchronization protocol is shown to perform well in a range of network topologies.
 The most extreme cases being \emph{client-server} and \emph{peer-to-peer}.
-For each network topology we show how assumptions we can make on the data history allow us to minimize the amount of data stored on each device.\\
+For each network topology, we show how assumptions we make on the data history allows to minimize the amount of data stored on each device.\\
 We focus on developing a practical solution that works on a broad range of devices.
 Histo is therefore implemented with \emph{open web standards}.
 To our knowledge there are no publicly available solutions with these objectives.\\
