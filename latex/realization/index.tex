@@ -5,12 +5,12 @@ A first prototype of Histo's architecture has actually been implemented and will
 
 The components of Histo described in Chapter \ref{sec:histo} all describe self-contained functionality and we therefore implemented each of them as a separate module.
 
-At the highest level is the Histo module which only implements the history tracking functionality described in Section \ref{sec:histo.committing}.
+At the highest level is the Histo module, which only implements the history tracking functionality described in Section \ref{sec:histo.committing}.
 All other features are still exposed in the Histo module but delegated to specialized modules:
 
 \begin{itemize}
 \item \emph{histo-sync}: Implements the synchronization protocol of Section \ref{sec:histo.protocol}
-\item \emph{lca}: Implements a lowest-common ancestor algorithm described in \ref{sec:background.lca}
+\item \emph{lca}: Implements a lowest-common ancestor algorithm described in Section \ref{sec:background.lca}
 \item \emph{graph-diff}: Implements the commit history difference algorithm of Section \ref{sec:histo.graph-diff}
 \item \emph{content-addressable}: Implements a content-addressable store interface described in Section \ref{sec:background.cas}
 \item \emph{diff-patch-merge}: Implements the three-way-merge algorithms described in Section \ref{sec:histo.merging}
@@ -21,7 +21,6 @@ Through this modular approach we enable the support of alternative data structur
 The implementations of all modules are attached to the thesis and can be found online where they continue to be improved \cite{histo-source}.\\
 
 In this chapter we will discuss the technologies used and our approach to ensure correctness of the implementation.
-Finally we will give suggestions on how Histo can be made more accessible and taken to new directions.
 
 \section{Technology}
 \label{sec:realization.technology}
@@ -40,7 +39,7 @@ This means we have the same database API available both in browsers and on the s
 We therefore decided to base the implementation of Histo on JavaScript, using the LevelDOWN interface for the storage layer.
 
 \section{Fullfillment of Requirements}
-In Section \ref{sec:requirements} we have listed the requirements of a synchronization solution.
+In Chapter \ref{sec:requirements} we have listed the requirements of a synchronization solution.
 We will now go through each of them and outline the relevant design decisions we made to fulfill them.
 
 \subsection*{Flexible Data Model Support}
@@ -80,9 +79,9 @@ The limits of showing correctness of software are known - we try to cover the mo
 The test suites of all modules are attached to the thesis and can be found online \cite{histo-source}.
 \\
 
-Part of the test-suite is verification of robustness to network partitions.
+Part of the test suite is verification of robustness to network partitions.
 We show that network partitions through any of the phases of our synchronization protocol will leave the database in a consistent state.\\
-This is partly due to our design choice of using a content-addressable store which never overrides existing data.
+This is partly due to our design choice of using a content-addressable store, which never overrides existing data.
 The entire synchronization process happens asynchronously and therefore does not block the database for writing by the local user.
 Only once the data has been merged successfully, the node's head is updated.
 Even the head update is asynchronous through the use of optimistic locking as described in Section \ref{sec:histo.protocol.merging}.
@@ -92,10 +91,10 @@ Due to the separation of data propagation and local merging, the protocol can st
 The slow data propagation phase can continue where it stopped.
 Only the comparatively fast local merging phase has to be redone when an error occurs during synchronization.
 
-\section{Conclusion and Outlook}
+\chapter{Conclusion and Outlook}
 By abstracting the complex process of synchronizing distributed data, Histo already drastically simplifies the implementation of collaborative applications.
 We have developed a flexible architecture that supports extension of Histo and re-use of its components to test new approaches for history-based synchronization.\\
-There still remains a lot of work to be done to make development of common collaboration scenarios even more productive.\\
+There still remains a lot of work to be done to make development of common collaboration scenarios even more productive.
 Histo currently comes with support for a very generic model of hierarchical data as described in Section \ref{sec:histo.hierarchy}.
 We exemplarically showed the mapping of a task manager's data model to Histo's internal data structure in Figure \ref{fig:histo.hierarchy}.
 This could be taken further by exploring other use cases and finding common patterns in their data models.\\
@@ -103,10 +102,8 @@ We used the three-way merging algorithms for low-level data structures to implem
 This approach could be leveraged to build three-way merging support for other high-level data structures.
 Interesting would be the application to specialized data structures like those of a spreadsheet application or a collaborative text-editor.\\
 The goal is to have a broad range of synchronizable data structures that can be used as the foundation of collaborative applications.\\
-
 To make Histo more accessible to developers, integration with client-side MVC frameworks could be built.
 Popular web frameworks like Backbone.js \cite{backbone}, Ember.js \cite{ember} or AngularJS \cite{angular} include support for pluggable model stores.\\
-
 Another interesting direction would be to explore ways to support the maintenance of distributed applications.
 With any application that is installed on a device for offline use, the maintenance complexity for software updates rises dramatically.
 Developers are faced with the problem of consistenly transforming user data to new software releases.
