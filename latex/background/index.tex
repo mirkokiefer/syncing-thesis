@@ -39,7 +39,7 @@ The process of synchronization can be divided into three phases.
 Local edits first have to be identified before they can be sent to other nodes.
 We refer to this step as the \emph{update detection} phase.
 Some applications may explicitly track each edit as its made and store the history of edit operations.
-This \emph{edit-based} approach is necessary for \emph{stream-based synchronization} which we explain in Section \ref{sec:background.stream-based}.\\
+This \emph{edit-based} approach is necessary for \emph{stream-based synchronization}, which we explain in Section \ref{sec:background.stream-based}.\\
 If edits are not tracked directly we have to run a differencing algorithm to detect updates.
 This requires us to keep previous states of the data and is detailed further in Section \ref{sec:background.history-based} on \emph{history-based synchronization}.\\
 Once updates are detected we continue with the \emph{update propagation} phase.
@@ -50,7 +50,7 @@ Updates have to be merged and conflicts are identified.
 In a centralized scenario this part is usually carried out by the server.
 Distributed architectures supporting peer-to-peer synchronization are much more complex as all clients have to reconcile the received updates in an eventually consistent way.\\
 
-Let us review these terms through figure \ref{fig:background.definition.terms} and a short summary:
+Let us review these terms through Figure \ref{fig:background.definition.terms} and a short summary:
 
 \begin{itemize}
 \item \textbf{Atoms} are the literal values that can not be divided further.
@@ -95,19 +95,19 @@ A mobile user who wants to edit some data while travelling without network conne
 Using locking concepts in such a scenario would not only be a an inconvenience for the users but would actually lead to a high-rate of deadlocks.
 As Jim Gray states, the rate of deadlocks goes up with the square of the level of concurrency and the fourth power of the transaction size \cite{gray1981strawman}.\\
 A common alternative to locking is \emph{multiversion concurrency-control} (MVCC) where readers can still access the prior version of data being edited by another user \cite{Bernstein:1981ut}.\\
-With regards to the ACID property \emph{Isolation}, MVCC refers to the most relaxed level of \emph{``Read Uncommitted''} which allows concurrent updates and reading of uncommitted data.\\
+With regards to the ACID property \emph{Isolation}, MVCC refers to the most relaxed level of \emph{``Read Uncommitted''}, which allows concurrent updates and reading of uncommitted data.\\
 
 Distributed databases usually use a two-phase commit protocol to gurantee strong consistency \cite{bernstein1987concurrency}.
 Each participant has to agree in order to successfully complete a transaction.
 In a mobile setting with long periods of disconnection each commit could take hours or days to be acknowledged by all nodes.
 This is further complicated as nodes are often not fixed and can be added or removed from a mobile application at any time.
-The two-phase commit algorithm requires a coordinator node which collects the votes of all collaborators and commits if the result is positive.
+The two-phase commit algorithm requires a coordinator node, which collects the votes of all collaborators and commits if the result is positive.
 In a peer-to-peer synchronization scenario with nodes unpredictably going offline this approach will not work as we can not define a reliable coordinator.\\
 The \emph{CAP-Theorem} actually states in detail that it is impossible to have strong consistency combined with partition tolerance \cite{Gilbert:2002uw}.\\
 Given these constraints we can only guarantee \emph{eventual consistency}.
 Data will be consistently propagated across all nodes given a long enough period of time over which no changes are made.
 Eventual consistency is increasingly adopted in multi-master databases like CouchDB \cite{anderson2010couchdb} and DynamoDB \cite{DeCandia:2007ui}.
-CouchDB which uses a combination of MVCC and eventual consistency will be reviewed in detail in Section \ref{sec:couchdb}.\\
+CouchDB, which uses a combination of MVCC and eventual consistency will be reviewed in detail in Section \ref{sec:couchdb}.\\
 \emph{Atomicity} is defined as transactions either passing entirely or leaving the database unchanged if a part fails.
 When choosing eventual consistency it is clear that we can not guarantee that a transaction succeeds across all nodes.
 Atomicity can only be guaranteed on a per-node level with transaction results eventually being propagated.\\
@@ -127,7 +127,7 @@ The family of algorithms developed to correctly transform the edit operations is
 If some nodes are temporarily offline while continuing to edit, the correct transformation of many concurrent edit operations becomes very complex and error-prone.\\
 A practical problem in modern user interfaces is that it is hard to correctly capture all edits made to data.
 If a single edit is missed the result is a fork possibly rendering all future update operations as incorrect.
-Packet loss due to unreliable network connections have to be taken into account which further complicates the design of a robust algorithm.\\
+Packet loss due to unreliable network connections have to be taken into account, which further complicates the design of a robust algorithm.\\
 Research has therefore investigated options for data synchronization that do not require Operational Transformation.\\
 
 \emph{Commutative Replicated Data Types} (CRDTs) have emerged as a viable alternative for specific use cases.
@@ -140,7 +140,7 @@ Due to the restrictions on supported operations on data types, CRDTs are only ap
 \label{sec:background.history-based}
 Snapshot-based methods work by tracking and relating an application's data state over time.
 Instead of sending a sequential stream of raw updates, each client collects additional metadata that allows more complex reasoning about the state of each client.\\
-A prominent example is the distributed content tracking system \emph{git} \cite{swicegood2008pragmatic} which can resolve the most complex peer-to-peer synchronization scenarios.\\
+A prominent example is the distributed version control system \emph{git} \cite{swicegood2008pragmatic}, which can resolve the most complex peer-to-peer synchronization scenarios.\\
 Git achieves this by storing the entire history of a project's database on each client.
 Each edit made to objects in the database is stored as a commit object and related to its ancestors.\\
 Through the resulting commit graph each client can identify the exact subset of updates each remote node has to receive in order to be in sync.\\
@@ -153,18 +153,19 @@ Three-way merging describes the concept for an algorithm that performs a merge o
 Let \emph{A} be the initial state of the object and let \emph{B} and \emph{C} be edited versions of \emph{A}.
 The goal is to merge \emph{B} and \emph{C} into a new object \emph{D}.\\
 The merge algorithm starts by identifying the differences between \emph{A} and \emph{B} and between \emph{A} and \emph{C}.\\
-All \emph{parts} of object \emph{B} that are neither changed in \emph{B} nor in \emph{C} are carried over into \emph{D}.\\
-All changes to parts of the object in \emph{B} that have not been changed in \emph{C} are directly accepted and added to \emph{D}.\\
+All parts of object \emph{B} that are neither changed in \emph{B} nor in \emph{C} are carried over into \emph{D}.\\
+All changes to parts of the object in \emph{B} that have not been changed in \emph{C} are directly accepted and added to \emph{D}.
+Same is true for changes to objects in \emph{C}, which have not been changed in \emph{B}.\\
 If the same parts are edited both in \emph{B} and \emph{C} we have a merge conflict that needs to be resolved.\\
 Figure \ref{fig:background.merging.success} shows a simple scenario where a merge can be successfully made.
-In figure \ref{fig:background.merging.conflict} we have concurrent edits of the same property resulting in a conflict.\\
-\begin{figure}[merge-success]
+In Figure \ref{fig:background.merging.conflict} we have concurrent edits of the same property resulting in a conflict.\\
+\begin{figure}[H]
   \centering
   \includegraphics[width=0.8\textwidth]{img/three-way-merging}
   \caption{A successful three-way merge}
   \label{fig:background.merging.success}
 \end{figure}
-\begin{figure}[merge-conflict]
+\begin{figure}[H]
   \centering
   \includegraphics[width=0.8\textwidth]{img/three-way-merging-conflict}
   \caption{Concurrent updates of the same property result in a conflict}
@@ -200,25 +201,27 @@ As described in Section \ref{sec:background.definition} the changing states of a
 Each object state links back to its ancestor thereby forming a directed acyclic graph.\\
 The lowest common ancestor (LCA) of two states A and B in the history graph is defined as the common ancestor C with the lowest distance to A and B.
 The distance between two states is defined as the number of edges between them.
-Figure \ref{fig:background.lca.one} shows an example where A and B have two common ancestors C and D but only C being the lowest common ancestor.\\
-There are cases where the LCA is ambigous - in figure \ref{fig:background.lca.two} both C and D have the same distance to A and B.\\
-The LCA problem has long been solved through various approaches.
-Czumaj et al. presented a simple method solving the problem on  $ n $ nodes and $ m $ edges in $\mathcal O(n*m)$ \cite{Czumaj:2007ht}.\\
-An alternative approach by Bender et al. is able to compute LCA queries in constant time after $\mathcal O(n^3) $ pre-processing step \cite{Bender:2005dg}.
 
-\begin{figure}[lca-one]
+\begin{figure}[H]
   \centering
   \includegraphics[width=0.5\textwidth]{img/lca1}
   \caption{C is the lowest common ancestor of A and B}
   \label{fig:background.lca.one}
 \end{figure}
 
-\begin{figure}[lca-two]
+Figure \ref{fig:background.lca.one} shows an example where A and B have two common ancestors C and D but only C being the lowest common ancestor.\\
+There are cases where the LCA is ambigous - in Figure \ref{fig:background.lca.two} both C and D have the same distance to A and B.\\
+
+\begin{figure}[H]
   \centering
   \includegraphics[width=0.5\textwidth]{img/lca2}
   \caption{Both C and D are lowest common ancestors of A and B}
   \label{fig:background.lca.two}
 \end{figure}
+
+The LCA problem has long been solved through various approaches.
+Czumaj et al. presented a simple method solving the problem on  $ n $ nodes and $ m $ edges in $\mathcal O(n*m)$ \cite{Czumaj:2007ht}.\\
+An alternative approach by Bender et al. is able to compute LCA queries in constant time after $\mathcal O(n^3) $ pre-processing step \cite{Bender:2005dg}.
 
 \section{Content Adressable Storage}
 \label{sec:background.cas}
@@ -230,7 +233,7 @@ The ZFS filesystem uses this concept internally to achieve fast snapshotting and
 Creating a snapshot of an object does not require any copying - the filesystem only has to keep the current version of the object as updates are made.\\
 Data verification is given for free as well - an object can simply be re-hashed on a read and compared to the hash its stored at.\\
 Git is another system making use of a CAS as it needs to keep all previous versions of each object \cite{swicegood2008pragmatic}.\\
-Our own synchronization framework described in chapter \ref{sec:histo} will use the concept of a CAS.
+Our own synchronization framework described in Chapter \ref{sec:histo} will use the concept of a CAS.
 
 \section{HTML5 and Offline Applications}
 \label{sec:background.html5}
@@ -238,21 +241,21 @@ HTML5 specifies a number of client-side storage options. Most are a work in proc
 
 \subsection{Web Storage}
 The simplest API is the \emph{localStorage} standard defined in the W3C's Web Storage specification \cite{webstorage}.\\
-It provides a key-value store accessible from JavaScript which can store string values for string keys.
+It provides a key-value store accessible from JavaScript, which can store string values for string keys.
 Most browsers currently set a storage limit of 5 MB per site.
 \emph{LocalStorage} is therefore only suitable for storing small volumes of data.\\
-Another limitation is the interface which is synchronous. As JavaScript is single-threaded, every read or write operation will block the entire application.
+Another limitation is the interface, which is synchronous. As JavaScript is single-threaded, every read or write operation will block the entire application.
 Frequent or large-volume read/write operations can result in a bad user experience caused by a ``freezing'' user-interface.\\
 \emph{LocalStorage} is currently supported by all major browsers including its mobile variants.
 
 \subsection{Web SQL Database}
 A much more advanced implementation is specified by the now deprecated \emph{Web SQL} standard \cite{websql}. It defines a relational database similar to Sqlite including SQL support.\\
-The proposal was strongly opposed by the Mozilla Foundation who sees a SQL-based database as a bad fit for web applications \cite{mozilla_indexeddb}.\\
+The proposal was strongly opposed by the Mozilla Foundation, which sees a SQL-based database as a bad fit for web applications \cite{mozilla_indexeddb}.\\
 The standard was therefore only implemented by Google Chrome, Safari and Opera and their mobile counterparts in Android and iOS.\\
 \emph{Web SQL} has been officially deprecated by the W3C and support by browsers is likely going to drop in the future.
 
 \subsection{Indexed Database}
-Instead of Web SQL the standard favored by the W3C and most browser vendors is \emph{IndexedDB}.\\
+Instead of Web SQL the standard favored by the W3C and most browser vendors is \emph{IndexedDB} \cite{indexeddb}.\\
 \emph{IndexedDB} defines a lower-level interface for storing key/value pairs and setting up custom indexes.
 While relatively simple, the API design is generic enough to cater for implementations of more complex databases on top.
 It would, for example, be possible to implement a \emph{Web SQL} database using \emph{IndexedDB}.\\
