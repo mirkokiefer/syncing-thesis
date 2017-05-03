@@ -1,13 +1,13 @@
 
-#Syncing Strategies for Mobile Devices
-##Motivation
+# Syncing Strategies for Mobile Devices
+## Motivation
 Building collaborative apps that sync data among a group of users is hard.  
 The widespread adoption of mobile devices with limited network access requires the offline availability of data and apps.  
 Some aspects of syncing are often application specific and can therefore not be solved in a generic way.  
 However there are recurring patterns that can be used to build application specific solutions. The goal of this thesis is to develop a syncing framework that speeds up the development of collaborative apps.
 
-##Application Scenarios
-###Relational Data Synchronization
+## Application Scenarios
+### Relational Data Synchronization
 The Wunderlist app serves as an example for a common kind of data model that requires syncing of data in a relational schema.
 
 Wunderlist's schema could be defined as the following:
@@ -25,7 +25,7 @@ While Invited User List is an unordered list, Todo Lists and Todo Items are orde
 
 Syncing lists of unordered object IDs never causes conflicts while syncing ordered object IDs can cause order conflicts.
 
-###Hierarchical Data Synchronization
+### Hierarchical Data Synchronization
 Dropbox synchronizes a file system - it is therefore a good example for syncing of hierarchical data.
 
 The data model is simple:
@@ -38,22 +38,22 @@ The list of child Tree Items can either be ordered or unordered. While Dropbox d
 
 Syncing trees can trigger conflicts if sub trees have been modified concurrently.
 
-###Text Synchronization
+### Text Synchronization
 Collaborative document editors like Google Docs need to synchronize text that is concurrently edited.  
 Google Docs currently does not support offline editing.
 
 Syncing text is equal to the problem of syncing an ordered list and can trigger conflicts.
 
-##General Concepts
-###Causality Preservation
-###Optimistic Synchronization
-###State vs. Edit-Based Syncing
-###Three-Way Merging
-###Vector Clocks
-###Operational Transformation
-###Commutative Replicated Data Types
+## General Concepts
+### Causality Preservation
+### Optimistic Synchronization
+### State vs. Edit-Based Syncing
+### Three-Way Merging
+### Vector Clocks
+### Operational Transformation
+### Commutative Replicated Data Types
 
-##Requirements and Evaluation Criteria
+## Requirements and Evaluation Criteria
 We will evaluate syncing strategies for the listed application scenarios.
 
 Requirements for strategies:
@@ -73,30 +73,30 @@ Aspects to consider when evaluating strategies:
 - How are updates merged/reconciled? (State or Edit-based)
 - Level of structural awareness (Textual, Syntactic, Semantic/Structural)
 
-##Existing Systems
-###git
+## Existing Systems
+### git
 
 - Data structure: filesystem/tree
 - Merging: tree-based, three-way merge
 - Propagation: snapshot-based
 - Supports peer-to-peer
 
-###CouchDB
+### CouchDB
 
 - Data structure: key-value
 - Merging: tree-based
 - Propagation: stream-based
 - Supports peer-to-peer
 
-###DynamoDB/Riak
+### DynamoDB/Riak
 Not made for offline editing - only serves as example for vector clocks.
 
 - Data structure: key-value
 - Merging: vector clocks
 - Propagation: stream-based
 
-##Syncing Framework
-###Design Guidelines
+## Syncing Framework
+### Design Guidelines
 - **no timestamps**: state-based 3-way merging
 - **no change tracing**: change tracing is not necessary - support diff computation on the fly
 - **data agnostic**: leave diff and merge of the actual data to plugins
@@ -104,7 +104,7 @@ Not made for offline editing - only serves as example for vector clocks.
 - **be small**: only implement the functional parts of syncing - leave everything else to the application (transport, persistence)
 - **sensitive defaults**: have defaults that *just work* but still support custom logic (e.g. for conflict resolution)
 
-###Proof-Of-Concept Implementation
+### Proof-Of-Concept Implementation
 As syncing is state based we need to track the entire history of a database.  
 Every client has his own replica of the database and commits data locally.  
 On every commit we create a commit object that links both to the new version of the data and the previous commit.  
@@ -133,10 +133,10 @@ This protocol is able to minimize the amount of data sent between synced stores 
 
 Updating the server's head uses optimistic locking. To update the head you need to include the last read head in your request.
 
-##Evaluation
+## Evaluation
 Evaluate the proof-of-concept by simulating syncing of data structures used in the problem scenarios with realistic network latency and disconnection.
 
-##Sources
+## Sources
 
 - [1] T. Lindholm, “XML-aware data synchronization for mobile devices,” 2009.
 - [2] P. Padmanabhan, L. Gruenwald, A. Vallur, and M. Atiquzzaman, “A survey of data replication techniques for mobile ad hoc network databases,” The VLDB Journal, vol. 17, no. 5, pp. 1143–1164, May 2008.
