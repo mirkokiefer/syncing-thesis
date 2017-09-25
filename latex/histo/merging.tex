@@ -274,8 +274,8 @@ Both in state B and C the user actually intended to \emph{replace} the word `Roa
 Concurrently replacing the same word should clearly cause a conflict.
 Our differencing algorithm has no notion of a `replace' operation.
 All it sees is a remove of `Roadmap' and an insert of some other word.\\
-This example shoes the limits of generic merging algorithms that preserve user intention.\\
-In practice it would propably be more suitable to define the `Project Name' as an atom.
+This example shows the limits of generic merging algorithms that preserve user intention.\\
+In practice it would probably be more suitable to define the `Project Name' as an atom.
 As names are short it is more likely that an update is actually intended as a replace operation of the entire string.
 Section \ref{sec:histo.conflicts} will describe some possible conflict resolution strategies in more detail.
 
