@@ -1,5 +1,10 @@
 
 # Syncing Strategies for Mobile Devices
+
+**Histo: A Protocol for Peer-to-Peer Data Synchronization in Mobile Apps**
+
+[Database Systems Research Group, Heidelberg University](https://dbs.ifi.uni-heidelberg.de/)
+
 ## Motivation
 Building collaborative apps that sync data among a group of users is hard.  
 The widespread adoption of mobile devices with limited network access requires the offline availability of data and apps.  
