@@ -25,6 +25,15 @@ We focus on developing a practical solution that works on a broad range of devic
 
 We see potential to continue the work by exploring other application scenarios and adding support for different types of data. This could include conflict handling support for specialized data structures like those of a spreadsheet or a text editor.
 
+## Beyond Structural CRDTs
+While modern Conflict-free Replicated Data Types (CRDTs) guarantee structural database convergence, they often create semantic conflicts by blindly merging data without understanding application logic. Histo's architecture avoids this "Divergence Trap" by retaining the Lowest Common Ancestor (LCA) and enforcing a three-way merge. This allows the application layer to intercept conflicting edits and apply business rules, behaving much like modern Mergeable Replicated Data Types (MRDTs). [arxiv](https://arxiv.org/html/2602.19231v1)
+
+## Commutativity and History Pruning
+A common misconception is that history-tracking protocols must suffer from infinite state bloat and scaling issues. However, if developers model their Histo application data using strictly commutative operations, the historical commit graph can be aggressively pruned. This allows the framework to gracefully transition from a full Git-like history tracker into a highly efficient, bandwidth-saving synchronization engine. [github](https://github.com/zed-industries/zed/discussions/12867)
+
+## Independent Commit Chains
+Histo's foundational concepts can be extended to support massive repositories with partial node access by utilizing a Merkle Forest architecture. Instead of a single monolithic commit history, discrete objects or permissioned layers maintain their own independent commit chains linked by a cryptographic root hash. This allows isolated nodes to safely advance the global state of the repository while remaining completely blind to the restricted data layers they cannot access. [docs.ipfs](https://docs.ipfs.tech/concepts/merkle-dag/)
+
 - [Abstract](#abstract)
 - [1 Introduction](./1-introduction/index.md)
   - [1.1 Motivation](./1-introduction/index.md#11-motivation)
